@@ -1,0 +1,72 @@
+package com.song.Reader;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import android.content.Context;
+
+import com.song.umd.Book;
+import com.song.umd.BookFactory;
+
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+
+public class BookManager implements View.OnKeyListener{
+	public static final int NEXTLINE = 0;
+	public static final int NEXTPAGE = 1;
+	public static final int JUMP = 2;
+	public static final int PRELINE = 3;
+	public static final int PREPAGE = 4;
+	public static final int PRECHAPTER = 5;
+	public static final int NEXTCHAPTER = 6;
+	public static final int OPENBOOK = 7;
+	
+	public static final int BUFSIZE = 512;
+	private int filePointer = 0;
+	private Book book;
+	private BookView bookView;
+	private Byte []bookBuf;
+	BookManager(Context con, File file) throws IOException{
+		book = BookFactory.createBook(file);
+		bookView = new BookView(con, this);
+		bookView.setFocusable(true);
+		bookView.setOnKeyListener(this);
+	}
+	
+	public View getBookView(){
+		return bookView;
+	}
+	public void excuteCmd(int cmd){
+
+	}
+	
+	public byte[] getContent(int start, int end) throws IOException{
+		filePointer = end + 1;
+		return book.getContent(start, end);
+	}
+	
+	public void openBook() throws IOException{
+		book.openBook();
+		setViewContent(getContent(0, BUFSIZE-1));
+	}
+	public void closeBook(){
+		book.closeBook();
+	}
+	public byte[] getNextContent() throws IOException{
+		return getContent(filePointer, filePointer + BUFSIZE - 1);
+		//Log.d("read content", new String(content, "Unicode"));
+	}
+	
+	public void setViewContent(byte []content) throws IOException{
+		bookView.getTextUtil().setTextStr(new String(content,"Unicode"));
+		bookView.postInvalidate();
+	}
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		this.bookView.nextLine();
+		System.out.println("ÓÐÐ§¹û");
+		return false;
+	}
+}

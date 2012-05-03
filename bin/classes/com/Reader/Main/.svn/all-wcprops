@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/reader/!svn/ver/1/src/com/song/Reader
+END
+HorseReaderActivity.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/reader/!svn/ver/1/src/com/song/Reader/HorseReaderActivity.java
+END
+TextUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/reader/!svn/ver/1/src/com/song/Reader/TextUtil.java
+END
+BookManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/reader/!svn/ver/1/src/com/song/Reader/BookManager.java
+END
+BookView.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/reader/!svn/ver/1/src/com/song/Reader/BookView.java
+END
+FileManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/reader/!svn/ver/1/src/com/song/Reader/FileManager.java
+END
+FileManagerAdapter.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/reader/!svn/ver/1/src/com/song/Reader/FileManagerAdapter.java
+END

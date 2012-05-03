@@ -1,0 +1,15 @@
+package com.song.umd;
+
+import java.io.File;
+import java.io.IOException;
+
+public class BookFactory {
+	public static Book createBook(File file) throws IOException{
+		String str = file.toString().substring(file.toString().lastIndexOf('.') + 1).toLowerCase();
+		if (str.equals("umd")){
+			return new Umd(file);
+		}
+		return null;
+		
+	}
+}
