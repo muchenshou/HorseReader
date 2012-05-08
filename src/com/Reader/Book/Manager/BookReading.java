@@ -18,8 +18,8 @@ public class BookReading {
 	public BookReading(Book book){
 		mBook = book;
 	}
+	
 	Line getLine(int start) {
-		Log.i("gc","here");
 		float[] widths = new float[1];
 		char[] ch = new char[1];
 		float widthTotal = (float) 0.0;
@@ -77,9 +77,7 @@ public class BookReading {
 			}
 
 		}
-		for (int i=0; i< mPage.mLines.size();i++){
-			Log.i("line", ""+mPage.mLines.get(i).mStart);
-		}
+
 		return mPage.getStrings();
 	}
 
@@ -104,7 +102,7 @@ public class BookReading {
 		}
 
 		
-		// Log.d("start local", "" + start);
+		Log.i("start local", "" + mPage.mLines.get(0).mStart);
 		float[] widths = new float[1];
 		float widthTotal = (float) 0.0;
 		char[] ch = new char[1];
@@ -199,8 +197,9 @@ public class BookReading {
 				local = 0;
 			}
 			local = this.preLineNum();
+			this.getPageStr(local);
 		}
-		return this.getPageStr(local);//mPage.getStrings();
+		return this.getPageStr(local);
 	}
 
 	class Line {

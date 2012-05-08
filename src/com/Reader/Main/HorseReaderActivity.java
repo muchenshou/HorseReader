@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-
-
 import com.Reader.Main.R;
 import com.Reader.Record.RecordHistory;
 
@@ -37,6 +35,7 @@ public class HorseReaderActivity extends Activity {
 	/** Called when the activity is first created. */
 	public static final int FILE_RESULT_CODE = 1;
 	public TextView textView;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,7 +54,7 @@ public class HorseReaderActivity extends Activity {
 			finish();
 		}
 		listview.setOnItemClickListener(new ListView.OnItemClickListener() {
-		
+
 			public void onItemClick(AdapterView<?> adapterview, View view,
 					int position, long id) {
 				if (((String) adapterview.getAdapter().getItem(position))
@@ -70,8 +69,7 @@ public class HorseReaderActivity extends Activity {
 							.getItem(position).toString();
 					RecordHistory recordHistory = new RecordHistory();
 					// if (recordHistory.isHaveRecord(bookName)){
-					//	
-					// }
+					//
 					Intent intent = new Intent(HorseReaderActivity.this,
 							ReadingActivity.class);
 					intent.putExtra("bookname", bookName);
@@ -87,18 +85,19 @@ public class HorseReaderActivity extends Activity {
 			}
 
 		});
-		
 
 	}
+
 	@Override
-	protected void onStart (){
+	protected void onStart() {
 		ListView listview = (ListView) findViewById(R.id.selectFile);
 		RecordHistory history = new RecordHistory();
-		BookAdapter adapter = new BookAdapter(this, new File(history
-				.getFileName()));
+		BookAdapter adapter = new BookAdapter(this, new File(
+				history.getFileName()));
 		listview.setAdapter(adapter);
 		super.onStart();
 	}
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (FILE_RESULT_CODE == requestCode) {
@@ -168,8 +167,9 @@ class BookAdapter extends BaseAdapter {
 		Map<String, Object> booktitle = null;
 
 		for (int i = 0; i < list.size() && i < 5; i++) {
-			String str = list.get(i).toString().substring(
-					list.get(i).toString().lastIndexOf('.') + 1).toLowerCase();
+			String str = list.get(i).toString()
+					.substring(list.get(i).toString().lastIndexOf('.') + 1)
+					.toLowerCase();
 			if (str.equals("umd")) {
 				booktitle = new HashMap<String, Object>();
 				booktitle.put("file", list.get(i));
@@ -194,7 +194,6 @@ class BookAdapter extends BaseAdapter {
 		mData.add(booktitle);
 		return this.mData;
 	}
-
 
 	public int getCount() {
 		return mData.size();

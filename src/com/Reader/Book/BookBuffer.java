@@ -3,11 +3,10 @@ package com.Reader.Book;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-
 public class BookBuffer {
 	private Book mBook = null;
 	private int mPosition = -1;
-	private int mBufferSize = 1024 * 4;//buffer 4k
+	private int mBufferSize = 1024;//buffer 4k
 	private ByteBuffer mBuffer = ByteBuffer.allocate(mBufferSize);
 	private int mLenghtContent = 0;
 	public BookBuffer(Book book){
@@ -15,9 +14,10 @@ public class BookBuffer {
 	}
 	
 	boolean have(int location){
+		//Log.i("\nhave is\t", "location:"+location +"\tmPosition:"+mPosition+"\t mLenghtContent:"+ mLenghtContent);
 		if (mPosition == -1)
 			return false;
-		if (location < mPosition || location > mPosition + mLenghtContent){
+		if (location < mPosition || location > mPosition + mLenghtContent - 1){
 			return false;
 		}
 		return true;

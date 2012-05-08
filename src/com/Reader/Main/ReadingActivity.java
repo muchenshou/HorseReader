@@ -50,15 +50,22 @@ public class ReadingActivity extends Activity {
 		try {
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
-			bookmanager.openBook();
 			bookView = bookmanager.getBookView();
+			setLookingBookView();
+			bookmanager.openBook();
+			
 			//bookView.getTextUtil().setLocal(Integer.parseInt(position));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		setLookingBookView();
+		//View.MeasureSpec.makeMeasureSpec(size, mode)
 	}
 
+	@Override
+	protected void onStart(){
+		super.onStart();
+		Log.i("onstartview",""+this.bookView.getWidth()+this.bookView.getHeight());
+	}
 	@Override
 	protected void onStop() {
 		Log.d("Onstop", "ok?");

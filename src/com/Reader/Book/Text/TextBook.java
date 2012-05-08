@@ -1,15 +1,7 @@
 package com.Reader.Book.Text;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-
-
-import android.util.Log;
 
 import com.Reader.Book.Book;
 import com.Reader.Book.CharInfo;

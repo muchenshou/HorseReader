@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 
 import com.Reader.Book.Book;
 import com.Reader.Book.BookView.BookView;
+import com.Reader.Config.TextUtilConfig;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -29,64 +31,39 @@ class StringUtils {
 }
 
 public class TextUtil {
-	private float mTextWidth = 240;// 绘制宽度
-	private float mTextHeight = 240;// 绘制高度
-	private int mFontColor = 0;// 字体颜色
-	private int mAlpha = 0;// Alpha值
-
-	private int mTextSize = 0;// 字体大小
-	private int mPadding = 5;
 
 	private Paint mPaint = null;
 	private BookReading bookreading;
 	private BookView mBookView;
+	private TextUtilConfig mTextConfig;
+	private boolean mInit = false;
+	private Bitmap m_book_bg = null;
+	private int m_backColor = 0xffff9e85; // 背景颜色
 	public TextUtil(BookView bookView, Book book) {
 		mBookView = bookView;
-		mPaint = new Paint();
+		mTextConfig = new TextUtilConfig();
+		mPaint = mTextConfig.getPaint();
 		bookreading = new BookReading(book);
-		this.mTextWidth = 240;
-		this.mTextHeight = 320;
-		this.mFontColor = Color.BLACK;
-		this.mAlpha = 0;
-		this.mTextSize = 22;
-		this.mPadding = 2;
-		mPaint.setARGB(this.mAlpha, Color.red(this.mFontColor), Color
-				.green(this.mFontColor), Color.blue(this.mFontColor));
-		mPaint.setTextSize(this.mTextSize);
-		mPaint.setColor(this.mFontColor);
-		mPaint.setAntiAlias(true);
-
-		bookreading.mPaint = mPaint;
-		bookreading.pageline = this.getLineNum() - 1;
-		bookreading.pageWidth = this.mTextWidth;
-	}
-
-	public void setSize(int w, int h) {
-		this.mTextWidth = w;
-		this.mTextHeight = h;
-		// update();
+		bookreading.mPaint = mPaint;		
 	}
 
 	public void setTextSize(int size) {
-		this.mTextSize = size;
-		// update();
+		this.mTextConfig.mTextSize = size;
 	}
 
 	public void InitText() throws IOException {
 		// 对画笔属性的设置
-		this.pageString = bookreading.getPageStr(0);
-		for (int i=0; i<pageString.size(); i++){
-			Log.i("text", pageString.get(i));
-		}
+		mInit = true;
+		
 	}
 
 	public int getLineHeight() {
 		FontMetrics fm = mPaint.getFontMetrics();// 得到系统默认字体属性
-		return (int) (Math.ceil(fm.descent - fm.top) + mPadding);
+		return (int) (Math.ceil(fm.descent - fm.top) +mTextConfig.mPadding);
 	}
 
 	public int getLineNum() {
-		return (int) (mTextHeight / getLineHeight());// 获得行高高度
+		return (int) (mBookView.getHeight() / getLineHeight());
 	}
 
 	private List<String> pageString = new ArrayList<String>();
@@ -98,11 +75,20 @@ public class TextUtil {
 	 * @throws IOException
 	 */
 	public void DrawText(Canvas canvas) throws IOException {
-		Log.i("text", ""+pageString.size());
+		if (this.mInit == true) {
+			bookreading.pageWidth = this.mBookView.getWidth();
+			bookreading.pageline = this.getLineNum() - 1;
+			this.pageString = bookreading.getPageStr(0);
+			this.mInit = false;
+		}
+		if (m_book_bg == null)
+			canvas.drawColor(m_backColor);
+		else
+			canvas.drawBitmap(m_book_bg, 0, 0, null);
 		for (int j = 0; j < pageString.size(); j++) {
-			
+			//Log.i("text paint",pageString.get(j));
 			canvas.drawText(pageString.get(j), 0,
-					(this.getLineHeight() + mPadding) * j + 30, mPaint);
+					(this.getLineHeight() + this.mTextConfig.mPadding) * j + 30, mPaint);
 
 		}
 	}
@@ -117,7 +103,7 @@ public class TextUtil {
 
 	public void nextPage() {
 		pageString = bookreading.nextPage();
-		this.mBookView.postInvalidate();
+		
 	}
 
 	public void preLine() {
@@ -132,5 +118,9 @@ public class TextUtil {
 		if (local < 0)
 			return;
 		pageString = bookreading.getPageStr(local);
+	}
+	
+	public void setBgBitmap(Bitmap BG) {
+		m_book_bg = BG;
 	}
 }
