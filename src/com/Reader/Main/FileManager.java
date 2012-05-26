@@ -17,13 +17,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.content.Context;
 
-public class FileManager extends ListActivity {
+public class FileManager extends ListActivity implements View.OnClickListener{
 
 	private List<String> searchBook(BookLibrary lib) {
 
@@ -40,7 +41,7 @@ public class FileManager extends ListActivity {
 			return list;
 		}
 		lib.deleteAllBook();
-		SearchBook sea = new SearchBook(progress, lib);
+		SearchBook sea = new SearchBook(progress, lib,this);
 
 		progress.show();
 		sea.execute("");
@@ -51,37 +52,27 @@ public class FileManager extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.fileselect);
+		
 		Button update = (Button) findViewById(R.id.updateButton);
 		update.setClickable(true);
-		update.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				BookLibrary lib = new BookLibrary(FileManager.this);
-				List<String> list = searchBook(lib);
-			}
-		});
+		update.setOnClickListener(this);
 		Button cancel = (Button) findViewById(R.id.cancelButton);
 		cancel.setClickable(true);
-		cancel.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				finish();
-			}
-		});	
-		
+		cancel.setOnClickListener(this);
+		setListViewContent();
+
+	}
+	public void setListViewContent(){
 		BookLibrary record = new BookLibrary((Context) this);
 		List<BookInfo> list = record.readLibrary();
 		if (list.size() == 0) {
 			Toast.makeText(this, "zero", Toast.LENGTH_SHORT).show();
 		}
-
 		ListView listview = this.getListView();
-		
 		listview.setAdapter(new BookAdapter(this, list));
-
 	}
-
 	//
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -106,6 +97,19 @@ public class FileManager extends ListActivity {
 			finish();
 		}
 
+	}
+
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v.getId() == R.id.updateButton){
+			BookLibrary lib = new BookLibrary(FileManager.this);
+			searchBook(lib);
+
+		}
+		if (v.getId() == R.id.cancelButton){
+			finish();
+		}
+		
 	}
 
 }

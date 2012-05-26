@@ -51,7 +51,7 @@ public class BookHistory {
 
 	}
 
-	private boolean exist(String book) {
+	public boolean exist(String book) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
 		Cursor cur = db
 				.rawQuery(

@@ -1,68 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- TabHost -->
-<TabHost
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:id="@android:id/tabhost">
- 
-    <LinearLayout
-        android:orientation="vertical"
+     >
+
+     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
- 
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
         <!-- 隐藏的TabWidget,visibility="gone" -->
+		<include 
+		    android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+		    layout="@layout/title" />
         <TabWidget
             android:id="@android:id/tabs"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"   />
- 
+            android:visibility="gone" />	
+
         <!-- 标签内容 -->
+
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
             android:layout_height="0.0dip"
-            android:layout_weight="1.0"/>
- 
-        <!-- 用户可见的“tabs”实际上是一组按钮-->
+            android:layout_weight="1.0" />
+
+        <!-- 用户可见的“tabs”实际上是一组按钮 -->
         <!-- 注意：checkedButton=“@+id/tab1“，这使得默认选中第一个按钮 android:background="@drawable/tab_bar_bg" -->
+
         <RadioGroup
             android:id="@+id/tab_group"
             android:layout_width="fill_parent"
             android:layout_height="50dp"
-            android:gravity="center_vertical"
             android:layout_gravity="bottom"
             android:background="#4822DD"
-            android:orientation="horizontal"
-            android:checkedButton="@+id/tab1">
- 
-            <!-- 第一个标签，注意button属性设置成null，以此去掉自带的radio button-->
+            android:checkedButton="@+id/tab1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <!-- 第一个标签，注意button属性设置成null，以此去掉自带的radio button -->
             <!-- 注意：id="@id/tab1"，为什么不是+id呢？这个和加载先后有关系,Google一下吧 -->
+
             <RadioButton
                 android:id="@id/tab1"
-                android:tag="tab1"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_weight="1.0"
                 android:layout_marginTop="1.0dip"
-                android:text="Tab 1"
+                android:layout_weight="1.0"
+                android:background="@drawable/chat_tab_selector"
                 android:button="@null"
                 android:gravity="center"
-                android:background="@drawable/chat_tab_selector"/>
- 
+                android:tag="tab1"
+                android:text="本地书库" />
+
             <RadioButton
                 android:id="@+id/tab2"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_weight="1.0"
                 android:layout_marginTop="1.0dip"
-                android:text="Tab 2"
+                android:layout_weight="1.0"
+                android:background="@drawable/chat_tab_selector"
                 android:button="@null"
                 android:gravity="center"
-                android:background="@drawable/chat_tab_selector"/>
- 
-           <!--  <RadioButton
+                android:text="网络书库" />
+
+            <!--
+                 <RadioButton
                 android:id="@+id/tab3"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -71,8 +80,9 @@
                 android:text="Tab 3"
                 android:button="@null"
                 android:gravity="center"
-                android:background="@drawable/chat_tab_selector"/>
-  -->
+                android:background="@drawable/chat_tab_selector"/>
+            -->
         </RadioGroup>
     </LinearLayout>
+
 </TabHost>

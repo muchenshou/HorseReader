@@ -11,7 +11,7 @@
             <padding android:bottom="0dp" android:left="0dp" android:right="0dp" android:top="0dp" />
         </shape></item>
     <item><shape>
-            <gradient android:angle="90" android:endColor="#0997F7" android:startColor="#4822DD" />
+            <gradient android:angle="90" android:endColor="#000997F7" android:startColor="#004822DD" />
 
             <stroke android:width="4dip" android:color="#00eeeeee" />
 

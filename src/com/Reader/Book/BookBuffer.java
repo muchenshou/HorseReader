@@ -8,7 +8,7 @@ import android.util.Log;
 public class BookBuffer {
 	private Book mBook = null;
 	private int mBuf1Position = -1;
-	private int mBufferSize = 16*1024;// buffer 4k
+	private int mBufferSize = 8*1024;// buffer 4k
 	private ByteBuffer mBuffer1 = ByteBuffer.allocate(mBufferSize);
 	private int mBuf1LenghtContent = 0;
 	private int mBuf2Position = -1;
@@ -42,9 +42,11 @@ public class BookBuffer {
 
 	}
 
-	public synchronized byte getByte(final int location) {
-
+	public byte getByte(final int location) {
+		long one = System.currentTimeMillis();
 		if (have(location)) {
+			long two = System.currentTimeMillis();
+			//Log.i("[Thread]", ""+(two - one));
 			return mBuffer1.get(location - mBuf1Position);
 		}
 		if (haveInBuf2(location)) {
@@ -57,13 +59,17 @@ public class BookBuffer {
 						+ this.mBuf2LenghtContent);
 				Log.i("[BookBuffer]", "mBuffer1 pos:" + mBuf1Position);*/
 				mBuffer1.clear();
-				mBuffer1.put(mBuffer2);
+				ByteBuffer mid = mBuffer1;
+				mBuffer1 = mBuffer2;
+				mBuffer2 = mid;
 				mBuf1Position = mBuf2Position;
 				mBuf1LenghtContent = mBuf2LenghtContent;
 			}
+
 			new Thread() {
 				public void run() {
 					synchronized (mBuffer2) {
+						Log.i("[Thread]", "time is important");
 						mBuffer2.clear();
 						mBuf2LenghtContent = mBook.getContent(buf1pos
 								+ mBuf2LenghtContent, mBuffer2);
@@ -71,6 +77,8 @@ public class BookBuffer {
 					}
 				}
 			}.start();
+			long two = System.currentTimeMillis();
+			Log.i("[Thread]", ""+(two - one));
 			return this.getByte(location);
 		}
 		mBuffer1.clear();
@@ -89,7 +97,6 @@ public class BookBuffer {
 				}
 			}
 		}.start();
-
 		return this.getByte(location);
 	}
 

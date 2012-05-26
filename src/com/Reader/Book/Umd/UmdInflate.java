@@ -45,7 +45,7 @@ class UmdInflate {
 	public byte[] getContentBlock(int index, int start, int length)
 			throws IOException {
 		byte[] content = null;
-		System.gc();
+
 		int err;
 		content = new byte[length];
 		byte[] in = umdbook.getBlockData(index);

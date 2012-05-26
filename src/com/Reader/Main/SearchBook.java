@@ -13,10 +13,12 @@ import android.os.AsyncTask;
 public class SearchBook extends AsyncTask<String, Integer, List<String>> {
 	ProgressDialog mDialog;
 	BookLibrary mBookLib;
+	FileManager mFileManager;
 	LinkedList<String> mList = new LinkedList<String>();
-	public SearchBook(ProgressDialog dialog, BookLibrary con){
+	public SearchBook(ProgressDialog dialog, BookLibrary con, FileManager fileManager){
 		this.mDialog = dialog;
 		this.mBookLib = con;
+		this.mFileManager = fileManager;
 	}
 	public List<String> getList(){
 		return mList;
@@ -33,6 +35,7 @@ public class SearchBook extends AsyncTask<String, Integer, List<String>> {
 		// doInBackground返回时触发，换句话说，就是doInBackground执行完后触发
 		// 这里的result就是上面doInBackground执行后的返回值，所以这里是"执行完毕"
 		this.mDialog.dismiss();
+		this.mFileManager.setListViewContent();
 		super.onPostExecute(result);
 	}
 	public static boolean isBook(File file) {

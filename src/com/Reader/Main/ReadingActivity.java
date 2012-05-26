@@ -40,7 +40,7 @@ public class ReadingActivity extends Activity {
 	private GridView mGrid;
 	private PopupWindow popup;
 	private LayoutInflater layoutInflater;
-
+	private String mBookName;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,7 +48,15 @@ public class ReadingActivity extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		String bookName = getIntent().getStringExtra("bookname");
-		int position = getIntent().getIntExtra("position", 0);
+		this.mBookName = bookName;
+		int position = 0;				
+		BookHistory history = new BookHistory(this);
+		if (history.exist(bookName)){
+			position = history.getPosition(bookName);
+		}else{
+			history.updateHistory(bookName,0);
+		}
+		
 		try {
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
@@ -73,6 +81,10 @@ public class ReadingActivity extends Activity {
 	@Override
 	protected void onStop() {
 		Log.d("Onstop", "ok?");
+		
+		BookHistory history = new BookHistory(this);
+		Log.i("ReadingOnStop", ""+this.mBookName+this.bookmanager.getReadingPosition());
+		history.updateHistory(this.mBookName,this.bookmanager.getReadingPosition());
 		super.onStop();
 	}
 

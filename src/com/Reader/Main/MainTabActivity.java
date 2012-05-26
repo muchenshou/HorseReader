@@ -6,6 +6,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TabHost;
@@ -19,8 +20,9 @@ public class MainTabActivity extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
  
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.maintab);
- 
+        
         tabhost = getTabHost();
         tabGroup = (RadioGroup) findViewById(R.id.tab_group);
  
@@ -29,9 +31,9 @@ public class MainTabActivity extends TabActivity {
         Intent tab2 = new Intent(this, WebActivity.class);
  
         // 向tabhost里添加tab
-        tabhost.addTab(tabhost.newTabSpec("TAB1").setIndicator("Tab 1")
+        tabhost.addTab(tabhost.newTabSpec("TAB1").setIndicator("本地书库")
                 .setContent(tab1));
-        tabhost.addTab(tabhost.newTabSpec("TAB2").setIndicator("Tab 2")
+        tabhost.addTab(tabhost.newTabSpec("TAB2").setIndicator("网络书库")
                 .setContent(tab2));
  
         // 给各个按钮设置监听
@@ -46,13 +48,10 @@ public class MainTabActivity extends TabActivity {
 			Bundle bundle = null;
 			if (data != null && (bundle = data.getExtras()) != null) {
 				Log.d("FILE_RESULT_CODE", "limian");
-				BookHistory history = new BookHistory(this);
-				history.updateHistory(bundle.getString("bookfile"),-1);
+
 				Intent intent = new Intent(MainTabActivity.this,
 						ReadingActivity.class);
 				intent.putExtra("bookname", bundle.getString("bookfile"));
-				intent.putExtra("position", "" + 0);
-				Log.i("horsereader", bundle.getString("bookfile"));
 				startActivityForResult(intent, HorseReaderActivity.READING_RESULT_CODE);
 			}
 		}
