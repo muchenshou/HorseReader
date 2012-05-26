@@ -10,7 +10,7 @@ public interface Book {
 
 	public void excuteCmd(int cmd);
 
-	public int getContent(int start, ByteBuffer buffer) throws IOException;
+	public int getContent(int start, ByteBuffer buffer);
 	public int size();
 
 	public CharInfo getChar(int start);

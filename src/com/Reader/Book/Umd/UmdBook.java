@@ -3,15 +3,20 @@ package com.Reader.Book.Umd;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import android.util.Log;
+
 import com.Reader.Book.Book;
 import com.Reader.Book.CharInfo;
 import com.Reader.Book.BookBuffer;
+
 public class UmdBook implements Book {
 	protected UmdParse umdStream;
 	public UmdInfo umdInfo = null;
 	private File umdFile;
 	UmdInflate umdinflate;
 	private BookBuffer bookBuffer = new BookBuffer(this);
+
 	public UmdBook(File umd) throws IOException {
 		umdFile = umd;
 		umdInfo = new UmdInfo(umd);
@@ -23,45 +28,55 @@ public class UmdBook implements Book {
 		return umdFile;
 	}
 
-	public int getContent(int start,ByteBuffer contentBuffer)  throws IOException{
+	public int getContent(int start, ByteBuffer contentBuffer) {
 		int length = contentBuffer.capacity();
 		byte[] content;
-		if (this.getPointerInWhichBlock(start) == this
-				.getPointerInWhichBlock(start + length - 1)) {
-			content = umdinflate.getContentBlock(this
-					.getPointerInWhichBlock(start), this
-					.getPointerInBlockLocal(start), this
-					.getPointerInBlockLocal(length));
-			contentBuffer.put(content);
-		} else {
-			content = umdinflate.getContentBlock(this
-					.getPointerInWhichBlock(start), this
-					.getPointerInBlockLocal(start), UmdParse.BLOCKSIZE);
-			if (content == null) {
-				System.out.println(" Is null\t"
-						+ this.getPointerInWhichBlock(start) + "\t"
-						+ this.getPointerInBlockLocal(start) + "\t"
-						+ UmdParse.BLOCKSIZE);
-			}
-			contentBuffer.put(content);
-			for (int i = this.getPointerInWhichBlock(start) + 1; i < this
-					.getPointerInWhichBlock(start + length - 1); i++) {
-				content = umdinflate.getContentBlock(this
-						.getPointerInWhichBlock(start), 0, UmdParse.BLOCKSIZE);
+		try {
+			if (this.getPointerInWhichBlock(start) == this
+					.getPointerInWhichBlock(start + length - 1)) {
+
+				content = umdinflate.getContentBlock(
+						this.getPointerInWhichBlock(start),
+						this.getPointerInBlockLocal(start),
+						length);
+				//.i("[UmdBook]","limit:"+contentBuffer.limit()
+				//		+ "capacity:"+length
+				//		+ "position:"+contentBuffer.position()
+				//		+ "content length:"+content.length);
+				contentBuffer.put(content);
+			} else {
+				content = umdinflate.getContentBlock(
+						this.getPointerInWhichBlock(start),
+						this.getPointerInBlockLocal(start), UmdParse.BLOCKSIZE- this.getPointerInBlockLocal(start));
+				if (content == null) {
+					System.out.println(" Is null\t"
+							+ this.getPointerInWhichBlock(start) + "\t"
+							+ this.getPointerInBlockLocal(start) + "\t"
+							+ UmdParse.BLOCKSIZE );
+				}
+				contentBuffer.put(content);
+				for (int i = this.getPointerInWhichBlock(start) + 1; i < this
+						.getPointerInWhichBlock(start + length - 1); i++) {
+					content = umdinflate.getContentBlock(
+							this.getPointerInWhichBlock(start), 0,
+							UmdParse.BLOCKSIZE);
+					contentBuffer.put(content);
+				}
+				content = umdinflate.getContentBlock(
+						this.getPointerInWhichBlock(start + length - 1),
+						this.getPointerInBlockLocal(0), (start + length - 1)
+								% UmdParse.BLOCKSIZE+1);
 				contentBuffer.put(content);
 			}
-			content = umdinflate.getContentBlock(this
-					.getPointerInWhichBlock(start + length - 1), this
-					.getPointerInBlockLocal(0), (start + length - 1)
-					% UmdParse.BLOCKSIZE);
-			contentBuffer.put(content);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
 		ByteOrder order = ByteOrder.LITTLE_ENDIAN;
 		contentBuffer.order(order);
-		return start + length - 1;
+		return contentBuffer.limit();
 	}
-	
+
 	public int getPointerInWhichBlock(int pointer) {
 		return pointer / (UmdParse.BLOCKSIZE);
 	}
@@ -94,10 +109,12 @@ public class UmdBook implements Book {
 		BytesTransfer.byteAlign(uncomp);
 		return uncomp;
 	}
+
 	public int blockIndex = -1;
 	public byte[] blockDataBuffer = null;
+
 	public byte[] getBlockData(int index) throws IOException {
-		if (index == blockIndex){
+		if (index == blockIndex) {
 			return blockDataBuffer;
 		}
 		byte bytes[] = null;
@@ -138,7 +155,6 @@ public class UmdBook implements Book {
 		}
 	}
 
-
 	public void openBook() {
 
 		try {
@@ -147,7 +163,6 @@ public class UmdBook implements Book {
 			e.printStackTrace();
 		}
 	}
-
 
 	public void closeBook() {
 		if (umdStream != null) {
@@ -159,7 +174,6 @@ public class UmdBook implements Book {
 		}
 	}
 
-
 	public void excuteCmd(int cmd) {
 
 	}
@@ -170,33 +184,26 @@ public class UmdBook implements Book {
 
 	}
 
-	public CharInfo getChar(int mEnd) {
+	public CharInfo getChar(int pos) {
 		// if(mEnd > boo)
 
 		CharInfo charinfo = new CharInfo();
-		charinfo.character = this.bookBuffer.getChar(mEnd);
+		charinfo.character = this.bookBuffer.getChar(pos);
+		if (charinfo.character==8233)
+			charinfo.character = '\n';
 		charinfo.length = 2;
-		charinfo.position = mEnd;
+		charinfo.position = pos;
 		return charinfo;
 		/*
-		int size = umdInfo.getSize();
-
-		if (mEnd >= size || mEnd < 0) {
-			return null;
-		}
-		try {
-			ByteBuffer buf = ByteBuffer.allocate(2);
-			this.getContent(mEnd, buf);
-			buf.flip();
-			CharInfo charinfo = new CharInfo();
-			charinfo.character = buf.getChar();
-			charinfo.length = 2;
-			charinfo.position = mEnd;
-			return charinfo;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
-		//return null;
+		 * int size = umdInfo.getSize();
+		 * 
+		 * if (mEnd >= size || mEnd < 0) { return null; } try { ByteBuffer buf =
+		 * ByteBuffer.allocate(2); this.getContent(mEnd, buf); buf.flip();
+		 * CharInfo charinfo = new CharInfo(); charinfo.character =
+		 * buf.getChar(); charinfo.length = 2; charinfo.position = mEnd; return
+		 * charinfo; } catch (IOException e) { e.printStackTrace(); }
+		 */
+		// return null;
 	}
 
 	public CharInfo getPreChar(int start) {

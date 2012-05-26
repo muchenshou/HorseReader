@@ -24,8 +24,8 @@ public class PageWidget extends View {
 	private int mCornerY = 0;
 	private Path mPath0;
 	private Path mPath1;
-	Bitmap mCurPageBitmap = null; // 当前页
-	Bitmap mNextPageBitmap = null;
+	public Bitmap mCurPageBitmap = null; // 当前页
+	public Bitmap mNextPageBitmap = null;
 
 	PointF mTouch = new PointF(); // 拖拽点
 	PointF mBezierStart1 = new PointF(); // 贝塞尔曲线起始点
@@ -91,6 +91,9 @@ public class PageWidget extends View {
 		super.onSizeChanged(w, h, oldw, oldh);
 		this.mWidth = w;
 		this.mHeight = h;
+		mCurPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		mNextPageBitmap = Bitmap
+				.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 	}
 	/**
 	 * Author : hmg25 Version: 1.0 Description : 计算拖拽点对应的拖拽脚

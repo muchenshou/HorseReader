@@ -1,15 +1,16 @@
 package com.Reader.Book.BookView;
 
-
 import java.io.IOException;
 
 import com.Reader.Book.Manager.TextUtil;
-import com.Reader.Main.R;
+//import com.Reader.Main.R;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.util.Log;
 
 public class BookView extends PageWidget {
 	protected int bookSize;
@@ -17,44 +18,38 @@ public class BookView extends PageWidget {
 	protected byte[] content;
 	protected int padding = 5;
 	private TextUtil textUtil = null;
-	public Bitmap mCurPageBitmap, mNextPageBitmap;
-	public Canvas mCurPageCanvas, mNextPageCanvas;
+	// public Bitmap mCurPageBitmap, mNextPageBitmap;
+	
 
 	public BookView(Context context) {
 		super(context);
 	}
-	public void setTextUtil(TextUtil t){
+
+	public void setTextUtil(TextUtil t) {
 		textUtil = t;
 	}
-	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh){
-		super.onSizeChanged(w, h, oldw, oldh);
-		mCurPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		mNextPageBitmap = Bitmap
-				.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		Canvas mCurPageCanvas, mNextPageCanvas;
 		mCurPageCanvas = new Canvas(mCurPageBitmap);
 		mNextPageCanvas = new Canvas(mNextPageBitmap);
+		Bitmap BG = this.textUtil.m_book_bg;
 
+		int bitmap_w = BG.getWidth();
+		int bitmap_h = BG.getHeight();
+		Log.i("[BookView]",""+bitmap_w + " " +bitmap_h);
+		Matrix m = new Matrix();
+		m.postScale((float)w / (float)bitmap_w, (float)h / (float)bitmap_h);
+		this.textUtil.m_book_bg = Bitmap.createBitmap(BG, 0, 0, bitmap_w,
+				bitmap_h, m, true);
 		try {
 			textUtil.DrawText(mCurPageCanvas);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.setBitmaps(mCurPageBitmap, mCurPageBitmap);
-	}
-	@Override
-	public void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
-		/*Paint paint = new Paint();
-		paint.setColor(Color.WHITE);
-		canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
-		//Log.d("width height", "" + getWidth() + getHeight());
-		try {
-			textUtil.DrawText(canvas);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
+		this.setBitmaps(mCurPageBitmap, mNextPageBitmap);
 	}
 }

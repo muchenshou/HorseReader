@@ -14,6 +14,8 @@ import com.Reader.Main.ReadingActivity;
 import com.Reader.Book.Book;
 import com.Reader.Book.BookFactory;
 import com.Reader.Book.BookView.BookView;
+import com.Reader.Config.TextUtilConfig;
+
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -27,8 +29,7 @@ public class BookManager implements View.OnKeyListener, View.OnTouchListener {
 	private BookView bookView;
 	private TextUtil textUtil;
 	public ReadingActivity bookActivity;
-	// private PageWidget mPageWidget;
-	
+
 	int bufferlocal = -1;// 文本块的位置
 	int BUFLEN = 4 * 1024;
 
@@ -42,7 +43,7 @@ public class BookManager implements View.OnKeyListener, View.OnTouchListener {
 		bookView.setOnKeyListener(this);
 		bookView.setOnTouchListener(this);
 
-		textUtil = new TextUtil(bookView, book);
+		textUtil = new TextUtil(bookView, book, new TextUtilConfig(con));
 		bookView.setTextUtil(textUtil);
 
 	}
@@ -51,12 +52,13 @@ public class BookManager implements View.OnKeyListener, View.OnTouchListener {
 		return bookView;
 	}
 
-	public void openBook() throws IOException {
+	public void openBook(int position) throws IOException {
 		book.openBook();
+		textUtil.mPosition = position;
 		textUtil.InitText();
 		this.textUtil.setBgBitmap(BitmapFactory.decodeResource(
 				bookActivity.getResources(), R.drawable.bg));
-		
+
 	}
 
 	public void closeBook() {
@@ -81,40 +83,37 @@ public class BookManager implements View.OnKeyListener, View.OnTouchListener {
 	}
 
 	public boolean onTouch(View v, MotionEvent event) {
-		/*
-		 * Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
-		 * 
-		 * if (event.getX() < rect.exactCenterX() + 40 && event.getX() >
-		 * rect.exactCenterX() - 40 && event.getY() > rect.exactCenterY() - 20
-		 * && event.getY() < rect.exactCenterY() + 20) { // gridview
-		 * bookActivity.setBookSet(); return false; }
-		 * 
-		 * if (event.getY() > rect.exactCenterY()) { this.textUtil.nextPage(); }
-		 * else { this.textUtil.prePage(); } this.bookView.postInvalidate();
-		 * return false;
-		 */
 
-		// TODO Auto-generated method stub
+		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
+
+		if (event.getAction() == MotionEvent.ACTION_DOWN
+				&& event.getX() < rect.exactCenterX() + 40
+				&& event.getX() > rect.exactCenterX() - 40
+				&& event.getY() > rect.exactCenterY() - 20
+				&& event.getY() < rect.exactCenterY() + 20) { // gridview
+			bookActivity.setBookSet();
+			return false;
+		}
+
 		boolean ret = false;
 		try {
+			Canvas mCurPageCanvas, mNextPageCanvas;
+			mCurPageCanvas = new Canvas(bookView.mCurPageBitmap);
+			mNextPageCanvas = new Canvas(bookView.mNextPageBitmap);
 			if (v == bookView) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					bookView.abortAnimation();
 					bookView.calcCornerXY(event.getX(), event.getY());
-
-					textUtil.DrawText(bookView.mCurPageCanvas);
+					textUtil.DrawText(mCurPageCanvas);
 					if (bookView.DragToRight()) {
 						this.textUtil.nextPage();
-
-						textUtil.DrawText(bookView.mNextPageCanvas);
+						textUtil.DrawText(mNextPageCanvas);
 
 					} else {
 						this.textUtil.nextPage();
-
-						textUtil.DrawText(bookView.mNextPageCanvas);
-
+						textUtil.DrawText(mNextPageCanvas);
 					}
-					bookView.setBitmaps(bookView.mCurPageBitmap, bookView.mNextPageBitmap);
+					//bookView.setBitmaps(bookView.mCurPageBitmap, bookView.mNextPageBitmap);
 				}
 
 				ret = bookView.doTouchEvent(event);
@@ -132,7 +131,7 @@ public class BookManager implements View.OnKeyListener, View.OnTouchListener {
 	}
 
 	public int getReadingPosition() {
-		return this.textUtil.getCurLocal();
+		return this.textUtil.getCurPosition();
 	}
 
 }

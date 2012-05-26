@@ -5,10 +5,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.Reader.Main.R;
-import com.Reader.Record.RecordBookList;
-import com.Reader.Record.RecordHistory;
+import com.Reader.Record.BookInfo;
+import com.Reader.Record.BookLibrary;
+import com.Reader.Record.BookHistory;
+import com.Reader.ui.BookAdapter;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,45 +19,32 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
+import android.content.Context;
 
 public class FileManager extends ListActivity {
 
-	boolean isBook(File file) {
-		// Toast.makeText(this, "isBook", Toast.LENGTH_SHORT).show();
-		return file.toString().substring(file.toString().lastIndexOf('.') + 1)
-				.toLowerCase().equals("umd")
-				|| file.toString().substring(
-						file.toString().lastIndexOf('.') + 1).toLowerCase()
-						.equals("txt");
-	}
+	private List<String> searchBook(BookLibrary lib) {
 
-	private void searchBookFromDir(List<String> list, File file) {
-		File[] array = file.listFiles();
-		if (array == null) {
-			return;
-		}
-		for (int i = 0; i < array.length; i++) {
-			if (array[i].isDirectory() == true) {
-				searchBookFromDir(list, array[i]);
-			} else {
-				if (isBook(array[i]) == true) {
-					list.add(array[i].toString());
-				}
-			}
-		}
-	}
-	private LinkedList<String> searchBook() {
-
-		if (Environment.MEDIA_MOUNTED.equals(Environment
+		ProgressDialog progress = new ProgressDialog(this);
+		progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
+		// progress.setTitle("提示");//设置标题
+		progress.setIcon(R.drawable.icon);// 设置图标
+		progress.setMessage("搜索中...");
+		progress.setIndeterminate(false);// 设置进度条是否为不明确
+		LinkedList<String> list = new LinkedList<String>();
+		if (!Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
-			LinkedList<String> list = new LinkedList<String>();
-			searchBookFromDir(list, new File("/sdcard/"));
-			return list;
-		} else {
 			Toast.makeText(this, "未发现SD卡！", Toast.LENGTH_LONG).show();
-			return null;
+			return list;
 		}
+		lib.deleteAllBook();
+		SearchBook sea = new SearchBook(progress, lib);
+
+		progress.show();
+		sea.execute("");
+		return sea.getList();
 
 	}
 
@@ -68,63 +58,54 @@ public class FileManager extends ListActivity {
 
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				RecordBookList record = new RecordBookList();
-				record.setRecords(searchBook());
-				record.writeFile();
-				ListView listview = getListView();
-				listview.setAdapter(new BookAdapter(FileManager.this, new File(
-						record.getFileName())));
+				BookLibrary lib = new BookLibrary(FileManager.this);
+				List<String> list = searchBook(lib);
 			}
 		});
 		Button cancel = (Button) findViewById(R.id.cancelButton);
 		cancel.setClickable(true);
 		cancel.setOnClickListener(new View.OnClickListener() {
-
 			public void onClick(View v) {
 				finish();
 			}
-		});
-		if (searchBook().size() == 0) {
+		});	
+		
+		BookLibrary record = new BookLibrary((Context) this);
+		List<BookInfo> list = record.readLibrary();
+		if (list.size() == 0) {
 			Toast.makeText(this, "zero", Toast.LENGTH_SHORT).show();
 		}
-		RecordBookList record = new RecordBookList();
-		record.setRecords(searchBook());
-		record.writeFile();
+
 		ListView listview = this.getListView();
-		listview.setAdapter(new BookAdapter(this,
-				new File(record.getFileName())));
+		
+		listview.setAdapter(new BookAdapter(this, list));
+
 	}
 
 	//
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		String bookname = (String) l.getAdapter().getItem(position);
-		RecordHistory history = new RecordHistory();
-
-		if (history.isHaveRecord(bookname) != true) {
-			history.addFirst(bookname, "" + 0);
-		}
-		history.writeFile();
 		// history
+		Log.i("filemanager", bookname);
 		openFile(new File(bookname));
 
 	}
 
 	public void DisplayToast(String str)
-
 	{
 		Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
 	}
 
 	private void openFile(File f) {
 		Intent intent = new Intent();
-		if (isBook(f)) {
-			intent.putExtra("umdfile", f.getPath());
-			Log.d("openFIle", f.getPath());
+		if (SearchBook.isBook(f)) {
+			intent.putExtra("bookfile", f.getPath());
+			Log.d("openFile", f.getPath());
 			setResult(RESULT_OK, intent);
 			finish();
 		}
 
 	}
-	
+
 }

@@ -2,63 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
     android:orientation="vertical" >
 
-    <RelativeLayout
+    <ListView
+        android:id="@+id/selectFile"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
-        <LinearLayout
-            android:id="@+id/imglayout"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical" >
-
-            <ListView
-                android:id="@+id/selectFile"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_column="0"
-                android:background="@drawable/button_style"
-                android:cacheColorHint="#000000" />
-        </LinearLayout>
-
-        <!-- row2 -->
-
-        <TableLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/jbshape"
-            android:padding="0px"
-            android:stretchColumns="0,1" >
-
-            <TableRow >
-
-                <Button
-                    android:id="@+id/confirm"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_column="0"
-                    android:layout_margin="0px"
-                    android:background="@drawable/button_style"
-                    android:padding="5px"
-                    android:text="确认"
-                    android:textSize="15px" />
-
-                <Button
-                    android:id="@+id/exit"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_margin="0px"
-                    android:background="@drawable/button_style"
-                    android:padding="5px"
-                    android:text="退出"
-                    android:textSize="15px" />
-            </TableRow>
-        </TableLayout>
-    </RelativeLayout>
+	    android:layout_height="0dp"
+	    android:layout_weight="1"
+	    android:cacheColorHint="#00000000"
+	    android:fadeScrollbars="true"
+	    android:dividerHeight="1dip"
+	    android:fastScrollEnabled="true"
+        android:divider="@drawable/divide"
+         />
+    <!--android:cacheColorHint="#000000" android:background="@drawable/button_style" -->
 
 </LinearLayout>

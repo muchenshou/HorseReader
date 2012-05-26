@@ -33,7 +33,7 @@ public class BookReading {
 			}
 			ch[0] = charinfo.character;
 			start += charinfo.length;
-			if (ch[0] == 8233) {
+			if (ch[0] == '\n' ) {
 				line.mLength += charinfo.length;
 				break;
 			}
@@ -51,7 +51,7 @@ public class BookReading {
 
 	}
 
-	public int getCurLocal() {
+	public int getCurPosition() {
 		return mPage.mLines.get(0).mStart;
 	}
 

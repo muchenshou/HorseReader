@@ -13,6 +13,7 @@ import com.Reader.Config.TextUtilConfig;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.util.Log;
@@ -37,13 +38,14 @@ public class TextUtil {
 	private BookView mBookView;
 	private TextUtilConfig mTextConfig;
 	private boolean mInit = false;
-	private Bitmap m_book_bg = null;
+	public Bitmap m_book_bg = null;
 	private int m_backColor = 0xffff9e85; // ±³¾°ÑÕÉ«
-	public TextUtil(BookView bookView, Book book) {
+	int mPosition = 0;
+	public TextUtil(BookView bookView, Book book,TextUtilConfig config ) {
 		mBookView = bookView;
-		mTextConfig = new TextUtilConfig();
-		mPaint = mTextConfig.getPaint();
 		bookreading = new BookReading(book);
+		mTextConfig = config;
+		mPaint = mTextConfig.getPaint();
 		bookreading.mPaint = mPaint;		
 	}
 
@@ -78,7 +80,7 @@ public class TextUtil {
 		if (this.mInit == true) {
 			bookreading.pageWidth = this.mBookView.getWidth();
 			bookreading.pageline = this.getLineNum() - 1;
-			this.pageString = bookreading.getPageStr(0);
+			this.pageString = bookreading.getPageStr(mPosition);
 			this.mInit = false;
 		}
 		if (m_book_bg == null)
@@ -93,8 +95,8 @@ public class TextUtil {
 		}
 	}
 
-	public int getCurLocal() {
-		return bookreading.getCurLocal();
+	public int getCurPosition() {
+		return bookreading.getCurPosition();
 	}
 
 	public void nextLine() {
@@ -121,6 +123,7 @@ public class TextUtil {
 	}
 	
 	public void setBgBitmap(Bitmap BG) {
+		
 		m_book_bg = BG;
 	}
 }

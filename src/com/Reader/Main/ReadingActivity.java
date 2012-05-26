@@ -14,13 +14,15 @@ import com.Reader.Command.CommandPreChapter;
 import com.Reader.Command.CommandReturn;
 import com.Reader.Main.HorseReaderActivity;
 import com.Reader.Main.R;
-import com.Reader.Record.RecordHistory;
+import com.Reader.Record.BookHistory;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,37 +48,49 @@ public class ReadingActivity extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		String bookName = getIntent().getStringExtra("bookname");
-		String position = getIntent().getStringExtra("position");
+		int position = getIntent().getIntExtra("position", 0);
 		try {
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
 			bookView = bookmanager.getBookView();
 			setLookingBookView();
-			bookmanager.openBook();
-			
-			//bookView.getTextUtil().setLocal(Integer.parseInt(position));
+			bookmanager.openBook(position);
+
+			// bookView.getTextUtil().setLocal(Integer.parseInt(position));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//View.MeasureSpec.makeMeasureSpec(size, mode)
+		// View.MeasureSpec.makeMeasureSpec(size, mode)
 	}
 
 	@Override
-	protected void onStart(){
+	protected void onStart() {
 		super.onStart();
-		Log.i("onstartview",""+this.bookView.getWidth()+this.bookView.getHeight());
+		Log.i("onstartview",
+				"" + this.bookView.getWidth() + this.bookView.getHeight());
 	}
+
 	@Override
 	protected void onStop() {
 		Log.d("Onstop", "ok?");
-		RecordHistory recordhistory = new RecordHistory();
-		recordhistory.setFirstRecordPosition(bookmanager.getReadingPosition());
-		recordhistory.writeFile();
 		super.onStop();
 	}
 
 	public void setLookingBookView() {
 		setContentView(bookmanager.getBookView());
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+		// 按下键盘上返回按钮
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Intent intent = new Intent();
+			intent.putExtra("BookReading", bookmanager.getReadingPosition());
+			setResult(RESULT_OK, intent);
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	public void setBookSet() {
@@ -85,8 +99,8 @@ public class ReadingActivity extends Activity {
 		layoutInflater = LayoutInflater.from(context);
 		View popView = layoutInflater.inflate(R.layout.gridpage, null, false);
 		if (popup == null) {
-			popup = new PopupWindow(popView, bookView.getWidth()-20, bookView
-					.getHeight()-20, true);
+			popup = new PopupWindow(popView, bookView.getWidth() - 20,
+					bookView.getHeight() - 20, true);
 		}
 		mGrid = (GridView) popView.findViewById(R.id.grid);
 		if (popup == null) {
@@ -151,7 +165,7 @@ public class ReadingActivity extends Activity {
 		public final Object getItem(int position) {
 			switch (operator.get(position)._com) {
 			case Command.EXIT:
-				return new CommandExit(ReadingActivity.this,popup);
+				return new CommandExit(ReadingActivity.this, popup);
 			case Command.RETURN:
 				return new CommandReturn(popup);
 			case Command.NEXTCHAPTER:
