@@ -10,22 +10,21 @@ import com.Reader.Book.Book;
 import com.Reader.Book.CharInfo;
 import com.Reader.Book.BookBuffer;
 
-public class UmdBook implements Book {
+public class UmdBook extends Book {
 	protected UmdParse umdStream;
 	public UmdInfo umdInfo = null;
-	private File umdFile;
 	UmdInflate umdinflate;
 	private BookBuffer bookBuffer = new BookBuffer(this);
 
 	public UmdBook(File umd) throws IOException {
-		umdFile = umd;
+		bookFile = umd;
 		umdInfo = new UmdInfo(umd);
 		umdInfo.parseBook();
 		umdinflate = new UmdInflate(this);
 	}
 
 	public File getFile() {
-		return umdFile;
+		return bookFile;
 	}
 
 	public int getContent(int start, ByteBuffer contentBuffer) {
@@ -71,6 +70,8 @@ public class UmdBook implements Book {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			this.EOFBOOK = true;
+			return -1;
 		}
 		ByteOrder order = ByteOrder.LITTLE_ENDIAN;
 		contentBuffer.order(order);
@@ -119,7 +120,7 @@ public class UmdBook implements Book {
 		}
 		byte bytes[] = null;
 		try {
-			umdStream = new UmdParse(this.umdFile, "r");
+			umdStream = new UmdParse(this.bookFile, "r");
 			UmdInfo.Block b = this.umdInfo.getBlock(index);
 			this.umdStream.seek(b.filePointer);
 			bytes = new byte[b.blockSize];
@@ -158,7 +159,7 @@ public class UmdBook implements Book {
 	public void openBook() {
 
 		try {
-			this.umdStream = new UmdParse(this.umdFile, "r");
+			this.umdStream = new UmdParse(this.bookFile, "r");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -186,7 +187,8 @@ public class UmdBook implements Book {
 
 	public CharInfo getChar(int pos) {
 		// if(mEnd > boo)
-
+		if (pos >= this.size())
+			return null;
 		CharInfo charinfo = new CharInfo();
 		charinfo.character = this.bookBuffer.getChar(pos);
 		if (charinfo.character==8233)

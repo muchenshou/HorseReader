@@ -14,7 +14,6 @@ public class BookBuffer {
 	private int mBuf2Position = -1;
 	private ByteBuffer mBuffer2 = ByteBuffer.allocate(mBufferSize);
 	private int mBuf2LenghtContent = 0;
-
 	public BookBuffer(Book book) {
 		mBook = book;
 	}
@@ -43,6 +42,8 @@ public class BookBuffer {
 	}
 
 	public byte getByte(final int location) {
+		if (location >= this.mBook.size())
+			return 0;
 		long one = System.currentTimeMillis();
 		if (have(location)) {
 			long two = System.currentTimeMillis();
@@ -71,6 +72,9 @@ public class BookBuffer {
 					synchronized (mBuffer2) {
 						Log.i("[Thread]", "time is important");
 						mBuffer2.clear();
+						if(BookBuffer.this.mBook.isEof()){
+							return;
+						}
 						mBuf2LenghtContent = mBook.getContent(buf1pos
 								+ mBuf2LenghtContent, mBuffer2);
 						mBuf2Position = buf1pos + mBuf2LenghtContent;
@@ -97,6 +101,7 @@ public class BookBuffer {
 				}
 			}
 		}.start();
+		Log.i("getbyteend",""+location);
 		return this.getByte(location);
 	}
 

@@ -2,8 +2,12 @@ package com.Reader.Book.Manager;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import com.Reader.Book.Book;
 import com.Reader.Book.CharInfo;
+import com.Reader.Book.BookView.BookView;
+
 import android.graphics.Paint;
 import android.util.Log;
 
@@ -11,12 +15,16 @@ public class BookReading {
 	int mStart = 0;
 	int mEnd = 0;
 	public int pageline = 5;
-	public float pageWidth = (float) 0.0;
-	public Paint mPaint = null;
+	private float pageWidth = (float) 0.0;
+	private float pageHeight = (float) 0.0;
+	private Paint mPaint = null;
 	Page mPage = new Page();
 	public Book mBook = null;
-	public BookReading(Book book){
+	private BookView mBookView;
+	public BookReading(Book book,BookView bookview){
 		mBook = book;
+		mBookView = bookview;
+		this.mPaint = mBookView.getPageConfig().getPaint();
 	}
 	
 	Line getLine(int start) {
@@ -54,12 +62,18 @@ public class BookReading {
 	public int getCurPosition() {
 		return mPage.mLines.get(0).mStart;
 	}
-
+	public int getLineHeight(){
+		return BookView.getTextHeight(mPaint)+this.mBookView.getPageConfig().mPadding;
+	}
+	public void update(int w, int h){
+		pageHeight = h;
+		pageWidth =w;
+	}
+	public void update(){
+		pageline = (int) (pageHeight/getLineHeight());
+	}
 	public List<String> getPageStr(int start) {
-		
-		
 		mPage.mLines.clear();
-		
 		for (; mPage.mLines.size() < pageline;) {
 			if (mPage.mLines.size() == 0) {
 				
@@ -89,10 +103,16 @@ public class BookReading {
 	}
 
 	public List<String> nextPage() {
-		if (mPage.mLines.size() < this.pageline && mPage.mLines.size() != 0) {
+		if (mPage.mLines.size() < this.pageline && mPage.mLines.size() > 0) {
 			return mPage.getStrings();
 		}
-		int local = mPage.mLines.getLast().getEnd();
+		int local = 0;
+		try {
+			local = mPage.mLines.getLast().getEnd();
+		} catch (NoSuchElementException e){
+			return mPage.getStrings();
+		}
+		
 		return this.getPageStr(local);
 	}
 

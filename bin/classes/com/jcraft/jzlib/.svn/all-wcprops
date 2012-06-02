@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib
+END
+Tree.java
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/Tree.java
+END
+Inflate.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/Inflate.java
+END
+Deflate.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/Deflate.java
+END
+ZStreamException.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/ZStreamException.java
+END
+ZInputStream.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/ZInputStream.java
+END
+ZStream.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/ZStream.java
+END
+ZOutputStream.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/ZOutputStream.java
+END
+StaticTree.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/StaticTree.java
+END
+InfBlocks.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/InfBlocks.java
+END
+InfCodes.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/InfCodes.java
+END
+JZlib.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/JZlib.java
+END
+Adler32.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/Adler32.java
+END
+InfTree.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/reader/!svn/ver/1/src/com/jcraft/jzlib/InfTree.java
+END

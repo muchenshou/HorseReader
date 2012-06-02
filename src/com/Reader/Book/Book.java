@@ -1,18 +1,23 @@
 package com.Reader.Book;
 
-import java.io.IOException;
+import java.io.File;
 import java.nio.ByteBuffer;
 
-public interface Book {
-	public void openBook();
-
-	public void closeBook();
-
-	public void excuteCmd(int cmd);
-
-	public int getContent(int start, ByteBuffer buffer);
-	public int size();
-
-	public CharInfo getChar(int start);
-	public CharInfo getPreChar(int mStart);
+public abstract class Book {
+	protected boolean EOFBOOK = false;
+	public int openOffset = 0;
+	protected File bookFile;
+	public abstract void openBook();
+	public abstract void closeBook();
+	public abstract void excuteCmd(int cmd);
+	public abstract int getContent(int start, ByteBuffer buffer);
+	public abstract int size();
+	public boolean isEof() {
+		return EOFBOOK;
+	}
+	public abstract CharInfo getChar(int start);
+	public abstract CharInfo getPreChar(int mStart);
+	public String getName(){
+		return bookFile.getName();
+	}
 }

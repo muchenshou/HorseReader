@@ -10,5 +10,8 @@ public interface Command {
 	public static final int NEXTCHAPTER = 6;
 	public static final int EXIT = 7;
 	public static final int RETURN = 8;
+	public static final int BAIFENBI = 9;
+	public static final int NIGHTMODE = 10;
+	public static final int MORE = 11;
 	public void excute();
 }

@@ -7,20 +7,15 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
-import org.apache.http.util.*;
-
-import android.util.Log;
-
 import com.Reader.Book.Book;
 import com.Reader.Book.BookBuffer;
 import com.Reader.Book.CharInfo;
 
-public class TextBook implements Book {
-	private File file;
+public class TextBook extends Book {
 	private RandomAccessFile mFile;
 	private BookBuffer bookBuffer = new BookBuffer(this);
 	public TextBook(File f) {
-		file = f;
+		bookFile = f;
 	}
 
 	public void closeBook() {
@@ -38,19 +33,27 @@ public class TextBook implements Book {
 	public int getContent(int start, ByteBuffer buffer) {
 
 		int readlen = 0;
+		try {
+			mFile.seek(start);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			EOFBOOK = true;
+			return -1;
+		}
 		buffer.clear();
 		try {
 			for (; readlen < buffer.capacity(); readlen++)
 				buffer.put(mFile.readByte());
 		} catch (IOException e) {
 			e.printStackTrace();
+			EOFBOOK = true;
 		}
 		return readlen;
 	}
 
 	public void openBook() {
 		try {
-			mFile = new RandomAccessFile(file, "r");
+			mFile = new RandomAccessFile(bookFile, "r");
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -59,13 +62,14 @@ public class TextBook implements Book {
 	}
 
 	public int size() {
-		//
-		return (int) file.length();
+		return (int) bookFile.length();
 	}
 
 	public CharInfo getChar(int pos) {
 		//
 		//Log.i("gbktext","here1");
+		if (pos >= this.size())
+			return null;
 		CharInfo charinfo = new CharInfo();
 		byte bytes[] = new byte[2];
 		if ((int)this.bookBuffer.getByte(pos) >= 0) {
@@ -99,6 +103,11 @@ public class TextBook implements Book {
 	public CharInfo getPreChar(int start) {
 		//
 		return getChar(start - 2);
+	}
+
+	public boolean isEof() {
+		// TODO Auto-generated method stub
+		return EOFBOOK;
 	}
 
 }

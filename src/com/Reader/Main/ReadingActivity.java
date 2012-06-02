@@ -15,8 +15,10 @@ import com.Reader.Command.CommandReturn;
 import com.Reader.Main.HorseReaderActivity;
 import com.Reader.Main.R;
 import com.Reader.Record.BookHistory;
+import com.Reader.ui.ProgressAlert;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +26,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -34,13 +40,14 @@ import android.widget.GridView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-public class ReadingActivity extends Activity {
+public class ReadingActivity extends Activity implements OnMenuItemClickListener  {
 	public BookView bookView;
 	public BookManager bookmanager;
 	private GridView mGrid;
 	private PopupWindow popup;
 	private LayoutInflater layoutInflater;
 	private String mBookName;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,14 +56,14 @@ public class ReadingActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		String bookName = getIntent().getStringExtra("bookname");
 		this.mBookName = bookName;
-		int position = 0;				
+		int position = 0;
 		BookHistory history = new BookHistory(this);
-		if (history.exist(bookName)){
+		if (history.exist(bookName)) {
 			position = history.getPosition(bookName);
-		}else{
-			history.updateHistory(bookName,0);
+		} else {
+			history.updateHistory(bookName, 0);
 		}
-		
+
 		try {
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
@@ -64,7 +71,6 @@ public class ReadingActivity extends Activity {
 			setLookingBookView();
 			bookmanager.openBook(position);
 
-			// bookView.getTextUtil().setLocal(Integer.parseInt(position));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,11 +87,29 @@ public class ReadingActivity extends Activity {
 	@Override
 	protected void onStop() {
 		Log.d("Onstop", "ok?");
-		
+
 		BookHistory history = new BookHistory(this);
-		Log.i("ReadingOnStop", ""+this.mBookName+this.bookmanager.getReadingPosition());
-		history.updateHistory(this.mBookName,this.bookmanager.getReadingPosition());
+		Log.i("ReadingOnStop",
+				"" + this.mBookName + this.bookmanager.getReadingPosition());
+		history.updateHistory(this.mBookName,
+				this.bookmanager.getReadingPosition());
 		super.onStop();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0, Command.NEXTCHAPTER, 0, "下一章").setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(0, Command.PRECHAPTER, 0, "下一章").setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(0, Command.BAIFENBI, 0, "百分比").setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(0, Command.NIGHTMODE, 0, "夜间模式").setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(0, Command.MORE, 0, "设置").setIcon(
+				android.R.drawable.ic_menu_info_details).setOnMenuItemClickListener(this);
+		return true;
+
 	}
 
 	public void setLookingBookView() {
@@ -194,4 +218,25 @@ public class ReadingActivity extends Activity {
 			return position;
 		}
 	}
-}
+	ProgressAlert mpDialog;
+	/*@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case Command.MORE:
+			mpDialog = new ProgressAlert(this);  
+            mpDialog.showAtLocation( this.bookView, Gravity.CENTER, 0, 0);    
+
+		}
+		return true;
+	}
+*/
+
+	public boolean onMenuItemClick(MenuItem item) {
+		// TODO Auto-generated method stub
+		mpDialog = new ProgressAlert(this);  
+        mpDialog.showAtLocation( this.bookView, Gravity.CENTER, 0, 0);    
+
+		return true;
+	}}

@@ -11,7 +11,7 @@ public class BookFactory {
 		String str = file.toString().substring(
 				file.toString().lastIndexOf('.') + 1).toLowerCase();
 		if (str.equals("umd")) {
-			return (Book) new UmdBook(file);
+			return  new UmdBook(file);
 		}
 		if (str.equals("txt")){
 			return (Book) new TextBook(file);
