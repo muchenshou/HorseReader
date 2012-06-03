@@ -6,8 +6,6 @@ import com.Reader.Book.Manager.BookReading;
 import com.Reader.Config.PageConfig;
 import com.Reader.Main.ReadingActivity;
 
-//import com.Reader.Main.R;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -61,12 +59,12 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 		return this.mPaint;
 	}
 	public void setTextSize(int size) {
-		this.mPageConfig.mTextSize = size;
+		this.mPageConfig.setTextSize(size);
 	}
 
 	public static int getTextHeight(Paint paint) {
 		FontMetrics fm = paint.getFontMetrics();//
-		return (int) (Math.ceil(fm.descent - fm.top));
+		return (int) (Math.ceil(fm.descent - fm.top)+1);
 	}
 
 	public void setTextUtil(PageObj t) {
@@ -81,9 +79,7 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		
-		bookreading.update(w,h);
-		
-		
+		bookreading.update(w,h-BookView.getTextHeight(this.mPageConfig.getOthersPaint()));
 		//
 		this.mBookNameObj.setPosition(0, h);
 		//
@@ -110,14 +106,12 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 		else
 			canvas.drawBitmap(m_book_bg, 0, 0, null);
 		mPageObj.Draw(canvas, this.mPaint);
-		mTimeObj.Draw(canvas, this.mPaint);
+		mTimeObj.Draw(canvas, this.mPageConfig.getOthersPaint());
 		//mBookNameObj.Draw(canvas, this.mPaint);
-		mBookProgressObj.Draw(canvas, mPaint);
+		mBookProgressObj.Draw(canvas, this.mPageConfig.getOthersPaint());
 	}
 	public void update(){
 		bookreading.update();
-		//bookreading.getPageStr(bookreading.getCurPosition());
-		//
 		if (this.mInit == false){
 			this.mPageObj.setLocal(mBook.openOffset);
 			mInit = true;
@@ -154,11 +148,11 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 				calcCornerXY(event.getX(), event.getY());
 				this.Draw(mCurPageCanvas);
 				if (DragToRight()) {
-					this.mPageObj.nextPage();
+					prePage();
 					this.Draw(mNextPageCanvas);
 
 				} else {
-					this.mPageObj.nextPage();
+					nextPage();
 					this.Draw(mNextPageCanvas);
 				}
 			}
@@ -170,5 +164,25 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 		return false;
 	}
 	
+	public void nextLine() {
+		this.mPageObj.setPageString(this.bookreading.nextLine());
+	}
 
+	public void nextPage() {
+		this.mPageObj.setPageString(this.bookreading.nextPage());
+		
+	}
+
+	public void preLine() {
+		this.mPageObj.setPageString(this.bookreading.preLine());
+	}
+
+	public void prePage() {
+		this.mPageObj.setPageString(this.bookreading.prePage());
+	}
+	
+	public void setLocal(int offset){
+		this.bookreading.getPageStr(offset);
+		this.update();
+	}
 }

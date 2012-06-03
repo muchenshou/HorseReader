@@ -4,6 +4,7 @@ import com.Reader.Book.Manager.BookReading;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.Log;
 
 public class BookProgressObj extends DrawableObj{
 
@@ -16,7 +17,8 @@ public class BookProgressObj extends DrawableObj{
 
 	@Override
 	public void Draw(Canvas canvas, Paint paint) {
-		canvas.drawText(Float.toString(this.mBookReading.getCurPosition()/mSize), this.mPosX, this.mPosY, paint);
+		Log.i("[bookprogress]", ""+this.mBookReading.getCurPosition()+"size:"+mSize);
+		canvas.drawText(Float.toString((float)this.mBookReading.getCurPosition()/(float)mSize*100)+"%", this.mPosX, this.mPosY, paint);
 	}
 
 }

@@ -26,28 +26,14 @@ public class PageObj extends DrawableObj{
 	
 	private BookView mBookView;
 	
-	public int mPosition = 0;
 	public PageObj(BookView bookView, Book book ) {
 		mBookView = bookView;		
 	}	
 
 	private List<String> pageString = new ArrayList<String>();
 
-	public void nextLine() {
-		pageString = this.mBookView.bookreading.nextLine();
-	}
-
-	public void nextPage() {
-		pageString = this.mBookView.bookreading.nextPage();
-		
-	}
-
-	public void preLine() {
-		pageString = this.mBookView.bookreading.preLine();
-	}
-
-	public void prePage() {
-		pageString = this.mBookView.bookreading.prePage();
+	public void setPageString(List<String> str){
+		this.pageString = str;
 	}
 
 	public void setLocal(int local) {
@@ -58,13 +44,10 @@ public class PageObj extends DrawableObj{
 
 	@Override
 	public	void Draw(Canvas canvas,Paint paint) {
-		
-		
 		for (int j = 0; j < pageString.size(); j++) {
 			//Log.i("text paint",pageString.get(j));
 			canvas.drawText(pageString.get(j), 0,
-					(this.mBookView.bookreading.getLineHeight() ) * j + 30, paint);
-
+					(this.mBookView.bookreading.getLineHeight() ) * (j+1), paint);
 		}
 	}
 	

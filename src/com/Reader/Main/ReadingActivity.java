@@ -16,6 +16,7 @@ import com.Reader.Main.HorseReaderActivity;
 import com.Reader.Main.R;
 import com.Reader.Record.BookHistory;
 import com.Reader.ui.ProgressAlert;
+import com.Reader.ui.ReadingMenu;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -29,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +42,7 @@ import android.widget.GridView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-public class ReadingActivity extends Activity implements OnMenuItemClickListener  {
+public class ReadingActivity extends Activity {
 	public BookView bookView;
 	public BookManager bookmanager;
 	private GridView mGrid;
@@ -96,23 +98,9 @@ public class ReadingActivity extends Activity implements OnMenuItemClickListener
 		super.onStop();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, Command.NEXTCHAPTER, 0, "下一章").setIcon(
-				android.R.drawable.ic_menu_info_details);
-		menu.add(0, Command.PRECHAPTER, 0, "下一章").setIcon(
-				android.R.drawable.ic_menu_info_details);
-		menu.add(0, Command.BAIFENBI, 0, "百分比").setIcon(
-				android.R.drawable.ic_menu_info_details);
-		menu.add(0, Command.NIGHTMODE, 0, "夜间模式").setIcon(
-				android.R.drawable.ic_menu_info_details);
-		menu.add(0, Command.MORE, 0, "设置").setIcon(
-				android.R.drawable.ic_menu_info_details).setOnMenuItemClickListener(this);
-		return true;
+	
 
-	}
-
-	public void setLookingBookView() {
+	private void setLookingBookView() {
 		setContentView(bookmanager.getBookView());
 	}
 
@@ -218,25 +206,19 @@ public class ReadingActivity extends Activity implements OnMenuItemClickListener
 			return position;
 		}
 	}
-	ProgressAlert mpDialog;
-	/*@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
-		super.onOptionsItemSelected(item);
-		switch (item.getItemId()) {
-		case Command.MORE:
-			mpDialog = new ProgressAlert(this);  
-            mpDialog.showAtLocation( this.bookView, Gravity.CENTER, 0, 0);    
-
-		}
-		return true;
+	
+	private ReadingMenu mReadingMenu;
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add("menu");// 必须创建一项
+		mReadingMenu = new ReadingMenu(this);
+		mReadingMenu.Create();
+		return super.onCreateOptionsMenu(menu);
 	}
-*/
-
-	public boolean onMenuItemClick(MenuItem item) {
-		// TODO Auto-generated method stub
-		mpDialog = new ProgressAlert(this);  
-        mpDialog.showAtLocation( this.bookView, Gravity.CENTER, 0, 0);    
-
-		return true;
-	}}
+	
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		mReadingMenu.show(this.bookView);
+		return false;// 返回为true 则显示系统menu
+	}
+}
