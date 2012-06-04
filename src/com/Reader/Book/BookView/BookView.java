@@ -118,8 +118,8 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 		}else{
 			this.mPageObj.setLocal(bookreading.getCurPosition());
 		}
-		Canvas mCurPageCanvas;
-		mCurPageCanvas = new Canvas(mCurPageBitmap);
+		//Canvas mCurPageCanvas;
+		//mCurPageCanvas = new Canvas(mCurPageBitmap);
 		Draw(mCurPageCanvas);
 		this.setBitmaps(mCurPageBitmap, mNextPageBitmap);
 		postInvalidate();
@@ -139,10 +139,7 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 
 		boolean ret = false;
 
-		Canvas mCurPageCanvas, mNextPageCanvas;
-		mCurPageCanvas = new Canvas(mCurPageBitmap);
-		mNextPageCanvas = new Canvas(mNextPageBitmap);
-		if (v == this) {
+			if (v == this) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				abortAnimation();
 				calcCornerXY(event.getX(), event.getY());

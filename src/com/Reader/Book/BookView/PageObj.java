@@ -22,17 +22,17 @@ class StringUtils {
 	}
 }
 
-public class PageObj extends DrawableObj{
-	
+public class PageObj extends DrawableObj {
+
 	private BookView mBookView;
-	
-	public PageObj(BookView bookView, Book book ) {
-		mBookView = bookView;		
-	}	
+
+	public PageObj(BookView bookView, Book book) {
+		mBookView = bookView;
+	}
 
 	private List<String> pageString = new ArrayList<String>();
 
-	public void setPageString(List<String> str){
+	public void setPageString(List<String> str) {
 		this.pageString = str;
 	}
 
@@ -43,13 +43,13 @@ public class PageObj extends DrawableObj{
 	}
 
 	@Override
-	public	void Draw(Canvas canvas,Paint paint) {
-		for (int j = 0; j < pageString.size(); j++) {
-			//Log.i("text paint",pageString.get(j));
-			canvas.drawText(pageString.get(j), 0,
-					(this.mBookView.bookreading.getLineHeight() ) * (j+1), paint);
+	public void Draw(Canvas canvas, Paint paint) {
+		int y = 15;
+		for (String strLine : pageString) {
+			// Log.i("text paint",pageString.get(j));
+			y += this.mBookView.bookreading.getLineHeight();
+			canvas.drawText(strLine, 0, y, paint);
 		}
 	}
-	
 
 }
