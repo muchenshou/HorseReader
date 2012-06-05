@@ -38,32 +38,27 @@ public class BookAdapter extends BaseAdapter {
 		mData.clear();
 		Map<String, Object> booktitle = null;
 
-		for (int i = 0; i < list.size() && i < 5; i++) {
-			String str = list.get(i).bookName.toString()
-					.substring(list.get(i).bookName.toString().lastIndexOf('.') + 1)
+		for (BookInfo b:list) {
+			String str = b.bookName.toString()
+					.substring(b.bookName.toString().lastIndexOf('.') + 1)
 					.toLowerCase();
 			if (str.equals("umd")) {
 				booktitle = new HashMap<String, Object>();
-				booktitle.put("file", list.get(i).bookName);
+				booktitle.put("file", b.bookName);
 				booktitle.put("img", new Integer(com.Reader.Main.R.drawable.umd));
-				booktitle.put("title", new File(list.get(i).bookName).getName());
+				booktitle.put("title", new File(b.bookName).getName());
 			}
 			if (str.equals("txt")) {
 				booktitle = new HashMap<String, Object>();
-				booktitle.put("file", list.get(i).bookName);
+				booktitle.put("file", b.bookName);
 				booktitle.put("img", new Integer(com.Reader.Main.R.drawable.txt));
-				booktitle.put("title", new File(list.get(i).bookName).getName());
+				booktitle.put("title", new File(b.bookName).getName());
 			}
 			mData.add(booktitle);
 		}
 		if (ActivityContext.getClass() == FileManager.class) {
 			return this.mData;
 		}
-		booktitle = new HashMap<String, Object>();
-		booktitle.put("file", "selectfile");
-		booktitle.put("img", new Integer(com.Reader.Main.R.drawable.txt));
-		booktitle.put("title", "Ñ¡ÔñÎÄ¼þ");
-		mData.add(booktitle);
 		return this.mData;
 	}
 

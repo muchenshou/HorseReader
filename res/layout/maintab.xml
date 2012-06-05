@@ -57,7 +57,7 @@
                 android:button="@null"
                 android:gravity="center"
                 android:tag="tab1"
-                android:text="本地书库" />
+                android:text="书架" />
 
             <RadioButton
                 android:id="@+id/tab2"
@@ -70,18 +70,18 @@
                 android:gravity="center"
                 android:text="网络书库" />
 
-            <!--
+            
                  <RadioButton
                 android:id="@+id/tab3"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
                 android:layout_marginTop="1.0dip"
-                android:text="Tab 3"
+                android:text="本地书库"
                 android:button="@null"
                 android:gravity="center"
                 android:background="@drawable/chat_tab_selector"/>
-            -->
+            
         </RadioGroup>
     </LinearLayout>
 

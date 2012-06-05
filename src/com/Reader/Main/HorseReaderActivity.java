@@ -34,10 +34,7 @@ public class HorseReaderActivity extends Activity {
 					int position, long id) {
 				if (((String) adapterview.getAdapter().getItem(position))
 						.equals("selectfile")) {
-					Intent intent = new Intent(HorseReaderActivity.this,
-							FileManager.class);
-					HorseReaderActivity.this.getParent().startActivityForResult(intent,
-							HorseReaderActivity.FILE_RESULT_CODE);
+					;
 				} else {
 					// openbook
 					String bookName = adapterview.getAdapter()

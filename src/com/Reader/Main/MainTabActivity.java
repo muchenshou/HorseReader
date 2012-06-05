@@ -29,12 +29,14 @@ public class MainTabActivity extends TabActivity {
         // 这里新建3个的Intent用于Activity的切换
         Intent tab1 = new Intent(this, HorseReaderActivity.class);
         Intent tab2 = new Intent(this, WebActivity.class);
- 
+        Intent tab3 = new Intent(this, FileManager.class);
         // 向tabhost里添加tab
-        tabhost.addTab(tabhost.newTabSpec("TAB1").setIndicator("本地书库")
+        tabhost.addTab(tabhost.newTabSpec("TAB1").setIndicator("书架")
                 .setContent(tab1));
         tabhost.addTab(tabhost.newTabSpec("TAB2").setIndicator("网络书库")
                 .setContent(tab2));
+        tabhost.addTab(tabhost.newTabSpec("TAB3").setIndicator("本地书库")
+                .setContent(tab3));
  
         // 给各个按钮设置监听
         tabGroup.setOnCheckedChangeListener((OnCheckedChangeListener) new OnTabChangeListener());
@@ -80,6 +82,8 @@ public class MainTabActivity extends TabActivity {
             case R.id.tab2:
                 tabhost.setCurrentTabByTag("TAB2");
                 break;
+            case R.id.tab3:
+            	tabhost.setCurrentTabByTag("TAB3");
  
             }
  

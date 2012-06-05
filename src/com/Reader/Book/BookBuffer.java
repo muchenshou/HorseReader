@@ -7,26 +7,23 @@ import android.util.Log;
  
 public class BookBuffer implements Runnable { 
     private Book mBook = null; 
-    private int mBuf1Position = -1; 
-    private int mBufferSize = 1024;// buffer 4k 
-    private ByteBuffer mBuffer1 = ByteBuffer.allocate(mBufferSize); 
-    private int mBuf1LenghtContent = -1; 
-    private int mBuf2Position = -1; 
-    private ByteBuffer mBuffer2 = ByteBuffer.allocate(mBufferSize); 
-    private int mBuf2LenghtContent = -1; 
+    private int mBufferSize = 8*1024;// buffer 4k 
+    private ByteBuffer mBuffer1 = ByteBuffer.allocate(mBufferSize); // cur 
+    private int mBuf1Num = -1; 
+    private ByteBuffer mBuffer2 = ByteBuffer.allocate(mBufferSize); // next 
+    private int mBuf2Num = -1; 
+    private ByteBuffer mBuffer3 = ByteBuffer.allocate(mBufferSize);// pre 
+    private int mBuf3Num = -1; 
  
     public BookBuffer(Book book) { 
         mBook = book; 
         new Thread(this).start(); 
-        
     } 
  
     boolean have(int location) { 
-        // Log.i("\nhave is\t", "location:"+location 
-        // +"\tmPosition:"+mPosition+"\t mLenghtContent:"+ mLenghtContent); 
-        if (mBuf1Position == -1) 
+        if (mBuf1Num == -1) 
             return false; 
-        if (location /this.mBufferSize != this.mBuf1LenghtContent) { 
+        if (location / this.mBufferSize != this.mBuf1Num) { 
             return false; 
         } 
         return true; 
@@ -44,55 +41,63 @@ public class BookBuffer implements Runnable {
     } 
  
     public byte getByte(final int location) { 
-        if (location >= this.mBook.size()) 
-            return 0; 
-        long one = System.currentTimeMillis(); 
-        if (have(location)) {  
-            return mBuffer1.get(location - mBuf1Position); 
-        } 
-        if (haveInBuf2(location)) { 
-            synchronized (this) {  
+        synchronized (this) { 
+            if (location >= this.mBook.size()) 
+                return 0; 
+            if (have(location)) { 
+                return mBuffer1.get(location % this.mBufferSize); 
+            } 
+            if (haveInBuf2(location)) { 
+ 
                 mBuffer1.clear(); 
-                ByteBuffer mid = mBuffer1; 
+                ByteBuffer mid = mBuffer3; 
+                mBuffer3 = mBuffer1; 
                 mBuffer1 = mBuffer2; 
                 mBuffer2 = mid; 
-                mBuf1Position = mBuf2Position; 
-                mBuf1LenghtContent = mBuf2LenghtContent; 
+                mBuf3Num = mBuf1Num; 
+                mBuf1Num = mBuf2Num; 
  
+                this.notifyAll(); 
+ 
+                Log.i("[Thread]", "location:" + location); 
+                return this.getByte(location); 
             } 
-            synchronized (this) { 
-                this.notify(); 
+            if (haveInBuf3(location)) { 
+                return mBuffer1.get(location % this.mBufferSize); 
             } 
-            
+            mBuffer1.clear(); 
+            Log.i("[Thread2]", "location" + location); 
+ 
+            mBook.getContent((location / this.mBufferSize) * this.mBufferSize, 
+                    mBuffer1); 
+            mBuf1Num = location / this.mBufferSize; 
+ 
+            this.notifyAll(); 
+ 
             long two = System.currentTimeMillis(); 
-            Log.i("[Thread]", "" + (two - one));
-            Log.i("[Thread]","location:"+location);
-            Log.i("[Thread]","buf1local"+this.mBuf1Position);
-            Log.i("[Thread]","buf1len"+this.mBuf1LenghtContent);
-            //return mBuffer1.get(location - mBuf1Position); 
+            // Log.i("[Thread2]", "" + (two - one)+"ms"); 
+ 
             return this.getByte(location); 
         } 
-        mBuffer1.clear(); 
-        Log.i("[Thread2]","location"+location);
-         
-        mBook.getContent((location/this.mBufferSize)*this.mBufferSize, mBuffer1);
-        mBuf1LenghtContent = location/this.mBufferSize;
-        this.mBuf1Position = (location/this.mBufferSize)*this.mBufferSize;
-        synchronized (this) { 
-            this.notify(); 
-        }
-        long two = System.currentTimeMillis(); 
-        Log.i("[Thread2]", "" + (two - one)); 
-        
-        return this.getByte(location); 
     } 
  
     private boolean haveInBuf2(int location) { 
         // Log.i("\nhave is\t", "location:"+location 
         // +"\tmPosition:"+mPosition+"\t mLenghtContent:"+ mLenghtContent); 
-        if (mBuf2Position == -1) 
+        if (mBuf2Num == -1) 
             return false; 
-        if (location/this.mBufferSize != this.mBuf2LenghtContent) { 
+        if (location / this.mBufferSize != this.mBuf2Num) { 
+            return false; 
+        } 
+        return true; 
+    } 
+ 
+    private boolean haveInBuf3(int location) { 
+        // Log.i("\nhave is\t", "location:"+location 
+        // +"\tmPosition:"+mPosition+"\t mLenghtContent:"+ mLenghtContent); 
+        if (mBuf3Num == -1) 
+            return false; 
+        if (location / this.mBufferSize != this.mBuf3Num) { 
             return false; 
         } 
         return true; 
@@ -104,19 +109,19 @@ public class BookBuffer implements Runnable {
  
             synchronized (this) { 
                 try { 
+                  //  this.isWaitting = true; 
                     this.wait(); 
                 } catch (InterruptedException e) { 
                     // TODO Auto-generated catch block 
                     e.printStackTrace(); 
                 }
-                
+                //this.isWaitting = false; 
+                // Log.i("[thread]","getcontent"); 
                 mBuffer2.clear(); 
-                mBook.getContent(this.mBuf1Position 
-                        + this.mBufferSize, mBuffer2); 
-                mBuf2LenghtContent = this.mBuf1LenghtContent+1;
-                mBuf2Position = this.mBuf1Position + this.mBufferSize;
-                Log.i("[Thread here]","here"+mBuf2Position);
-                //this.mBuffer2.notify(); 
+                mBook.getContent((this.mBuf1Num + 1) * this.mBufferSize, 
+                        mBuffer2); 
+                this.mBuf2Num = this.mBuf1Num + 1; 
+                this.notifyAll(); 
             } 
         } 
     } 

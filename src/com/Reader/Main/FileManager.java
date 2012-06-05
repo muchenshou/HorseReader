@@ -58,9 +58,6 @@ public class FileManager extends ListActivity implements View.OnClickListener{
 		Button update = (Button) findViewById(R.id.updateButton);
 		update.setClickable(true);
 		update.setOnClickListener(this);
-		Button cancel = (Button) findViewById(R.id.cancelButton);
-		cancel.setClickable(true);
-		cancel.setOnClickListener(this);
 		setListViewContent();
 
 	}
@@ -89,25 +86,27 @@ public class FileManager extends ListActivity implements View.OnClickListener{
 	}
 
 	private void openFile(File f) {
-		Intent intent = new Intent();
+		//Intent intent = new Intent();
 		if (SearchBook.isBook(f)) {
-			intent.putExtra("bookfile", f.getPath());
+			//intent.putExtra("bookfile", f.getPath());
 			Log.d("openFile", f.getPath());
-			setResult(RESULT_OK, intent);
-			finish();
+			//setResult(RESULT_OK, intent);
+			Intent intent = new Intent(FileManager.this,
+					ReadingActivity.class);
+			intent.putExtra("bookname", f.getPath());
+			FileManager.this.getParent().startActivityForResult(intent,HorseReaderActivity.READING_RESULT_CODE);
+			//finish();
 		}
 
 	}
 
 	public void onClick(View v) {
+		Log.i("[onclick]", "updatebutton1");
 		// TODO Auto-generated method stub
 		if (v.getId() == R.id.updateButton){
+			Log.i("[onclick]", "updatebutton");
 			BookLibrary lib = new BookLibrary(FileManager.this);
 			searchBook(lib);
-
-		}
-		if (v.getId() == R.id.cancelButton){
-			finish();
 		}
 		
 	}
