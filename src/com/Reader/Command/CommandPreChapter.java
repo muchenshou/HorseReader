@@ -5,9 +5,10 @@ import com.Reader.Book.Manager.BookManager;
 import com.Reader.Book.Umd.UmdBook;
 import com.Reader.Main.ReadingActivity;
 
-public class CommandPreChapter implements Command{
+public class CommandPreChapter implements Command {
 	ReadingActivity activity;
-	public CommandPreChapter(ReadingActivity a){
+
+	public CommandPreChapter(ReadingActivity a) {
 		activity = a;
 	}
 
@@ -16,10 +17,18 @@ public class CommandPreChapter implements Command{
 		BookManager _bookmanager = activity.bookmanager;
 		UmdBook umd = (UmdBook) _bookmanager.getBook();
 		BookView bookView = _bookmanager.getBookView();
-		int value = umd.getChapterLocal(umd.localIsInWhichChapter(_bookmanager.getReadingPosition()));
-		value = umd.getChapterLocal(umd.localIsInWhichChapter(value - 1));
+		int chapter = umd.localIsInWhichChapter(_bookmanager
+				.getReadingPosition());
+		if (chapter == 0) {
+			bookView.setLocal(0);
+			bookView.postInvalidate();
+			bookView.refreshDrawableState();
+			return;
+		}
+		int value = umd.getChapterLocal(chapter - 3);
 		bookView.setLocal(value);
 		bookView.postInvalidate();
+		bookView.refreshDrawableState();
 	}
 
 }

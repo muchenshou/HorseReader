@@ -28,55 +28,54 @@ public class UmdBook extends Book {
 	}
 
 	public int getContent(int start, ByteBuffer contentBuffer) {
-		int length = contentBuffer.capacity();
-		byte[] content;
-		try {
-			if (this.getPointerInWhichBlock(start) == this
-					.getPointerInWhichBlock(start + length - 1)) {
+        int length = contentBuffer.capacity();
+        byte[] content;
+        try {
+            if (this.getPointerInWhichBlock(start) == this
+                    .getPointerInWhichBlock(start + length - 1)) {
 
-				content = umdinflate.getContentBlock(
-						this.getPointerInWhichBlock(start),
-						this.getPointerInBlockLocal(start),
-						length);
-				//.i("[UmdBook]","limit:"+contentBuffer.limit()
-				//		+ "capacity:"+length
-				//		+ "position:"+contentBuffer.position()
-				//		+ "content length:"+content.length);
-				contentBuffer.put(content);
-			} else {
-				content = umdinflate.getContentBlock(
-						this.getPointerInWhichBlock(start),
-						this.getPointerInBlockLocal(start), UmdParse.BLOCKSIZE- this.getPointerInBlockLocal(start));
-				if (content == null) {
-					System.out.println(" Is null\t"
-							+ this.getPointerInWhichBlock(start) + "\t"
-							+ this.getPointerInBlockLocal(start) + "\t"
-							+ UmdParse.BLOCKSIZE );
-				}
-				contentBuffer.put(content);
-				for (int i = this.getPointerInWhichBlock(start) + 1; i < this
-						.getPointerInWhichBlock(start + length - 1); i++) {
-					content = umdinflate.getContentBlock(
-							this.getPointerInWhichBlock(start), 0,
-							UmdParse.BLOCKSIZE);
-					contentBuffer.put(content);
-				}
-				content = umdinflate.getContentBlock(
-						this.getPointerInWhichBlock(start + length - 1),
-						this.getPointerInBlockLocal(0), (start + length - 1)
-								% UmdParse.BLOCKSIZE+1);
-				contentBuffer.put(content);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			this.EOFBOOK = true;
-			return -1;
-		}
-		ByteOrder order = ByteOrder.LITTLE_ENDIAN;
-		contentBuffer.order(order);
-		return contentBuffer.limit();
-	}
+                content = umdinflate.getContentBlock(
+                        this.getPointerInWhichBlock(start),
+                        this.getPointerInBlockLocal(start), length);
+                contentBuffer.put(content);
+            } else {
+                content = umdinflate.getContentBlock(
+                        this.getPointerInWhichBlock(start),
+                        this.getPointerInBlockLocal(start), UmdParse.BLOCKSIZE
+                                - this.getPointerInBlockLocal(start));
+                if (content == null) {
+                    System.out.println(" Is null\t"
+                            + this.getPointerInWhichBlock(start) + "\t"
+                            + this.getPointerInBlockLocal(start) + "\t"
+                            + UmdParse.BLOCKSIZE);
+                }
+                contentBuffer.put(content);
+                for (int i = this.getPointerInWhichBlock(start) + 1; i < this
+                        .getPointerInWhichBlock(start + length - 1); i++) {
+                    content = umdinflate.getContentBlock(
+                            this.getPointerInWhichBlock(start), 0,
+                            UmdParse.BLOCKSIZE);
+                    contentBuffer.put(content);
+                }
+                content = umdinflate.getContentBlock(
+                        this.getPointerInWhichBlock(start + length - 1),
+                        0,
+                        UmdParse.BLOCKSIZE
+                                - this.getPointerInBlockLocal(start + length
+                                        - 1));
+                contentBuffer.put(content);
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            this.EOFBOOK = true;
+            return -1;
+        }
+        ByteOrder order = ByteOrder.LITTLE_ENDIAN;
+        contentBuffer.order(order);
+        return contentBuffer.limit();
+    }
+
 
 	public int getPointerInWhichBlock(int pointer) {
 		return pointer / (UmdParse.BLOCKSIZE);

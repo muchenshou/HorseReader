@@ -21,12 +21,13 @@ public class BookReading {
 	Page mPage = new Page();
 	public Book mBook = null;
 	private BookView mBookView;
-	public BookReading(Book book,BookView bookview){
+
+	public BookReading(Book book, BookView bookview) {
 		mBook = book;
 		mBookView = bookview;
 		this.mPaint = mBookView.getPageConfig().getPaint();
 	}
-	
+
 	Line getLine(int start) {
 		float[] widths = new float[1];
 		char[] ch = new char[1];
@@ -35,13 +36,13 @@ public class BookReading {
 		line.mStart = start;
 		while (true) {
 			CharInfo charinfo = mBook.getChar(start);
-			
-			if (charinfo == null) {		
+
+			if (charinfo == null) {
 				return null;
 			}
 			ch[0] = charinfo.character;
 			start += charinfo.length;
-			if (ch[0] == '\n' ) {
+			if (ch[0] == '\n') {
 				line.mLength += charinfo.length;
 				break;
 			}
@@ -62,21 +63,26 @@ public class BookReading {
 	public int getCurPosition() {
 		return mPage.mLines.get(0).mStart;
 	}
-	public int getLineHeight(){
-		return BookView.getTextHeight(mPaint)+this.mBookView.getPageConfig().mPadding;
+
+	public int getLineHeight() {
+		return BookView.getTextHeight(mPaint)
+				+ this.mBookView.getPageConfig().mPadding;
 	}
-	public void update(int w, int h){
+
+	public void update(int w, int h) {
 		pageHeight = h;
-		pageWidth =w;
+		pageWidth = w;
 	}
-	public void update(){
-		pageline = (int) (pageHeight/getLineHeight());
+
+	public void update() {
+		pageline = (int) (pageHeight / getLineHeight());
 	}
+
 	public List<String> getPageStr(int start) {
 		mPage.mLines.clear();
 		for (; mPage.mLines.size() < pageline;) {
 			if (mPage.mLines.size() == 0) {
-				
+
 				if (this.getLine(start) == null) {
 					break;
 				}
@@ -109,10 +115,10 @@ public class BookReading {
 		int local = 0;
 		try {
 			local = mPage.mLines.getLast().getEnd();
-		} catch (NoSuchElementException e){
+		} catch (NoSuchElementException e) {
 			return mPage.getStrings();
 		}
-		
+
 		return this.getPageStr(local);
 	}
 
@@ -121,80 +127,37 @@ public class BookReading {
 			return 0;
 		}
 
-		
 		Log.i("start local", "" + mPage.mLines.get(0).mStart);
-		float[] widths = new float[1];
-		float widthTotal = (float) 0.0;
-		char[] ch = new char[1];
-		CharInfo charinfo = this.mBook.getPreChar(mPage.mLines.get(0).mStart);
-		int start = mPage.mLines.get(0).mStart - charinfo.length;
-		ch[0] = charinfo.character;
-		if (ch[0] != 8233) {
-			widthTotal = 0;
-			mPaint.getTextWidths(ch, 0, 1, widths);
-			widthTotal += Math.ceil(widths[0]);
+
+		int start = mPage.mLines.get(0).mStart;
+		if (start <= 0)
+			return 0;
+		CharInfo charinfo = this.mBook.getPreChar(start);
+		if (charinfo.character == '\n') {
 			start -= charinfo.length;
-			while (true) {
-				if (start < 0)
-					return 0;
-				charinfo = this.mBook.getChar(start);
-				ch[0] = charinfo.character;
-
-				if (ch[0] == 8233) {
-					break;
-				}
-
-				mPaint.getTextWidths(ch, 0, 1, widths);
-				widthTotal += Math.ceil(widths[0]);
-				if (widthTotal > this.pageWidth) {
-					break;
-				}
-				start -= charinfo.length;
-			}
-			return start + charinfo.length;
 		}
-
-		if (ch[0] == 8233) {
-			// Ãÿ ‚¥¶¿Ì
-			// Log.d("is touch1", "touch");
+		int savevalue = start;
+		charinfo = this.mBook.getPreChar(start);
+		start -= charinfo.length;
+		while (charinfo.character != '\n') {
+			if (start <= 0)
+				return 0;
+			charinfo = this.mBook.getPreChar(start);
 			start -= charinfo.length;
-			while (true) {
-				if (start < 0)
-					return 0;
-				charinfo = this.mBook.getChar(start);
-				// Log.d("start", ""+start);
-				ch[0] = charinfo.character;
-				// Log.d("char1", "" + ch[0]);
-				if (ch[0] == 8233 || ch[0] == 0) {
-					break;
-				}
-				start = start - charinfo.length;
-			}
-			start += charinfo.length;
-			int num = 0;
-			// Log.d("is touch2", "touch");
-			while (true) {
-				// Log.d("is touch3", "touch");
-				charinfo = this.mBook.getChar(start);
-				ch[0] = charinfo.character;
-				// Log.d("char2", "" + ch[0]);
-				if (ch[0] == 8233) {
-					return start - num;
-				}
-
-				mPaint.getTextWidths(ch, 0, 1, widths);
-				widthTotal += Math.ceil(widths[0]);
-				if (widthTotal > this.pageWidth) {
-					num = 0;
-					widthTotal = 0;
-					continue;
-				}
-				start += charinfo.length;
-				num += charinfo.length;
-			}
-
 		}
-		return -1;
+		Line saveline;
+		Line line = this.getLine(start + charinfo.length);
+
+		start += line.mLength;
+		saveline = line;
+		while (line.mStart < savevalue) {
+			saveline = line;
+			line = this.getLine(start + charinfo.length);
+			if (line == null)
+				break;
+			start += line.mLength;
+		}
+		return saveline.mStart;
 
 	}
 

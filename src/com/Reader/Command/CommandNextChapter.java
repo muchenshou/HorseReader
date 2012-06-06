@@ -19,6 +19,7 @@ public class CommandNextChapter implements Command {
 		int value = umd.getChapterLocal(umd.localIsInWhichChapter(_bookmanager.getReadingPosition()));
 		bookView.setLocal(value);
 		bookView.postInvalidate();
+		bookView.refreshDrawableState();
 	}
 
 }
