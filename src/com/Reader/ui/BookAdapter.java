@@ -11,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.Reader.Main.FileManager;
+import com.Reader.Main.R;
 import com.Reader.Record.BookInfo;
 
 public class BookAdapter extends BaseAdapter {
@@ -87,7 +89,6 @@ public class BookAdapter extends BaseAdapter {
 
 			holder = (ViewHolder) convertView.getTag();
 		}
-
 		holder.img.setBackgroundResource((Integer) mData.get(position).get(
 				"img"));
 		holder.title.setText((String) mData.get(position).get("title"));

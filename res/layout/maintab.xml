@@ -37,7 +37,7 @@
         <RadioGroup
             android:id="@+id/tab_group"
             android:layout_width="fill_parent"
-            android:layout_height="50dp"
+            android:layout_height="25dp"
             android:layout_gravity="bottom"
             android:background="#4822DD"
             android:checkedButton="@+id/tab1"

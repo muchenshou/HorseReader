@@ -41,6 +41,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ReadingActivity extends Activity {
 	public BookView bookView;
@@ -67,6 +68,10 @@ public class ReadingActivity extends Activity {
 		}
 
 		try {
+			if (!new File(bookName).exists()){
+				Toast.makeText(this, "文件不存在", Toast.LENGTH_LONG).show();
+				return;
+			}
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
 			bookView = bookmanager.getBookView();
@@ -82,8 +87,8 @@ public class ReadingActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i("onstartview",
-				"" + this.bookView.getWidth() + this.bookView.getHeight());
+		//Log.i("onstartview",
+			//	"" + this.bookView.getWidth() + this.bookView.getHeight());
 	}
 
 	@Override
