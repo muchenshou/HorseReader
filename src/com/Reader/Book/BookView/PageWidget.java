@@ -1,3 +1,7 @@
+/*
+ * http://blog.csdn.net/hmg25/
+ * 
+ * */
 
 package com.Reader.Book.BookView;
 
