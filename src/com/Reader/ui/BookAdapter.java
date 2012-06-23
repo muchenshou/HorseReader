@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class BookAdapter extends BaseAdapter {
 	public final class ViewHolder {
 		public ImageView img;
 		public TextView title;
+		public TextView process;
 	}
 
 	private List<Map<String, Object>> mData = new ArrayList<Map<String, Object>>();
@@ -63,6 +65,7 @@ public class BookAdapter extends BaseAdapter {
 				booktitle.put("img", new Integer(com.Reader.Main.R.drawable.txt));
 				booktitle.put("title", new File(b.bookName).getName());
 			}
+			booktitle.put("process", b.mProcess);
 			mData.add(booktitle);
 		}
 		if (ActivityContext.getClass() == FileManager.class) {
@@ -91,6 +94,7 @@ public class BookAdapter extends BaseAdapter {
 			convertView = mInflater.inflate(com.Reader.Main.R.layout.listitem, null);
 			holder.img = (ImageView) convertView.findViewById(com.Reader.Main.R.id.img);
 			holder.title = (TextView) convertView.findViewById(com.Reader.Main.R.id.title);
+			holder.process = (TextView) convertView.findViewById(com.Reader.Main.R.id.process);
 			convertView.setTag(holder);
 		} else {
 
@@ -98,7 +102,14 @@ public class BookAdapter extends BaseAdapter {
 		}
 		holder.img.setBackgroundResource((Integer) mData.get(position).get(
 				"img"));
-		holder.title.setText((String) mData.get(position).get("title"));
+		String name = (String) mData.get(position).get("title");
+		holder.title.setText(name.substring(0, name.length()-4));
+		
+		if (parent.getContext().getClass().equals(FileManager.class)){
+			holder.process.setVisibility(View.GONE);
+		} else {
+			holder.process.setText( (mData.get(position).get("process")).toString());
+		}
 		return convertView;
 	}
 

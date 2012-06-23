@@ -1,4 +1,10 @@
-package com.Reader.Book.BookView;
+/*
+ * QQ:1127082711
+ * 
+ * xinlangweibo:http://weibo.com/muchenshou
+ * 
+ * email:muchenshou@gmail.com
+ * */package com.Reader.Book.BookView;
 
 import com.Reader.Book.Book;
 import com.Reader.Book.Manager.BookManager;
@@ -79,13 +85,15 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		
-		bookreading.update(w,h-BookView.getTextHeight(this.mPageConfig.getOthersPaint()));
+		bookreading.update(w,h-BookView.getTextHeight(this.mPageConfig.getOthersPaint())-20);
 		//
-		this.mBookNameObj.setPosition(0, h);
+		float len = mBookNameObj.getNameMeasure(mPageConfig.getOthersPaint());
+		this.mBookNameObj.setPosition((w-(int)len)/2, h-5);
 		//
-		this.mBookProgressObj.setPosition(w/2-80, h);
+		this.mBookProgressObj.setPosition(0, h-5);
 		//
-		mTimeObj.setPosition(w/2 + 80, h);
+		len = mPageConfig.getOthersPaint().measureText("00:00");
+		mTimeObj.setPosition(w-(int)len, h-5);
 
 		Bitmap BG = this.m_book_bg;
 
@@ -107,7 +115,7 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 			canvas.drawBitmap(m_book_bg, 0, 0, null);
 		mPageObj.Draw(canvas, this.mPaint);
 		mTimeObj.Draw(canvas, this.mPageConfig.getOthersPaint());
-		//mBookNameObj.Draw(canvas, this.mPaint);
+		mBookNameObj.Draw(canvas, this.mPaint);
 		mBookProgressObj.Draw(canvas, this.mPageConfig.getOthersPaint());
 	}
 	public void update(){

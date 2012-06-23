@@ -26,7 +26,7 @@ public class BookHistory {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
 		Cursor cursor = db
 				.rawQuery(
-						"select bookfiles._id,bookfiles.fulldirname from bookfiles,bookhistory "
+						"select bookfiles._id,bookfiles.fulldirname,bookhistory.process from bookfiles,bookhistory "
 								+ " where bookfiles._id=bookhistory.bookid order by bookhistory.time desc",
 						null);
 		List<BookInfo> list = new ArrayList<BookInfo>();
@@ -34,6 +34,7 @@ public class BookHistory {
 			BookInfo info = new BookInfo();
 			info.book_id = cursor.getInt(0);
 			info.bookName = cursor.getString(1);
+			info.mProcess = cursor.getString(2);
 			list.add(info);
 		}
 		cursor.close();
@@ -75,12 +76,21 @@ public class BookHistory {
 	public void updateHistory(String bookname, int pos) {
 		// TODO Auto-generated method stub
 		if (this.exist(bookname)) {
-			update(bookname, pos);
+			updatePos(bookname, pos);
 		} else {
 			this.addHistory(bookname, 0);
 		}
 	}
 
+	public void updateHistoryPro(String bookname, String pos) {
+		// TODO Auto-generated method stub
+		if (this.exist(bookname)) {
+			updateProcess(bookname, pos);
+		} else {
+			this.addHistory(bookname, 0);
+		}
+	}
+	
 	public int getPosition(String book) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
 		Cursor cur = db
@@ -98,7 +108,7 @@ public class BookHistory {
 		return rtn;
 	}
 
-	private void update(String bookname, int pos) {
+	private void updatePos(String bookname, int pos) {
 		SQLiteDatabase db = this.bookHelper.getWritableDatabase();
 		if (pos != -1)
 			db.execSQL(String
@@ -112,4 +122,21 @@ public class BookHistory {
 							bookname));
 		db.close();
 	}
+	
+	private void updateProcess(String bookname, String pos) {
+		SQLiteDatabase db = this.bookHelper.getWritableDatabase();
+		if (pos != null) {
+			db.execSQL(String
+					.format("update bookhistory set time=datetime('now','localtime'),process=\"%s\" where bookid in"
+							+ "(select _id from bookfiles where fulldirname=\"%s\");",
+							pos, bookname));
+		}
+		else
+			db.execSQL(String
+					.format("update bookhistory set time=datetime('now','localtime') where bookid in"
+							+ "(select _id from bookfiles where fulldirname=\"%s\");",
+							bookname));
+		db.close();
+	}
+
 }

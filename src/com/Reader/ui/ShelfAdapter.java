@@ -113,7 +113,7 @@ public class ShelfAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
-		View layout = mInflater.inflate(R.layout.bookshelves_listitem, null);
+		/*View layout = mInflater.inflate(R.layout.bookshelves_listitem, null);
 
 		Button btn1 = (Button) layout.findViewById(R.id.button_1);
 		if (position * 3 + 0 < mData.size()) {
@@ -132,7 +132,8 @@ public class ShelfAdapter extends BaseAdapter {
 			btn3.setText((String) this.mData.get(position * 3 + 2).get("title"));
 			btn3.setOnClickListener(new BtnOnClickListener(position * 3 + 2));
 		}
-		return layout;
+		return layout;*/
+		return null;
 	}
 
 }

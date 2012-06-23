@@ -9,6 +9,7 @@ package com.Reader.Main;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +20,11 @@ import com.Reader.Command.CommandExit;
 import com.Reader.Command.CommandNextChapter;
 import com.Reader.Command.CommandPreChapter;
 import com.Reader.Command.CommandReturn;
-import com.Reader.Main.HorseReaderActivity;
 import com.Reader.Main.R;
 import com.Reader.Record.BookHistory;
-import com.Reader.ui.ProgressAlert;
 import com.Reader.ui.ReadingMenu;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,10 +33,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.ViewGroup.LayoutParams;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -75,7 +69,7 @@ public class ReadingActivity extends Activity {
 		}
 
 		try {
-			if (!new File(bookName).exists()){
+			if (!new File(bookName).exists()) {
 				Toast.makeText(this, "文件不存在", Toast.LENGTH_LONG).show();
 				return;
 			}
@@ -88,29 +82,23 @@ public class ReadingActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// View.MeasureSpec.makeMeasureSpec(size, mode)
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		//Log.i("onstartview",
-			//	"" + this.bookView.getWidth() + this.bookView.getHeight());
 	}
 
 	@Override
 	protected void onStop() {
-		Log.d("Onstop", "ok?");
-
 		BookHistory history = new BookHistory(this);
 		Log.i("ReadingOnStop",
 				"" + this.mBookName + this.bookmanager.getReadingPosition());
 		history.updateHistory(this.mBookName,
 				this.bookmanager.getReadingPosition());
+		float fPercent = (float) bookmanager.getReadingPosition()
+				/ (float) bookmanager.getBookSize();
+		DecimalFormat df = new DecimalFormat("#0.0");
+		String strPercent = df.format(fPercent * 100) + "%";
+		history.updateHistoryPro(this.mBookName,
+				strPercent + ":" + bookmanager.getReadingContent());
 		super.onStop();
 	}
-
-	
 
 	private void setLookingBookView() {
 		setContentView(bookmanager.getBookView());
@@ -218,8 +206,9 @@ public class ReadingActivity extends Activity {
 			return position;
 		}
 	}
-	
+
 	private ReadingMenu mReadingMenu;
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add("menu");// 必须创建一项
@@ -227,7 +216,7 @@ public class ReadingActivity extends Activity {
 		mReadingMenu.Create();
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		mReadingMenu.show(this.bookView);

@@ -35,6 +35,9 @@ public class BookReading {
 		this.mPaint = mBookView.getPageConfig().getPaint();
 	}
 
+	public String getCurContent(){
+		return mPage.getStrings().get(0);
+	}
 	Line getLine(int start) {
 		float[] widths = new float[1];
 		char[] ch = new char[1];

@@ -23,6 +23,7 @@ public class BookDatabaseHelper extends SQLiteOpenHelper{
 	private static final String TB_HISTORY_BOOKID = "bookid";
 	private static final String TB_HISTORY_POSITION = "position";
 	private static final String TB_HISTORY_TIME ="time";
+	private static final String TB_HISTORY_PROCESS ="process";
 	public BookDatabaseHelper(Context context,
 			CursorFactory factory, int version) {
 		super(context, DATABASE, factory, version);
@@ -41,6 +42,7 @@ public class BookDatabaseHelper extends SQLiteOpenHelper{
 				+ TB_HISTORY + "("
 				+ ID + " INTEGER PRIMARY KEY,"
 				+ TB_HISTORY_BOOKID +" INTEGER,"
+				+ TB_HISTORY_PROCESS +" VARCHAR,"
 				+ TB_HISTORY_POSITION + " INTEGER DEFAULT 0,"
 				+ TB_HISTORY_TIME + " TimeStamp NOT NULL DEFAULT (datetime('now','localtime'))"
 				+ ");");

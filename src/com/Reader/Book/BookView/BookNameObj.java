@@ -15,6 +15,10 @@ public class BookNameObj extends DrawableObj{
 	public void setBookName(String name){
 		this.mBookName = name;
 	}
+	
+	public float getNameMeasure(Paint paint){
+		return paint.measureText(mBookName);
+	}
 	@Override
 	public void Draw(Canvas canvas, Paint paint) {
 		// TODO Auto-generated method stub

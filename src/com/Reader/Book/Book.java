@@ -25,6 +25,7 @@ public abstract class Book {
 	public abstract CharInfo getChar(int start);
 	public abstract CharInfo getPreChar(int mStart);
 	public String getName(){
-		return bookFile.getName();
+		String name = bookFile.getName();
+		return name.substring(0,name.length()-4);
 	}
 }

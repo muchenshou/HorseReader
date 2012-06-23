@@ -35,8 +35,6 @@ public class BookManager{
 	public static final int BUFSIZE = 512;
 	private Book book;
 	private BookView bookView;
-	private PageObj textUtil;
-	private BookReading bookReading;
 	public ReadingActivity bookActivity;
 
 	int bufferlocal = -1;// 文本块的位置
@@ -79,6 +77,9 @@ public class BookManager{
 		return book;
 	}
 
+	public String getReadingContent(){
+		return this.bookView.bookreading.getCurContent();
+	}
 	public int getReadingPosition() {
 		return this.bookView.bookreading.getCurPosition();
 	}

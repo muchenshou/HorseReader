@@ -34,6 +34,10 @@ public class UmdBook extends Book {
 		return bookFile;
 	}
 
+	@Override
+	public String getName(){
+		return umdInfo.getName();
+	}
 	public int getContent(int start, ByteBuffer contentBuffer) {
         int length = contentBuffer.capacity();
         byte[] content;
