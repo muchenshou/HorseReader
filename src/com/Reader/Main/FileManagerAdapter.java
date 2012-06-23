@@ -39,9 +39,9 @@ public class FileManagerAdapter extends BaseAdapter {
 		mIcon2 = BitmapFactory.decodeResource(context.getResources(),
 				R.drawable.icon);
 		mIcon3 = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.filejia);
+				R.drawable.icon);
 		mIcon4 = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.file);
+				R.drawable.icon);
 	}
 
 	public int getCount() {

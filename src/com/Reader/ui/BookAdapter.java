@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.Reader.Main.FileManager;
-import com.Reader.Main.R;
 import com.Reader.Record.BookInfo;
 
 public class BookAdapter extends BaseAdapter {
@@ -35,52 +34,37 @@ public class BookAdapter extends BaseAdapter {
 		public TextView process;
 	}
 
-	private List<Map<String, Object>> mData = new ArrayList<Map<String, Object>>();
 	private LayoutInflater mInflater;
 	private Context ActivityContext;
+	private List<BookInfo> mBookInfoList;
 
 	public BookAdapter(Context context, List<BookInfo> list) {
 		ActivityContext = context;
 		this.mInflater = LayoutInflater.from(context);
-		getData(list);
-	}
+		mBookInfoList = list;
 
-	private List<Map<String, Object>> getData(List<BookInfo> list) {
-		mData.clear();
-		Map<String, Object> booktitle = null;
-
-		for (BookInfo b:list) {
+		for (BookInfo b : mBookInfoList) {
 			String str = b.bookName.toString()
 					.substring(b.bookName.toString().lastIndexOf('.') + 1)
 					.toLowerCase();
 			if (str.equals("umd")) {
-				booktitle = new HashMap<String, Object>();
-				booktitle.put("file", b.bookName);
-				booktitle.put("img", new Integer(com.Reader.Main.R.drawable.umd));
-				booktitle.put("title", new File(b.bookName).getName());
+				b.mBookImage = ActivityContext.getResources().getDrawable(
+						com.Reader.Main.R.drawable.umd);
 			}
 			if (str.equals("txt")) {
-				booktitle = new HashMap<String, Object>();
-				booktitle.put("file", b.bookName);
-				booktitle.put("img", new Integer(com.Reader.Main.R.drawable.txt));
-				booktitle.put("title", new File(b.bookName).getName());
+				b.mBookImage = ActivityContext.getResources().getDrawable(
+						com.Reader.Main.R.drawable.txt);
 			}
-			booktitle.put("process", b.mProcess);
-			mData.add(booktitle);
 		}
-		if (ActivityContext.getClass() == FileManager.class) {
-			return this.mData;
-		}
-		return this.mData;
+
 	}
 
 	public int getCount() {
-		return mData.size();
+		return this.mBookInfoList.size();
 	}
 
 	public Object getItem(int position) {
-
-		return mData.get(position).get("file");
+		return mBookInfoList.get(position).bookName;
 	}
 
 	public long getItemId(int position) {
@@ -91,24 +75,28 @@ public class BookAdapter extends BaseAdapter {
 		ViewHolder holder = null;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			convertView = mInflater.inflate(com.Reader.Main.R.layout.listitem, null);
-			holder.img = (ImageView) convertView.findViewById(com.Reader.Main.R.id.img);
-			holder.title = (TextView) convertView.findViewById(com.Reader.Main.R.id.title);
-			holder.process = (TextView) convertView.findViewById(com.Reader.Main.R.id.process);
+			convertView = mInflater.inflate(com.Reader.Main.R.layout.listitem,
+					null);
+			holder.img = (ImageView) convertView
+					.findViewById(com.Reader.Main.R.id.img);
+			holder.title = (TextView) convertView
+					.findViewById(com.Reader.Main.R.id.title);
+			holder.process = (TextView) convertView
+					.findViewById(com.Reader.Main.R.id.process);
 			convertView.setTag(holder);
 		} else {
-
 			holder = (ViewHolder) convertView.getTag();
 		}
-		holder.img.setBackgroundResource((Integer) mData.get(position).get(
-				"img"));
-		String name = (String) mData.get(position).get("title");
-		holder.title.setText(name.substring(0, name.length()-4));
-		
-		if (parent.getContext().getClass().equals(FileManager.class)){
+		holder.img.setBackgroundDrawable(mBookInfoList.get(position)
+				.getBookImage());
+		String bookfulldir = mBookInfoList.get(position).bookName;
+		String name = bookfulldir.substring(bookfulldir.lastIndexOf('/') + 1,
+				bookfulldir.lastIndexOf('.')).toLowerCase();
+		holder.title.setText(name);
+		if (parent.getContext().getClass().equals(FileManager.class)) {
 			holder.process.setVisibility(View.GONE);
 		} else {
-			holder.process.setText( (mData.get(position).get("process")).toString());
+			holder.process.setText(mBookInfoList.get(position).mProcess);
 		}
 		return convertView;
 	}

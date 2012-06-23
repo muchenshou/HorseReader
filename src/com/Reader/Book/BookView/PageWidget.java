@@ -127,8 +127,16 @@ public class PageWidget extends View {
 	public boolean doTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
+			
+			if (mTouch.x <=0){
+				mTouch.x = 0.01f;
+			}
+			if (mTouch.y >= mHeight){
+				mTouch.y = mHeight - 0.01f;
+			}
 			this.postInvalidate();
 		}
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -177,12 +185,6 @@ public class PageWidget extends View {
 		mBezierControl2.y = mMiddleY - (mCornerX - mMiddleX)
 				* (mCornerX - mMiddleX) / (mCornerY - mMiddleY);
 
-		// Log.i("hmg", "mTouchX  " + mTouch.x + "  mTouchY  " + mTouch.y);
-		// Log.i("hmg", "mBezierControl1.x  " + mBezierControl1.x
-		// + "  mBezierControl1.y  " + mBezierControl1.y);
-		// Log.i("hmg", "mBezierControl2.x  " + mBezierControl2.x
-		// + "  mBezierControl2.y  " + mBezierControl2.y);
-
 		mBezierStart1.x = mBezierControl1.x - (mCornerX - mBezierControl1.x)
 				/ 2;
 		mBezierStart1.y = mCornerY;
@@ -193,7 +195,7 @@ public class PageWidget extends View {
 			if (mBezierStart1.x < 0 || mBezierStart1.x > mWidth) {
 				if (mBezierStart1.x < 0)
 					mBezierStart1.x = mWidth - mBezierStart1.x;
-
+				
 				float f1 = Math.abs(mCornerX - mTouch.x);
 				float f2 = mWidth * f1 / mBezierStart1.x;
 				mTouch.x = Math.abs(mCornerX - f2);
@@ -212,12 +214,6 @@ public class PageWidget extends View {
 				mBezierControl2.x = mCornerX;
 				mBezierControl2.y = mMiddleY - (mCornerX - mMiddleX)
 						* (mCornerX - mMiddleX) / (mCornerY - mMiddleY);
-				// Log.i("hmg", "mTouchX --> " + mTouch.x + "  mTouchY-->  "
-				// + mTouch.y);
-				// Log.i("hmg", "mBezierControl1.x--  " + mBezierControl1.x
-				// + "  mBezierControl1.y -- " + mBezierControl1.y);
-				// Log.i("hmg", "mBezierControl2.x -- " + mBezierControl2.x
-				// + "  mBezierControl2.y -- " + mBezierControl2.y);
 				mBezierStart1.x = mBezierControl1.x
 						- (mCornerX - mBezierControl1.x) / 2;
 			}
