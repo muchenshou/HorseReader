@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.Reader.Fragment.LocalFileListFragment;
 import com.Reader.Record.BookLibrary;
 
 import android.app.ProgressDialog;
@@ -20,9 +21,9 @@ import android.os.AsyncTask;
 public class SearchBook extends AsyncTask<String, Integer, List<String>> {
 	ProgressDialog mDialog;
 	BookLibrary mBookLib;
-	FileManager mFileManager;
 	LinkedList<String> mList = new LinkedList<String>();
-	public SearchBook(ProgressDialog dialog, BookLibrary con, FileManager fileManager){
+	private LocalFileListFragment mFileManager;
+	public SearchBook(ProgressDialog dialog, BookLibrary con, LocalFileListFragment fileManager){
 		this.mDialog = dialog;
 		this.mBookLib = con;
 		this.mFileManager = fileManager;
@@ -46,7 +47,6 @@ public class SearchBook extends AsyncTask<String, Integer, List<String>> {
 		super.onPostExecute(result);
 	}
 	public static boolean isBook(File file) {
-		// Toast.makeText(this, "isBook", Toast.LENGTH_SHORT).show();
 		return file.toString().substring(file.toString().lastIndexOf('.') + 1)
 				.toLowerCase().equals("umd")
 				|| file.toString().substring(

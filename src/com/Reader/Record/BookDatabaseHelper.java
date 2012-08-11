@@ -18,6 +18,7 @@ public class BookDatabaseHelper extends SQLiteOpenHelper{
 	public static final String ID = "_id";
 	private static final String FILENAME = "filename";
 	private static final String FILEFULLNAME = "fulldirname";
+	private static final String FILESIZE = "filesize";
 	private static final String DATABASE = "booklibrary";
 	private static final String TB_HISTORY = "bookhistory";
 	private static final String TB_HISTORY_BOOKID = "bookid";
@@ -35,7 +36,8 @@ public class BookDatabaseHelper extends SQLiteOpenHelper{
 				+ TB_BOOKS + "("
 				+ ID + " INTEGER PRIMARY KEY,"
 				+ FILENAME + " VARCHAR,"
-				+ FILEFULLNAME + " VARCHAR"
+				+ FILEFULLNAME + " VARCHAR,"
+				+ FILESIZE + " INTEGER"
 				+ ");");
 		
 		db.execSQL("CREATE TABLE IF NOT EXISTS "

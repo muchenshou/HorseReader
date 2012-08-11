@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/list_books_bg"
+    android:background="#00ffffff"
     android:orientation="horizontal" >
 
     <ImageView
@@ -11,23 +11,48 @@
         android:layout_height="64dip"
         android:layout_margin="5dp" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="10dip" >
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dip"
+            android:singleLine="true"
             android:textColor="#000000"
-            android:textSize="22dp" />
-        <TextView
-            android:id="@+id/process"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#aaaaaa"
             android:textSize="18dp" />
-    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dip"
+            android:orientation="horizontal"
+            android:paddingRight="10dip" >
+
+            <TextView
+                android:id="@+id/process"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:singleLine="true"
+                android:textColor="#aaaaaa"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/filesize"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:gravity="right"
+                android:singleLine="true"
+                android:textColor="#aaaaaa"
+                android:textSize="14dp" />
+        </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

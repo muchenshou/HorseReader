@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.ui;
+package com.Reader.Ui;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ public class BookAdapter extends BaseAdapter {
 		public ImageView img;
 		public TextView title;
 		public TextView process;
+		public TextView size;
 	}
 
 	private LayoutInflater mInflater;
@@ -83,6 +84,8 @@ public class BookAdapter extends BaseAdapter {
 					.findViewById(com.Reader.Main.R.id.title);
 			holder.process = (TextView) convertView
 					.findViewById(com.Reader.Main.R.id.process);
+			holder.size = (TextView) convertView
+					.findViewById(com.Reader.Main.R.id.filesize);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -93,6 +96,7 @@ public class BookAdapter extends BaseAdapter {
 		String name = bookfulldir.substring(bookfulldir.lastIndexOf('/') + 1,
 				bookfulldir.lastIndexOf('.')).toLowerCase();
 		holder.title.setText(name);
+		holder.size.setText(mBookInfoList.get(position).mSize/1024+"k");
 		if (parent.getContext().getClass().equals(FileManager.class)) {
 			holder.process.setVisibility(View.GONE);
 		} else {

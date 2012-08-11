@@ -13,6 +13,7 @@ public class BookInfo {
 	public String bookName;
 	public int book_id;
 	public String mProcess;
+	public int mSize;
 	public Drawable mBookImage = null;
 	public Drawable getBookImage(){
 		return mBookImage;

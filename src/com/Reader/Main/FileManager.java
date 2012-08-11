@@ -15,7 +15,7 @@ import com.Reader.Main.R;
 import com.Reader.Record.BookInfo;
 import com.Reader.Record.BookLibrary;
 import com.Reader.Record.BookHistory;
-import com.Reader.ui.BookAdapter;
+import com.Reader.Ui.BookAdapter;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -48,7 +48,7 @@ public class FileManager extends ListActivity implements View.OnClickListener{
 			return list;
 		}
 		lib.deleteAllBook();
-		SearchBook sea = new SearchBook(progress, lib,this);
+		SearchBook sea = null;// = new SearchBook(progress, lib,this);
 
 		progress.show();
 		sea.execute("");
@@ -101,7 +101,7 @@ public class FileManager extends ListActivity implements View.OnClickListener{
 			Intent intent = new Intent(FileManager.this,
 					ReadingActivity.class);
 			intent.putExtra("bookname", f.getPath());
-			FileManager.this.getParent().startActivityForResult(intent,HorseReaderActivity.READING_RESULT_CODE);
+			//FileManager.this.getParent().startActivityForResult(intent,YouYouReaderActivity.READING_RESULT_CODE);
 			//finish();
 		}
 

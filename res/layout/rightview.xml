@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.Reader.Ui.AdobeView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/action"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:text="dddddn" >
+
+    <!--
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/channelgallery_bg" >
+
+        <ImageButton
+            android:id="@+id/imagebtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:src="@drawable/cartoon_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="title" />
+    </LinearLayout>
+    -->
+
+    <com.Reader.Ui.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar" />
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/sidebar_background"
+        android:scrollingCache="false" />
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#F2F2F2" />
+    <!-- android:background="@drawable/file_list_bg" -->
+
+</com.Reader.Ui.AdobeView>

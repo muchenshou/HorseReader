@@ -17,12 +17,13 @@ import com.Reader.Book.BookView.BookView;
 import com.Reader.Book.Manager.BookManager;
 import com.Reader.Command.Command;
 import com.Reader.Command.CommandExit;
+import com.Reader.Command.CommandFactory;
 import com.Reader.Command.CommandNextChapter;
 import com.Reader.Command.CommandPreChapter;
 import com.Reader.Command.CommandReturn;
 import com.Reader.Main.R;
 import com.Reader.Record.BookHistory;
-import com.Reader.ui.ReadingMenu;
+import com.Reader.Ui.ReadingMenu;
 
 import android.app.Activity;
 import android.content.Context;
@@ -47,9 +48,6 @@ import android.widget.Toast;
 public class ReadingActivity extends Activity {
 	public BookView bookView;
 	public BookManager bookmanager;
-	private GridView mGrid;
-	private PopupWindow popup;
-	private LayoutInflater layoutInflater;
 	private String mBookName;
 
 	@Override
@@ -95,8 +93,7 @@ public class ReadingActivity extends Activity {
 				/ (float) bookmanager.getBookSize();
 		DecimalFormat df = new DecimalFormat("#0.0");
 		String strPercent = df.format(fPercent * 100) + "%";
-		history.updateHistoryPro(this.mBookName,
-				strPercent + ":" + bookmanager.getReadingContent());
+		history.updateHistoryPro(this.mBookName, strPercent);// bookmanager.getReadingContent()
 		super.onStop();
 	}
 
@@ -115,96 +112,6 @@ public class ReadingActivity extends Activity {
 			finish();
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-
-	public void setBookSet() {
-
-		Context context = ReadingActivity.this;
-		layoutInflater = LayoutInflater.from(context);
-		View popView = layoutInflater.inflate(R.layout.gridpage, null, false);
-		if (popup == null) {
-			popup = new PopupWindow(popView, bookView.getWidth() - 20,
-					bookView.getHeight() - 20, true);
-		}
-		mGrid = (GridView) popView.findViewById(R.id.grid);
-		if (popup == null) {
-			Log.d("popup", "is null");
-		} else {
-			Log.d("popup", "is not null");
-		}
-		mGrid.setAdapter(new CommandAdapter());
-		mGrid.setOnItemClickListener(new GridView.OnItemClickListener() {
-
-			public void onItemClick(AdapterView<?> arg0, View view,
-					int position, long arg3) {
-				Command command = (Command) arg0.getAdapter().getItem(position);
-				if (command != null)
-					command.excute();
-			}
-		});
-		// popup.setContentView(popView);
-		popup.showAtLocation(bookmanager.getBookView(), Gravity.CENTER, 0, 0);
-
-	}
-
-	public class CommandAdapter extends BaseAdapter {
-		class CommandItem {
-			public int _com;
-			public String _str;
-
-			CommandItem(int com, String str) {
-				_com = com;
-				_str = str;
-			}
-		}
-
-		List<CommandItem> operator = new ArrayList<CommandItem>();
-
-		public CommandAdapter() {
-			operator.add(new CommandItem(Command.PRECHAPTER, "上一章"));
-			operator.add(new CommandItem(Command.NEXTCHAPTER, "下一章"));
-			operator.add(new CommandItem(Command.JUMP, "跳转"));
-			operator.add(new CommandItem(Command.RETURN, "返回"));
-			operator.add(new CommandItem(Command.EXIT, "退出"));
-		}
-
-		public View getView(int position, View convertView, ViewGroup parent) {
-			TextView i;
-
-			if (convertView == null) {
-				i = new TextView(ReadingActivity.this);
-				i.setText(operator.get(position)._str);
-				i.setGravity(Gravity.CENTER);
-				i.setLayoutParams(new GridView.LayoutParams(50, 50));
-			} else {
-				i = (TextView) convertView;
-			}
-			return i;
-		}
-
-		public final int getCount() {
-			return operator.size();
-		}
-
-		public final Object getItem(int position) {
-			switch (operator.get(position)._com) {
-			case Command.EXIT:
-				return new CommandExit(ReadingActivity.this, popup);
-			case Command.RETURN:
-				return new CommandReturn(popup);
-			case Command.NEXTCHAPTER:
-				return new CommandNextChapter(ReadingActivity.this);
-			case Command.PRECHAPTER:
-				return new CommandPreChapter(ReadingActivity.this);
-			default:
-				break;
-			}
-			return null;
-		}
-
-		public final long getItemId(int position) {
-			return position;
-		}
 	}
 
 	private ReadingMenu mReadingMenu;

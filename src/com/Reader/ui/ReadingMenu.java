@@ -5,48 +5,73 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.ui;
+package com.Reader.Ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SimpleAdapter;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TextView;
 
+import com.Reader.Command.Command;
+import com.Reader.Command.CommandExit;
+import com.Reader.Command.CommandFactory;
 import com.Reader.Command.CommandNextChapter;
 import com.Reader.Command.CommandPreChapter;
+import com.Reader.Command.CommandReturn;
 import com.Reader.Main.R;
 import com.Reader.Main.ReadingActivity;
 
-public class ReadingMenu {
-
-	private boolean isMore = false;// menu菜单翻页控制
+public class ReadingMenu implements OnItemClickListener {
 	PopupWindow menuDialog;// menu菜单Dialog
 	GridView menuGrid;
 	View menuView;
-	ProgressAlert mTextSizeProress;
-	private final int PREPAGE = 0;
-	private final int NEXTPAGE = 1;
-	private final int TEXTSIZE = 2;
-	private final int SETTINGS = 3;
+	
+	List<CommandMenuItem> mMenuItemList = new ArrayList<CommandMenuItem>();
 
-	/** 菜单图片 **/
-	int[] menu_image_array = { R.drawable.controlbar_backward_enable,
-			R.drawable.controlbar_forward_enable,
-			R.drawable.menu_input_pick_inputmethod, R.drawable.menu_syssettings };
-	/** 菜单文字 **/
-	String[] menu_name_array = { "上一页", "下一页", "字体大小", "设置" };
+	class CommandMenuItem {
+		int image;
+		String text;
+		int command;
+	}
+
+	void loadMenuItems() {
+		this.mMenuItemList.clear();
+		/** 菜单图片 **/
+		int[] menu_image_array = { R.drawable.controlbar_backward_enable,
+				R.drawable.controlbar_forward_enable,
+				R.drawable.menu_input_pick_inputmethod,
+				R.drawable.menu_syssettings };
+		/** 菜单文字 **/
+		String[] menu_name_array = { "上一章", "下一章", "字体大小", "设置" };
+		int[] menu_command = { CommandFactory.PREPAGE, CommandFactory.NEXTPAGE,
+				CommandFactory.TEXTSIZE, CommandFactory.SETTINGS };
+
+		for (int i = 0; i < menu_image_array.length; i++) {
+			CommandMenuItem menuitem = new CommandMenuItem();
+			menuitem.image = menu_image_array[i];
+			menuitem.text = menu_name_array[i];
+			menuitem.command = menu_command[i];
+			this.mMenuItemList.add(menuitem);
+		}
+	}
 
 	Context mContext;
 
@@ -57,31 +82,11 @@ public class ReadingMenu {
 	public void Create() {
 		menuView = View.inflate(mContext, R.layout.reading_gridview_menu, null);
 		// 创建AlertDialog
-
+		this.loadMenuItems();
 		menuGrid = (GridView) menuView.findViewById(R.id.gridview);
-		menuGrid.setAdapter(getMenuAdapter(menu_name_array, menu_image_array));
+		menuGrid.setAdapter(new MenuAdapter());
 		/** 监听menu选项 **/
-		menuGrid.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				Log.i("[Reading]", "onitemlistener " + arg2);
-				switch (arg2) {
-				case PREPAGE://
-					new CommandPreChapter((ReadingActivity)ReadingMenu.this.mContext).excute();
-				case NEXTPAGE://
-					new CommandNextChapter((ReadingActivity)ReadingMenu.this.mContext).excute();
-					break;
-				case TEXTSIZE://
-					mTextSizeProress = new ProgressAlert(mContext);
-					mTextSizeProress.showAtLocation(
-							((ReadingActivity) mContext).bookView,
-							Gravity.CENTER, 0, 0);
-					break;
-				case SETTINGS://
-					break;
-				}
-			}
-		});
+		menuGrid.setOnItemClickListener(this);
 	}
 
 	public void show(View pa) {
@@ -95,20 +100,41 @@ public class ReadingMenu {
 
 	}
 
-	private SimpleAdapter getMenuAdapter(String[] menuNameArray,
-			int[] imageResourceArray) {
-		ArrayList<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
-		for (int i = 0; i < menuNameArray.length; i++) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("itemImage", imageResourceArray[i]);
-			map.put("itemText", menuNameArray[i]);
-			data.add(map);
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
+		new CommandFactory((ReadingActivity) ReadingMenu.this.mContext)
+				.CreateCommand(mMenuItemList.get(pos).command).excute();
+
+	}
+
+	class MenuAdapter extends BaseAdapter {
+
+		@Override
+		public int getCount() {
+			return mMenuItemList.size();
 		}
-		SimpleAdapter simperAdapter = new SimpleAdapter(this.mContext, data,
-				R.layout.reading_item_menu, new String[] { "itemImage",
-						"itemText" }, new int[] { R.id.item_image,
-						R.id.item_text });
-		return simperAdapter;
+
+		@Override
+		public Object getItem(int position) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			convertView = LayoutInflater.from(mContext).inflate(
+					R.layout.menuitem, null);
+			TextView tv = (TextView) convertView.findViewById(R.id.title);
+			tv.setText(mMenuItemList.get(position).text);
+			ImageView image = (ImageView) convertView.findViewById(R.id.img);
+			image.setBackgroundResource(mMenuItemList.get(position).image);
+			return convertView;
+		}
+
 	}
 
 }

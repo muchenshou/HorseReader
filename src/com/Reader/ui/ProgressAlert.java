@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.ui;
+package com.Reader.Ui;
 
 import com.Reader.Main.R;
 import com.Reader.Main.ReadingActivity;

@@ -11,21 +11,17 @@
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"
-            android:name="com.Reader.Main.MainTabActivity" >
+            android:name=".SideBarActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".HorseReaderActivity" >
         </activity>
         <activity
             android:name=".LocalBookActivity" >
         </activity>
         <activity
-            android:name="com.Reader.Main.FileManager" >
+            android:name=".FileManager" >
         </activity>
         <activity
             android:name=".ReadingActivity" >

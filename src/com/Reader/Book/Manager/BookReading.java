@@ -11,9 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.Reader.Book.BookView.BookView;
 import com.Reader.Book.Book;
 import com.Reader.Book.CharInfo;
-import com.Reader.Book.BookView.BookView;
 
 import android.graphics.Paint;
 import android.util.Log;

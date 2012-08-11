@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/titlebtn"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/icon" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq" />
+    </LinearLayout>
+
+    <com.Reader.Ui.SideBarMainView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/sidebarmain"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/sidebar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/details"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+        </LinearLayout>
+    </com.Reader.Ui.SideBarMainView>
+
+</LinearLayout>

@@ -148,7 +148,7 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 				&& event.getX() > rect.exactCenterX() - 40
 				&& event.getY() > rect.exactCenterY() - 20
 				&& event.getY() < rect.exactCenterY() + 20) { // gridview
-			((ReadingActivity) this.getContext()).setBookSet();
+			//((ReadingActivity) this.getContext()).setBookSet();
 			return false;
 		}
 

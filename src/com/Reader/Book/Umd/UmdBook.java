@@ -14,8 +14,8 @@ import java.nio.ByteOrder;
 import android.util.Log;
 
 import com.Reader.Book.Book;
-import com.Reader.Book.CharInfo;
 import com.Reader.Book.BookBuffer;
+import com.Reader.Book.CharInfo;
 
 public class UmdBook extends Book {
 	protected UmdParse umdStream;

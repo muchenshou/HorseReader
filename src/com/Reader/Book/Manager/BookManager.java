@@ -18,11 +18,11 @@ import android.graphics.Rect;
 
 import com.Reader.Main.R;
 import com.Reader.Main.ReadingActivity;
-import com.Reader.Book.Book;
-import com.Reader.Book.BookFactory;
 import com.Reader.Book.BookView.BookView;
 import com.Reader.Book.BookView.PageObj;
 import com.Reader.Config.PageConfig;
+import com.Reader.Book.Book;
+import com.Reader.Book.BookFactory;
 
 import android.util.Log;
 import android.view.KeyEvent;

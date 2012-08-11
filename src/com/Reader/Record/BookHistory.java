@@ -26,7 +26,7 @@ public class BookHistory {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
 		Cursor cursor = db
 				.rawQuery(
-						"select bookfiles._id,bookfiles.fulldirname,bookhistory.process from bookfiles,bookhistory "
+						"select bookfiles._id,bookfiles.fulldirname,bookhistory.process,bookfiles.filesize from bookfiles,bookhistory "
 								+ " where bookfiles._id=bookhistory.bookid order by bookhistory.time desc",
 						null);
 		List<BookInfo> list = new ArrayList<BookInfo>();
@@ -35,6 +35,7 @@ public class BookHistory {
 			info.book_id = cursor.getInt(0);
 			info.bookName = cursor.getString(1);
 			info.mProcess = cursor.getString(2);
+			info.mSize = cursor.getInt(3);
 			list.add(info);
 		}
 		cursor.close();

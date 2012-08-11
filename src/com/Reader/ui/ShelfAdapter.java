@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.ui;
+package com.Reader.Ui;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.Reader.Main.FileManager;
-import com.Reader.Main.HorseReaderActivity;
-import com.Reader.Main.R;
 import com.Reader.Record.BookInfo;
 
 import android.content.Context;
@@ -23,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,12 +37,10 @@ public class ShelfAdapter extends BaseAdapter {
 	}
 
 	private List<Map<String, Object>> mData = new ArrayList<Map<String, Object>>();
-	private LayoutInflater mInflater;
 	private Context ActivityContext;
 
 	public ShelfAdapter(Context context, List<BookInfo> list) {
 		ActivityContext = context;
-		this.mInflater = LayoutInflater.from(context);
 		getData(list);
 	}
 
@@ -105,7 +100,7 @@ public class ShelfAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			((HorseReaderActivity) ActivityContext).CallBackOpen((String) mData
+			((ShelfAdapter.CallBack) ActivityContext).CallBackOpen((String) mData
 					.get(mIndex).get("file"));
 		}
 	}
