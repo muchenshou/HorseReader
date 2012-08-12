@@ -15,7 +15,6 @@ import com.Reader.Fragment.LocalFileListFragment;
 import com.Reader.Record.BookLibrary;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 
 public class SearchBook extends AsyncTask<String, Integer, List<String>> {

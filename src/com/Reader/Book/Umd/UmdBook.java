@@ -10,9 +10,6 @@ package com.Reader.Book.Umd;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import android.util.Log;
-
 import com.Reader.Book.Book;
 import com.Reader.Book.BookBuffer;
 import com.Reader.Book.CharInfo;

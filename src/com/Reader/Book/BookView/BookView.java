@@ -10,27 +10,25 @@ import com.Reader.Book.Book;
 import com.Reader.Book.Manager.BookManager;
 import com.Reader.Book.Manager.BookReading;
 import com.Reader.Config.PageConfig;
-import com.Reader.Main.ReadingActivity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Paint.FontMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class BookView extends PageWidget implements View.OnTouchListener {
+public class BookView extends View implements View.OnTouchListener {
 	protected int bookSize;
 	protected byte bookContent;
 	protected byte[] content;
 	protected int padding = 5;
 	BookManager mBookManager;
 	public BookReading bookreading;
-
+	private BookViewAnimation mAnimation;
 	public Bitmap m_book_bg = null;
 	Book mBook;
 	private int m_backColor = 0xffff9e85;
@@ -40,7 +38,12 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 	private PageObj mPageObj = null;
 	private BookNameObj mBookNameObj = null;
 	private BookProgressObj mBookProgressObj;
+	private Paint mPaint;
 
+	Bitmap mCurPageBitmap = null; // µ±Ç°Ò³
+	Bitmap mNextPageBitmap = null;
+	Canvas mCurPageCanvas;
+	Canvas mNextPageCanvas;
 	public BookView(Context context, Book book) {
 		super(context);
 		setOnTouchListener(this);
@@ -56,6 +59,9 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 		mBookNameObj.setBookName(book.getName());
 
 		mBookProgressObj = new BookProgressObj(this.bookreading, book.size());
+		
+		this.mAnimation = new PageWidget(getContext());
+		this.mAnimation.setBookView(this);
 	}
 
 	public PageConfig getPageConfig() {
@@ -86,8 +92,13 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-
-		bookreading.update(w,
+		mCurPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		mNextPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		mCurPageCanvas = new Canvas(mCurPageBitmap);
+		mNextPageCanvas = new Canvas(mNextPageBitmap);
+		this.mAnimation.AfterSizeChange(w, h, oldw, oldh);
+		
+		bookreading.update(w-20,
 				h - BookView.getTextHeight(this.mPageConfig.getOthersPaint())
 						- 20);
 		//
@@ -122,7 +133,15 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 		mBookNameObj.Draw(canvas, this.mPaint);
 		mBookProgressObj.Draw(canvas, this.mPageConfig.getOthersPaint());
 	}
-
+	public void computeScroll(){
+		super.computeScroll();
+		this.mAnimation.computeScroll();
+	}
+	
+	@Override
+	protected void onDraw(Canvas canvas) {
+		this.mAnimation.AfterDraw(canvas);
+	}
 	public void update() {
 		bookreading.update();
 		if (this.mInit == false) {
@@ -133,47 +152,12 @@ public class BookView extends PageWidget implements View.OnTouchListener {
 		}
 
 		Draw(mCurPageCanvas);
-		this.setBitmaps(mCurPageBitmap, mNextPageBitmap);
-		abortAnimation();
-		calcCornerXY(0, 0);
+		this.mAnimation.update();
 		postInvalidate();
 	}
 
 	public boolean onTouch(View v, MotionEvent event) {
-
-		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
-
-		if (event.getAction() == MotionEvent.ACTION_DOWN
-				&& event.getX() < rect.exactCenterX() + 40
-				&& event.getX() > rect.exactCenterX() - 40
-				&& event.getY() > rect.exactCenterY() - 20
-				&& event.getY() < rect.exactCenterY() + 20) { // gridview
-			//((ReadingActivity) this.getContext()).setBookSet();
-			return false;
-		}
-
-		boolean ret = false;
-
-		if (v == this) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				abortAnimation();
-				calcCornerXY(event.getX(), event.getY());
-				this.Draw(mCurPageCanvas);
-				if (DragToRight()) {
-					prePage();
-					this.Draw(mNextPageCanvas);
-
-				} else {
-					nextPage();
-					this.Draw(mNextPageCanvas);
-				}
-			}
-
-			ret = doTouchEvent(event);
-			return ret;
-		}
-
-		return false;
+		return this.mAnimation.AfterTouch(v, event);
 	}
 
 	public void nextLine() {

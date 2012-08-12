@@ -10,39 +10,20 @@ package com.Reader.Main;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.Reader.Book.BookView.BookView;
 import com.Reader.Book.Manager.BookManager;
-import com.Reader.Command.Command;
-import com.Reader.Command.CommandExit;
-import com.Reader.Command.CommandFactory;
-import com.Reader.Command.CommandNextChapter;
-import com.Reader.Command.CommandPreChapter;
-import com.Reader.Command.CommandReturn;
-import com.Reader.Main.R;
 import com.Reader.Record.BookHistory;
 import com.Reader.Ui.ReadingMenu;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class ReadingActivity extends Activity {

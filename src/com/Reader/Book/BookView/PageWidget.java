@@ -14,25 +14,22 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.GradientDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Scroller;
 
-public class PageWidget extends View {
+public class PageWidget implements BookViewAnimation {
 
-	private static final String TAG = "hmg";
+	//private static final String TAG = "hmg";
 	private int mWidth = 0;
 	private int mHeight = 0;
 	private int mCornerX = 0; // 拖拽点对应的页脚
 	private int mCornerY = 0;
 	private Path mPath0;
 	private Path mPath1;
-	public Bitmap mCurPageBitmap = null; // 当前页
-	public Bitmap mNextPageBitmap = null;
-	Canvas mCurPageCanvas, mNextPageCanvas;
-	
 
 	PointF mTouch = new PointF(); // 拖拽点
 	PointF mBezierStart1 = new PointF(); // 贝塞尔曲线起始点
@@ -72,7 +69,6 @@ public class PageWidget extends View {
 	Scroller mScroller;
 
 	public PageWidget(Context context) {
-		super(context);
 		// TODO Auto-generated constructor stub
 		mPath0 = new Path();
 		mPath1 = new Path();
@@ -87,24 +83,12 @@ public class PageWidget extends View {
 		cm.set(array);
 		mColorMatrixFilter = new ColorMatrixColorFilter(cm);
 		mMatrix = new Matrix();
-		mScroller = new Scroller(getContext());
+		mScroller = new Scroller(context);
 
 		mTouch.x = 0.01f; // 不让x,y为0,否则在点计算时会有问题
 		mTouch.y = 0.01f;
 	}
 
-	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh){
-		super.onSizeChanged(w, h, oldw, oldh);
-		this.mWidth = w;
-		this.mHeight = h;
-		mCurPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		mNextPageBitmap = Bitmap
-				.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		mCurPageCanvas = new Canvas(mCurPageBitmap);
-		mNextPageCanvas = new Canvas(mNextPageBitmap);
-		mMaxLength = (float) Math.hypot(mWidth, mHeight);
-	}
 	/**
 	 * Author : hmg25 Version: 1.0 Description : 计算拖拽点对应的拖拽脚
 	 */
@@ -127,17 +111,17 @@ public class PageWidget extends View {
 	public boolean doTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
-			
+
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
-			
-			if (mTouch.x <=0){
+
+			if (mTouch.x <= 0) {
 				mTouch.x = 0.01f;
 			}
-			if (mTouch.y >= mHeight){
+			if (mTouch.y >= mHeight) {
 				mTouch.y = mHeight - 0.01f;
 			}
-			this.postInvalidate();
+			this.mBookView.postInvalidate();
 		}
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			mTouch.x = event.getX();
@@ -153,7 +137,7 @@ public class PageWidget extends View {
 				mTouch.y = mCornerY - 0.09f;
 			}
 
-			this.postInvalidate();
+			this.mBookView.postInvalidate();
 		}
 		// return super.onTouchEvent(event);
 		return true;
@@ -195,7 +179,7 @@ public class PageWidget extends View {
 			if (mBezierStart1.x < 0 || mBezierStart1.x > mWidth) {
 				if (mBezierStart1.x < 0)
 					mBezierStart1.x = mWidth - mBezierStart1.x;
-				
+
 				float f1 = Math.abs(mCornerX - mTouch.x);
 				float f2 = mWidth * f1 / mBezierStart1.x;
 				mTouch.x = Math.abs(mCornerX - f2);
@@ -296,26 +280,6 @@ public class PageWidget extends View {
 				(int) (mMaxLength + mBezierStart1.y));
 		mBackShadowDrawable.draw(canvas);
 		canvas.restore();
-	}
-
-	public void setBitmaps(Bitmap bm1, Bitmap bm2) {
-		mCurPageBitmap = bm1;
-		mNextPageBitmap = bm2;
-	}
-
-	public void setScreen(int w, int h) {
-		mWidth = w;
-		mHeight = h;
-	}
-
-	@Override
-	protected void onDraw(Canvas canvas) {
-		canvas.drawColor(0xFFAAAAAA);
-		calcPoints();
-		drawCurrentPageArea(canvas, mCurPageBitmap, mPath0);
-		drawNextPageAreaAndShadow(canvas, mNextPageBitmap);
-		drawCurrentPageShadow(canvas);
-		drawCurrentBackArea(canvas, mCurPageBitmap);
 	}
 
 	/**
@@ -523,13 +487,12 @@ public class PageWidget extends View {
 	}
 
 	public void computeScroll() {
-		super.computeScroll();
 		if (mScroller.computeScrollOffset()) {
 			float x = mScroller.getCurrX();
 			float y = mScroller.getCurrY();
 			mTouch.x = x;
 			mTouch.y = y;
-			postInvalidate();
+			this.mBookView.postInvalidate();
 		}
 	}
 
@@ -566,10 +529,76 @@ public class PageWidget extends View {
 	/**
 	 * Author : hmg25 Version: 1.0 Description : 是否从左边翻向右边
 	 */
-	public boolean DragToRight() {
+	private boolean DragToRight() {
 		if (mCornerX > 0)
 			return false;
 		return true;
+	}
+
+	@Override
+	public boolean AfterTouch(View v, MotionEvent event) {
+		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
+
+		if (event.getAction() == MotionEvent.ACTION_DOWN
+				&& event.getX() < rect.exactCenterX() + 40
+				&& event.getX() > rect.exactCenterX() - 40
+				&& event.getY() > rect.exactCenterY() - 20
+				&& event.getY() < rect.exactCenterY() + 20) { // gridview
+			// ((ReadingActivity) this.getContext()).setBookSet();
+			return false;
+		}
+
+		boolean ret = false;
+
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			abortAnimation();
+			calcCornerXY(event.getX(), event.getY());
+			this.mBookView.Draw(this.mBookView.mCurPageCanvas);
+			if (DragToRight()) {
+				this.mBookView.prePage();
+				this.mBookView.Draw(this.mBookView.mNextPageCanvas);
+
+			} else {
+				this.mBookView.nextPage();
+				this.mBookView.Draw(this.mBookView.mNextPageCanvas);
+			}
+		}
+
+		ret = doTouchEvent(event);
+		return ret;
+
+	}
+
+	private BookView mBookView;
+
+	@Override
+	public void setBookView(BookView bookview) {
+		mBookView = bookview;
+	}
+
+	@Override
+	public void AfterSizeChange(int w, int h, int oldw, int oldh) {
+		// TODO Auto-generated method stub
+		this.mWidth = w;
+		this.mHeight = h;
+
+		mMaxLength = (float) Math.hypot(mWidth, mHeight);
+	}
+
+	@Override
+	public void AfterDraw(Canvas canvas) {
+		canvas.drawColor(0xFFAAAAAA);
+		calcPoints();
+		drawCurrentPageArea(canvas, this.mBookView.mCurPageBitmap, mPath0);
+		drawNextPageAreaAndShadow(canvas, this.mBookView.mNextPageBitmap);
+		drawCurrentPageShadow(canvas);
+		drawCurrentBackArea(canvas, this.mBookView.mCurPageBitmap);
+	}
+
+	@Override
+	public void update() {
+		abortAnimation();
+		calcCornerXY(0, 0);
 	}
 
 }

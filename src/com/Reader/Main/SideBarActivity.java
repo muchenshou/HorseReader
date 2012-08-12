@@ -8,17 +8,11 @@
 package com.Reader.Main;
 
 import com.Reader.Fragment.HistoryListFragment;
-import com.Reader.Fragment.SideBarFragment;
-import com.Reader.Record.BookHistory;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.ImageView;
 
 public class SideBarActivity extends FragmentActivity{
 

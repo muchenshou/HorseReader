@@ -1,14 +1,10 @@
 package com.Reader.Fragment;
 
 import com.Reader.Main.R;
-import com.Reader.Main.SideBarActivity;
 import com.Reader.Ui.ActionBar;
 import com.Reader.Ui.ActionBar.Action;
-import com.Reader.Ui.ActionBar.IntentAction;
 import com.Reader.Ui.AdobeView;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class SideBarFragment extends Fragment implements OnItemClickListener {
 	int mCurCheckPosition = 0;
@@ -53,10 +48,11 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 		actionBar.setHomeAction(new Action() {
 			@Override
 			public void performAction(View view) {
-				Toast.makeText(getActivity(), "Added action.",
-						Toast.LENGTH_SHORT).show();
+				// Toast.makeText(getActivity(), "Added action.",
+				// Toast.LENGTH_SHORT).show();
 				adobe.switchView();
 			}
+
 			@Override
 			public int getDrawable() {
 				return R.drawable.cartoon_content;
@@ -64,6 +60,7 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 		});
 		actionBar.setDisplayHomeAsUpEnabled(true);
 	}
+
 	HistoryListFragment hf = new HistoryListFragment();
 	LocalFileListFragment lf = new LocalFileListFragment();
 	NetWorkListFragment nf = new NetWorkListFragment();

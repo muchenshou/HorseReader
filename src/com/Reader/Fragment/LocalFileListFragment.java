@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.Reader.Main.FileManager;
 import com.Reader.Main.R;
 import com.Reader.Main.ReadingActivity;
 import com.Reader.Main.SearchBook;
@@ -22,12 +21,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class LocalFileListFragment extends Fragment implements

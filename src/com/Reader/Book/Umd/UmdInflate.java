@@ -12,6 +12,7 @@ import java.io.IOException;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZStream;
 
+@SuppressWarnings("deprecation")
 class UmdInflate {
 	private UmdBook umdbook;
 

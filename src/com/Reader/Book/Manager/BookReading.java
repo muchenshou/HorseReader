@@ -190,7 +190,6 @@ public class BookReading {
 	}
 	public List<String> prePage() {
 		LinkedList<Line> prepage = new LinkedList<Line>();
-		//int local = 0;
 		if (this.isBookStart()){
 			return mPage.getStrings();
 		}
@@ -198,9 +197,9 @@ public class BookReading {
 		prepage.addAll(0, this.mBufLine);
 		for (;prepage.size()<this.pageline && !isBookEnd();) {
 			preLineNum(prepage.get(0).mStart);
-			for (Line l: mBufLine){
+			//for (Line l: mBufLine){
 				//Log.i("[prepage]", l.strLine.toString());
-			}
+			//}
 			
 			prepage.addAll(0, this.mBufLine);
 		}

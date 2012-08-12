@@ -2,7 +2,6 @@ package com.Reader.Fragment;
 
 import java.io.File;
 
-import com.Reader.Main.R;
 import com.Reader.Main.ReadingActivity;
 import com.Reader.Main.SearchBook;
 import com.Reader.Record.BookHistory;
@@ -18,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class HistoryListFragment extends Fragment implements
 		OnItemClickListener {

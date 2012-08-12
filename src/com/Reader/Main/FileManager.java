@@ -14,7 +14,6 @@ import java.util.List;
 import com.Reader.Main.R;
 import com.Reader.Record.BookInfo;
 import com.Reader.Record.BookLibrary;
-import com.Reader.Record.BookHistory;
 import com.Reader.Ui.BookAdapter;
 
 import android.app.ListActivity;
@@ -27,7 +26,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.content.Context;
 
@@ -37,7 +35,6 @@ public class FileManager extends ListActivity implements View.OnClickListener{
 
 		ProgressDialog progress = new ProgressDialog(this);
 		progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
-		// progress.setTitle("提示");//设置标题
 		progress.setIcon(R.drawable.icon);// 设置图标
 		progress.setMessage("搜索中...");
 		progress.setIndeterminate(false);// 设置进度条是否为不明确

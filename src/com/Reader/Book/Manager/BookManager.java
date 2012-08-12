@@ -11,23 +11,13 @@ import java.io.File;
 import java.io.IOException;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 
 import com.Reader.Main.R;
 import com.Reader.Main.ReadingActivity;
 import com.Reader.Book.BookView.BookView;
-import com.Reader.Book.BookView.PageObj;
-import com.Reader.Config.PageConfig;
 import com.Reader.Book.Book;
 import com.Reader.Book.BookFactory;
-
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
 
 public class BookManager{
 

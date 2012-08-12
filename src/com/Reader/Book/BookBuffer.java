@@ -11,12 +11,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.LinkedList;
 
-import android.util.Log;
-
 public class BookBuffer implements Runnable {
 	private Book mBook = null;
 	private int mBufferSize = 8 * 1024;// buffer 4k
-	private int curBlockNum = -1;
 	class BookBufBlock {
 		ByteBuffer mBufBlock;
 		int mBlockNum;
@@ -125,8 +122,6 @@ public class BookBuffer implements Runnable {
 				//Log.i("[Thread]", "location:" + location);
 				return this.getByte(location);
 			}
-			this.curBlockNum = location/this.mBufferSize;
-			Log.i("[Thread2]", "location" + location);
 
 			this.mBufList.getCur().mBufBlock.clear();
 			mBook.getContent((location / this.mBufferSize) * this.mBufferSize,

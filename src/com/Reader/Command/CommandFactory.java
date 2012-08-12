@@ -1,10 +1,6 @@
 package com.Reader.Command;
 
-import android.view.Gravity;
-
 import com.Reader.Main.ReadingActivity;
-import com.Reader.Ui.ProgressAlert;
-import com.Reader.Ui.ReadingMenu;
 
 public class CommandFactory {
 	public static final int NEXTLINE = 0;
