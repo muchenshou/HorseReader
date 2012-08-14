@@ -136,10 +136,9 @@ public class BookReading {
 
 	private LinkedList<Line> mBufLine = new LinkedList<Line>();
 
-	private int preLineNum(int start) {
+	private int preLineNum(int s) {
+		int start = s;
 		Log.i("start local", "" + mPage.mLines.get(0).mStart);
-		//int start = mPage.mLines.get(0).mStart;
-
 		if (start <= 0)
 			return 0;
 		int savevalue = start;
@@ -197,10 +196,9 @@ public class BookReading {
 		prepage.addAll(0, this.mBufLine);
 		for (;prepage.size()<this.pageline && !isBookEnd();) {
 			preLineNum(prepage.get(0).mStart);
-			//for (Line l: mBufLine){
-				//Log.i("[prepage]", l.strLine.toString());
-			//}
-			
+			for (Line l: mBufLine){
+				Log.i("[prepage]", l.strLine.toString());
+			}
 			prepage.addAll(0, this.mBufLine);
 		}
 		this.mPage.mLines.clear();

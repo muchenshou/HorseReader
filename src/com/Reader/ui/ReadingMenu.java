@@ -8,15 +8,11 @@
 package com.Reader.Ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -26,16 +22,9 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-import android.widget.SimpleAdapter;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 
-import com.Reader.Command.Command;
-import com.Reader.Command.CommandExit;
 import com.Reader.Command.CommandFactory;
-import com.Reader.Command.CommandNextChapter;
-import com.Reader.Command.CommandPreChapter;
-import com.Reader.Command.CommandReturn;
 import com.Reader.Main.R;
 import com.Reader.Main.ReadingActivity;
 
