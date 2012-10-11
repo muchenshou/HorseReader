@@ -5,16 +5,15 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Main;
+package com.reader.main;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.Reader.Main.R;
-import com.Reader.Record.BookInfo;
-import com.Reader.Record.BookLibrary;
-import com.Reader.Ui.BookAdapter;
+import com.reader.record.BookInfo;
+import com.reader.record.BookLibrary;
+import com.reader.ui.BookAdapter;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;

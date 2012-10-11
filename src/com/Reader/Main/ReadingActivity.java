@@ -5,16 +5,16 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Main;
+package com.reader.main;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
-import com.Reader.Book.BookView.BookView;
-import com.Reader.Book.Manager.BookManager;
-import com.Reader.Record.BookHistory;
-import com.Reader.Ui.ReadingMenu;
+import com.reader.book.bookview.BookView;
+import com.reader.book.manager.BookManager;
+import com.reader.record.BookHistory;
+import com.reader.ui.ReadingMenu;
 
 import android.app.Activity;
 import android.content.Intent;

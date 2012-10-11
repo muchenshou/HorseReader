@@ -5,9 +5,11 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Main;
+package com.reader.main;
 
-import com.Reader.Fragment.HistoryListFragment;
+import com.reader.fragment.HistoryListFragment;
+import com.reader.main.R;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -27,25 +29,4 @@ public class SideBarActivity extends FragmentActivity{
 		ft.add(R.id.content, hf);
 		ft.commit();
 	}
-
-	/*@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (0 == requestCode) {
-			Bundle bundle = null;
-			if (data != null && (bundle = data.getExtras()) != null) {
-				Intent intent = new Intent(SideBarActivity.this,
-						ReadingActivity.class);
-				intent.putExtra("bookname", bundle.getString("bookfile"));
-				// startActivityForResult(intent,
-				// YouYouReaderActivity.READING_RESULT_CODE);
-			}
-		}
-		if (1 == requestCode) {
-			Bundle bundle = null;
-			if (data != null && (bundle = data.getExtras()) != null) {
-				BookHistory history = new BookHistory(this);
-			}
-		}
-		super.onActivityResult(requestCode, resultCode, data);
-	}*/
 }

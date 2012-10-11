@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/sidebarfragment"
-        android:name="com.Reader.Fragment.SideBarFragment"
+        android:name="com.reader.fragment.SideBarFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >

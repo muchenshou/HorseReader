@@ -5,11 +5,11 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Main;
+package com.reader.main;
 
 import java.io.File;
 import java.util.List;
-import com.Reader.Main.R;
+import com.reader.main.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

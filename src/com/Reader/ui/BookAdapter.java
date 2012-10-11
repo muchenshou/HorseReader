@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Ui;
+package com.reader.ui;
 
 import java.util.List;
 
@@ -17,8 +17,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.Reader.Main.FileManager;
-import com.Reader.Record.BookInfo;
+import com.reader.record.BookInfo;
+import com.reader.main.FileManager;
 
 public class BookAdapter extends BaseAdapter {
 
@@ -44,11 +44,11 @@ public class BookAdapter extends BaseAdapter {
 					.toLowerCase();
 			if (str.equals("umd")) {
 				b.mBookImage = ActivityContext.getResources().getDrawable(
-						com.Reader.Main.R.drawable.umd);
+						com.reader.main.R.drawable.umd);
 			}
 			if (str.equals("txt")) {
 				b.mBookImage = ActivityContext.getResources().getDrawable(
-						com.Reader.Main.R.drawable.txt);
+						com.reader.main.R.drawable.txt);
 			}
 		}
 
@@ -70,16 +70,16 @@ public class BookAdapter extends BaseAdapter {
 		ViewHolder holder = null;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			convertView = mInflater.inflate(com.Reader.Main.R.layout.listitem,
+			convertView = mInflater.inflate(com.reader.main.R.layout.listitem,
 					null);
 			holder.img = (ImageView) convertView
-					.findViewById(com.Reader.Main.R.id.img);
+					.findViewById(com.reader.main.R.id.img);
 			holder.title = (TextView) convertView
-					.findViewById(com.Reader.Main.R.id.title);
+					.findViewById(com.reader.main.R.id.title);
 			holder.process = (TextView) convertView
-					.findViewById(com.Reader.Main.R.id.process);
+					.findViewById(com.reader.main.R.id.process);
 			holder.size = (TextView) convertView
-					.findViewById(com.Reader.Main.R.id.filesize);
+					.findViewById(com.reader.main.R.id.filesize);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();

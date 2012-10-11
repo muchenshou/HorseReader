@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Record;
+package com.reader.record;
 
 import java.io.File;
 import java.util.ArrayList;

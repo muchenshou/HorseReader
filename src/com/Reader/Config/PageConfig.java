@@ -5,9 +5,9 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Config;
+package com.reader.config;
 
-import com.Reader.Util.PaintText;
+import com.reader.util.PaintText;
 
 import android.content.Context;
 import android.content.SharedPreferences;

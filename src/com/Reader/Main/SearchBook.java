@@ -5,14 +5,14 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Main;
+package com.reader.main;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.Reader.Fragment.LocalFileListFragment;
-import com.Reader.Record.BookLibrary;
+import com.reader.fragment.LocalFileListFragment;
+import com.reader.record.BookLibrary;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;

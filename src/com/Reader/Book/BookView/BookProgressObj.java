@@ -5,11 +5,11 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book.BookView;
+package com.reader.book.bookview;
 
 import java.text.DecimalFormat;
 
-import com.Reader.Book.Manager.BookReading;
+import com.reader.book.manager.BookReading;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

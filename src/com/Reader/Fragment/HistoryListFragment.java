@@ -1,11 +1,11 @@
-package com.Reader.Fragment;
+package com.reader.fragment;
 
 import java.io.File;
 
-import com.Reader.Main.ReadingActivity;
-import com.Reader.Main.SearchBook;
-import com.Reader.Record.BookHistory;
-import com.Reader.Ui.BookAdapter;
+import com.reader.record.BookHistory;
+import com.reader.ui.BookAdapter;
+import com.reader.main.ReadingActivity;
+import com.reader.main.SearchBook;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,7 +40,6 @@ public class HistoryListFragment extends Fragment implements
 		mListView.setAdapter(adapter);
 	}
 
-	@Override
 	public void onItemClick(AdapterView<?> l, View arg1, int pos, long arg3) {
 		BookAdapter adapter = (BookAdapter) l.getAdapter();
 		openFile(new File((String) adapter.getItem(pos)));

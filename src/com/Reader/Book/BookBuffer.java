@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book;
+package com.reader.book;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -137,7 +137,6 @@ public class BookBuffer implements Runnable {
 		}
 	}
 
-	@Override
 	public void run() {
 		while (!Thread.currentThread().isInterrupted()) {
 

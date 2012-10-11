@@ -1,4 +1,4 @@
-package com.Reader.Ui;
+package com.reader.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;

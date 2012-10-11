@@ -1,6 +1,6 @@
-package com.Reader.Fragment;
+package com.reader.fragment;
 
-import com.Reader.Main.R;
+import com.reader.main.R;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;

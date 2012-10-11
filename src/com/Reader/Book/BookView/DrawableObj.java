@@ -4,7 +4,8 @@
  * xinlangweibo:http://weibo.com/muchenshou
  * 
  * email:muchenshou@gmail.com
- * */package com.Reader.Book.BookView;
+ * */
+package com.reader.book.bookview;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

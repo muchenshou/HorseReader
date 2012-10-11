@@ -1,4 +1,4 @@
-package com.Reader.Main;
+package com.reader.main;
 
 import android.app.Application;
 

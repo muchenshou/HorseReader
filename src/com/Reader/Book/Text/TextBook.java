@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book.Text;
+package com.reader.book.text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,9 +16,9 @@ import java.nio.ByteBuffer;
 
 import android.util.Log;
 
-import com.Reader.Book.Book;
-import com.Reader.Book.BookBuffer;
-import com.Reader.Book.CharInfo;
+import com.reader.book.Book;
+import com.reader.book.BookBuffer;
+import com.reader.book.CharInfo;
 
 public class TextBook extends Book {
 	private RandomAccessFile mFile;

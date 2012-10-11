@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Record;
+package com.reader.record;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.Reader.Ui;
+package com.reader.ui;
 
 import java.util.LinkedList;
 
-import com.Reader.Main.R;
+import com.reader.main.R;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -146,7 +146,6 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
         mTitleView.setOnClickListener(listener);
     }
 
-    @Override
     public void onClick(View view) {
         final Object tag = view.getTag();
         if (tag instanceof Action) {
@@ -263,7 +262,6 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
             mDrawable = drawable;
         }
 
-        @Override
         public int getDrawable() {
             return mDrawable;
         }
@@ -279,7 +277,6 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
             mIntent = intent;
         }
 
-        @Override
         public void performAction(View view) {
             try {
                mContext.startActivity(mIntent); 

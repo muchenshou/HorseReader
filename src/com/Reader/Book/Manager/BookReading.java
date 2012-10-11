@@ -5,15 +5,15 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book.Manager;
+package com.reader.book.manager;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.Reader.Book.BookView.BookView;
-import com.Reader.Book.Book;
-import com.Reader.Book.CharInfo;
+import com.reader.book.bookview.BookView;
+import com.reader.book.Book;
+import com.reader.book.CharInfo;
 
 import android.graphics.Paint;
 import android.util.Log;

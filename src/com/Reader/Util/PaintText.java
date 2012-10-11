@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Util;
+package com.reader.util;
 
 import android.content.Context;
 import android.content.res.Resources;

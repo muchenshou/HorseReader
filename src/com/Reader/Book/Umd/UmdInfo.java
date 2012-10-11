@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book.Umd;
+package com.reader.book.umd;
 
 import java.io.File;
 import java.io.IOException;

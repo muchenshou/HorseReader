@@ -1,6 +1,6 @@
-package com.Reader.Command;
+package com.reader.command;
 
-import com.Reader.Main.ReadingActivity;
+import com.reader.main.ReadingActivity;
 
 public class CommandFactory {
 	public static final int NEXTLINE = 0;

@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Ui;
+package com.reader.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +24,9 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.Reader.Command.CommandFactory;
-import com.Reader.Main.R;
-import com.Reader.Main.ReadingActivity;
+import com.reader.command.CommandFactory;
+import com.reader.main.R;
+import com.reader.main.ReadingActivity;
 
 public class ReadingMenu implements OnItemClickListener {
 	PopupWindow menuDialog;// menu²Ëµ¥Dialog
@@ -89,7 +89,6 @@ public class ReadingMenu implements OnItemClickListener {
 
 	}
 
-	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 		new CommandFactory((ReadingActivity) ReadingMenu.this.mContext)
 				.CreateCommand(mMenuItemList.get(pos).command).excute();
@@ -98,22 +97,18 @@ public class ReadingMenu implements OnItemClickListener {
 
 	class MenuAdapter extends BaseAdapter {
 
-		@Override
 		public int getCount() {
 			return mMenuItemList.size();
 		}
 
-		@Override
 		public Object getItem(int position) {
 			return null;
 		}
 
-		@Override
 		public long getItemId(int position) {
 			return 0;
 		}
 
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			convertView = LayoutInflater.from(mContext).inflate(
 					R.layout.menuitem, null);

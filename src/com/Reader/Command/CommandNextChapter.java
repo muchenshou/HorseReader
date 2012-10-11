@@ -5,12 +5,12 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Command;
+package com.reader.command;
 
-import com.Reader.Book.BookView.BookView;
-import com.Reader.Book.Manager.BookManager;
-import com.Reader.Book.Umd.UmdBook;
-import com.Reader.Main.ReadingActivity;
+import com.reader.book.bookview.BookView;
+import com.reader.book.manager.BookManager;
+import com.reader.book.umd.UmdBook;
+import com.reader.main.ReadingActivity;
 
 public class CommandNextChapter implements Command {
 	ReadingActivity activity;

@@ -95,7 +95,7 @@
                 android:visibility="gone"
                 style="@style/ActionBarProgressBar"
                 />
-            <com.Reader.Ui.ScrollingTextView
+            <com.reader.ui.ScrollingTextView
                 android:id="@+id/actionbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

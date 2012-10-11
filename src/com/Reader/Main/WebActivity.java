@@ -5,9 +5,12 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Main;
+package com.reader.main;
 
 import java.net.URLEncoder;
+
+import com.reader.main.R;
+
 import android.app.Activity;
 
 import android.os.Bundle;

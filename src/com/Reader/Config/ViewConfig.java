@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Config;
+package com.reader.config;
 
 import android.graphics.Color;
 

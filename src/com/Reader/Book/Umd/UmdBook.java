@@ -5,14 +5,14 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book.Umd;
+package com.reader.book.umd;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import com.Reader.Book.Book;
-import com.Reader.Book.BookBuffer;
-import com.Reader.Book.CharInfo;
+import com.reader.book.Book;
+import com.reader.book.BookBuffer;
+import com.reader.book.CharInfo;
 
 public class UmdBook extends Book {
 	protected UmdParse umdStream;

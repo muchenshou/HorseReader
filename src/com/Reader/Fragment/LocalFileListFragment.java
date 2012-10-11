@@ -1,15 +1,15 @@
-package com.Reader.Fragment;
+package com.reader.fragment;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.Reader.Main.R;
-import com.Reader.Main.ReadingActivity;
-import com.Reader.Main.SearchBook;
-import com.Reader.Record.BookInfo;
-import com.Reader.Record.BookLibrary;
-import com.Reader.Ui.BookAdapter;
+import com.reader.main.R;
+import com.reader.record.BookInfo;
+import com.reader.record.BookLibrary;
+import com.reader.ui.BookAdapter;
+import com.reader.main.ReadingActivity;
+import com.reader.main.SearchBook;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -116,7 +116,6 @@ public class LocalFileListFragment extends Fragment implements
 
 	}
 
-	@Override
 	public void onItemClick(AdapterView<?> l, View arg1, int position, long arg3) {
 		String bookname = (String) l.getAdapter().getItem(position);
 		// history

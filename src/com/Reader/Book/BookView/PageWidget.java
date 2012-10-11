@@ -3,7 +3,7 @@
  * 
  * */
 
-package com.Reader.Book.BookView;
+package com.reader.book.bookview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -535,7 +535,6 @@ public class PageWidget implements BookViewAnimation {
 		return true;
 	}
 
-	@Override
 	public boolean AfterTouch(View v, MotionEvent event) {
 		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
 
@@ -571,12 +570,10 @@ public class PageWidget implements BookViewAnimation {
 
 	private BookView mBookView;
 
-	@Override
 	public void setBookView(BookView bookview) {
 		mBookView = bookview;
 	}
 
-	@Override
 	public void AfterSizeChange(int w, int h, int oldw, int oldh) {
 		// TODO Auto-generated method stub
 		this.mWidth = w;
@@ -585,7 +582,6 @@ public class PageWidget implements BookViewAnimation {
 		mMaxLength = (float) Math.hypot(mWidth, mHeight);
 	}
 
-	@Override
 	public void AfterDraw(Canvas canvas) {
 		canvas.drawColor(0xFFAAAAAA);
 		calcPoints();
@@ -595,7 +591,6 @@ public class PageWidget implements BookViewAnimation {
 		drawCurrentBackArea(canvas, this.mBookView.mCurPageBitmap);
 	}
 
-	@Override
 	public void update() {
 		abortAnimation();
 		calcCornerXY(0, 0);

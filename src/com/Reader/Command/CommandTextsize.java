@@ -5,12 +5,12 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Command;
+package com.reader.command;
 
 import android.view.Gravity;
 
-import com.Reader.Main.ReadingActivity;
-import com.Reader.Ui.ProgressAlert;
+import com.reader.ui.ProgressAlert;
+import com.reader.main.ReadingActivity;
 
 public class CommandTextsize implements Command{
 	ReadingActivity activity;

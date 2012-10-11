@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book.Manager;
+package com.reader.book.manager;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +13,11 @@ import java.io.IOException;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 
-import com.Reader.Main.R;
-import com.Reader.Main.ReadingActivity;
-import com.Reader.Book.BookView.BookView;
-import com.Reader.Book.Book;
-import com.Reader.Book.BookFactory;
+import com.reader.main.R;
+import com.reader.book.bookview.BookView;
+import com.reader.book.Book;
+import com.reader.book.BookFactory;
+import com.reader.main.ReadingActivity;
 
 public class BookManager{
 

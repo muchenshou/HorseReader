@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Command;
+package com.reader.command;
 
 import android.widget.PopupWindow;
 

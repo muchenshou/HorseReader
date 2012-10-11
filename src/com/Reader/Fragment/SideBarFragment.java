@@ -1,9 +1,9 @@
-package com.Reader.Fragment;
+package com.reader.fragment;
 
-import com.Reader.Main.R;
-import com.Reader.Ui.ActionBar;
-import com.Reader.Ui.ActionBar.Action;
-import com.Reader.Ui.AdobeView;
+import com.reader.main.R;
+import com.reader.ui.ActionBar;
+import com.reader.ui.ActionBar.Action;
+import com.reader.ui.AdobeView;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,16 +23,21 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 	ListView listview;
 	AdobeView adobe;
 	// copied by hetao
-	public static final String[] TITLES = { "历史记录", "本地", "网络", "关于" };
+	public static final int[] TITLES = { R.string.records, R.string.local,
+			R.string.internet, R.string.about };
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		adobe = (AdobeView) inflater.inflate(R.layout.rightview, container,
 				false);
+		String[] titles = new String[TITLES.length];
+		for (int i = 0; i < titles.length; i++) {
+			titles[i] = this.getString(TITLES[i]);
+		}
 		listview = (ListView) adobe.findViewById(R.id.listview);
 		listview.setAdapter(new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_expandable_list_item_1, TITLES));
+				android.R.layout.simple_expandable_list_item_1, titles));
 		listview.setOnItemClickListener(this);
 		return adobe;
 	}
@@ -46,14 +51,12 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 		actionBar.setTitle("Home");
 
 		actionBar.setHomeAction(new Action() {
-			@Override
 			public void performAction(View view) {
 				// Toast.makeText(getActivity(), "Added action.",
 				// Toast.LENGTH_SHORT).show();
 				adobe.switchView();
 			}
 
-			@Override
 			public int getDrawable() {
 				return R.drawable.cartoon_content;
 			}
@@ -67,7 +70,6 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 	About about = new About();
 	int cur = 0;
 
-	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		Log.i("onItemClick", "" + arg2);
 		if (arg2 == cur)

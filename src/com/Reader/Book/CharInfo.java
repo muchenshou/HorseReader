@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book;
+package com.reader.book;
 
 public class CharInfo {
 	public char character;

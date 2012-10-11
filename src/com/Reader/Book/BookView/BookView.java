@@ -4,12 +4,13 @@
  * xinlangweibo:http://weibo.com/muchenshou
  * 
  * email:muchenshou@gmail.com
- * */package com.Reader.Book.BookView;
+ * */
+package com.reader.book.bookview;
 
-import com.Reader.Book.Book;
-import com.Reader.Book.Manager.BookManager;
-import com.Reader.Book.Manager.BookReading;
-import com.Reader.Config.PageConfig;
+import com.reader.book.Book;
+import com.reader.book.manager.BookManager;
+import com.reader.book.manager.BookReading;
+import com.reader.config.PageConfig;
 
 import android.content.Context;
 import android.graphics.Bitmap;

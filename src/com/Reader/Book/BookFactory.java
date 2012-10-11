@@ -5,13 +5,13 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book;
+package com.reader.book;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.Reader.Book.Text.TextBook;
-import com.Reader.Book.Umd.UmdBook;
+import com.reader.book.text.TextBook;
+import com.reader.book.umd.UmdBook;
 
 public class BookFactory {
 	public static Book createBook(File file) throws IOException {

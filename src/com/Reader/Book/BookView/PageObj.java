@@ -5,14 +5,14 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Book.BookView;
+package com.reader.book.bookview;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.Reader.Book.Book;
+import com.reader.book.Book;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

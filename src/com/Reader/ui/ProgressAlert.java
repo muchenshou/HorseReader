@@ -5,10 +5,11 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.Reader.Ui;
+package com.reader.ui;
 
-import com.Reader.Main.R;
-import com.Reader.Main.ReadingActivity;
+import com.reader.main.R;
+import com.reader.main.ReadingActivity;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
