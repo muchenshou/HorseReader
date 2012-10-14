@@ -7,15 +7,19 @@ import java.util.List;
 import com.reader.main.R;
 import com.reader.record.BookInfo;
 import com.reader.record.BookLibrary;
+import com.reader.searchfile.FileListAdapter;
+import com.reader.searchfile.SearchFileTask;
 import com.reader.ui.BookAdapter;
 import com.reader.main.ReadingActivity;
-import com.reader.main.SearchBook;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,21 +32,36 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class LocalFileListFragment extends Fragment implements
-		View.OnClickListener ,OnItemClickListener{
+		View.OnClickListener, OnItemClickListener {
 	ListView mListView;
+	FileListAdapter mFileListAdapter;
+	MyHandler mMyhandler = new MyHandler(Looper.getMainLooper());
 
-	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	class MyHandler extends Handler {
+		public MyHandler(Looper L) {
+			super(L);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			mFileListAdapter.notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View tv = inflater.inflate(R.layout.fileselect, container, false);
 		this.mListView = (ListView) tv.findViewById(R.id.filelist);
 		this.mListView.setOnItemClickListener(this);
 		mListView.setScrollingCacheEnabled(false);
+		mFileListAdapter = new FileListAdapter(getActivity(), mMyhandler);
+		mListView.setAdapter(mFileListAdapter);
 		Button update = (Button) tv.findViewById(R.id.updateButton);
 		update.setClickable(true);
 		update.setOnClickListener(this);
-		setListViewContent();
-		
 		return tv;
 	}
 
@@ -51,39 +70,20 @@ public class LocalFileListFragment extends Fragment implements
 		super.onActivityCreated(savedInstanceState);
 	}
 
-	private List<String> searchBook(BookLibrary lib) {
-
-		ProgressDialog progress = new ProgressDialog(this.getActivity());
-		progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
-		// progress.setTitle("提示");//设置标题
-		progress.setIcon(R.drawable.icon);// 设置图标
-		progress.setMessage("搜索中...");
-		progress.setIndeterminate(false);// 设置进度条是否为不明确
-		LinkedList<String> list = new LinkedList<String>();
+	private void searchBook(BookLibrary lib) {
 		if (!Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
 			Toast.makeText(this.getActivity(), "未发现SD卡！", Toast.LENGTH_LONG)
 					.show();
-			return list;
+			return;
 		}
 		lib.deleteAllBook();
-		SearchBook sea = new SearchBook(progress, lib, this);
+		Log.i("++++++++", "dafdfadfadsf");
+		SearchFileTask sft = new SearchFileTask(this.getActivity()
+				.getApplicationContext(), mFileListAdapter, lib);
+		sft.execute(null);
+		return;
 
-		progress.show();
-		sea.execute("");
-		return sea.getList();
-
-	}
-
-	public void setListViewContent() {
-		BookLibrary record = new BookLibrary((Context) this.getActivity());
-		List<BookInfo> list = record.readLibrary();
-		if (list.size() == 0) {
-			Toast.makeText(this.getActivity(), "zero", Toast.LENGTH_SHORT)
-					.show();
-		}
-		ListView listview = mListView;
-		listview.setAdapter(new BookAdapter(this.getActivity(), list));
 	}
 
 	public void DisplayToast(String str) {
@@ -92,24 +92,14 @@ public class LocalFileListFragment extends Fragment implements
 
 	private void openFile(File f) {
 		// Intent intent = new Intent();
-		if (SearchBook.isBook(f)) {
-			// intent.putExtra("bookfile", f.getPath());
-			Log.d("openFile", f.getPath());
-			// setResult(RESULT_OK, intent);
-			Intent intent = new Intent(this.getActivity(),
-					ReadingActivity.class);
-			intent.putExtra("bookname", f.getPath());
-			startActivityForResult(intent,0);
-			// finish();
-		}
+		Intent intent = new Intent(this.getActivity(), ReadingActivity.class);
+		intent.putExtra("bookname", f.getPath());
+		startActivityForResult(intent, 0);
 
 	}
 
 	public void onClick(View v) {
-		Log.i("[onclick]", "updatebutton1");
-		// TODO Auto-generated method stub
 		if (v.getId() == R.id.updateButton) {
-			Log.i("[onclick]", "updatebutton");
 			BookLibrary lib = new BookLibrary(this.getActivity());
 			searchBook(lib);
 		}
@@ -119,7 +109,6 @@ public class LocalFileListFragment extends Fragment implements
 	public void onItemClick(AdapterView<?> l, View arg1, int position, long arg3) {
 		String bookname = (String) l.getAdapter().getItem(position);
 		// history
-		Log.i("filemanager", bookname);
 		openFile(new File(bookname));
 	}
 

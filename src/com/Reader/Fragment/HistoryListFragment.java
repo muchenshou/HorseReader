@@ -5,7 +5,6 @@ import java.io.File;
 import com.reader.record.BookHistory;
 import com.reader.ui.BookAdapter;
 import com.reader.main.ReadingActivity;
-import com.reader.main.SearchBook;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -46,13 +45,9 @@ public class HistoryListFragment extends Fragment implements
 	}
 
 	private void openFile(File f) {
-		if (SearchBook.isBook(f)) {
-			Log.d("openFile", f.getPath());
-			Intent intent = new Intent(this.getActivity(),
-					ReadingActivity.class);
-			intent.putExtra("bookname", f.getPath());
-			startActivityForResult(intent, 0);
-		}
+		Intent intent = new Intent(this.getActivity(), ReadingActivity.class);
+		intent.putExtra("bookname", f.getPath());
+		startActivityForResult(intent, 0);
 
 	}
 

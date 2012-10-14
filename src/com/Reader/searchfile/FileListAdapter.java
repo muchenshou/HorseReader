@@ -1,0 +1,114 @@
+package com.reader.searchfile;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.reader.record.BookInfo;
+import com.reader.ui.BookAdapter.ViewHolder;
+import com.reader.util.FileInfo;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class FileListAdapter extends BaseAdapter implements
+		SearchFileTask.SearchFileTaskCallBack {
+	public final class ViewHolder {
+		public ImageView img;
+		public TextView title;
+		public TextView process;
+		public TextView size;
+	}
+
+	List<BookInfo> mBookInfoList = new ArrayList<BookInfo>();
+	Context mContext;
+	Handler myhand;
+	LayoutInflater mInflater;
+
+	public FileListAdapter(Context context, Handler hand) {
+		super();
+		mContext = context;
+		myhand = hand;
+		mBookInfoList.clear();
+		mInflater = LayoutInflater.from(mContext);
+	}
+
+	public synchronized void findOneFile(String filePath) {
+		FileInfo lFileInfo = new FileInfo();
+		File lFile = new File(filePath);
+		lFileInfo.canRead = lFile.canRead();
+		lFileInfo.canWrite = lFile.canWrite();
+		lFileInfo.isHidden = lFile.isHidden();
+		lFileInfo.fileName = lFile.getName();
+		lFileInfo.ModifiedDate = lFile.lastModified();
+		lFileInfo.IsDir = lFile.isDirectory();
+		lFileInfo.filePath = filePath;
+		lFileInfo.fileSize = lFile.length();
+		BookInfo b = new BookInfo();
+		b.bookName = lFileInfo.filePath;
+		b.mSize = (int) lFileInfo.fileSize;
+		String str = b.bookName.toString()
+				.substring(b.bookName.toString().lastIndexOf('.') + 1)
+				.toLowerCase();
+		if (str.equals("umd")) {
+			b.mBookImage = mContext.getResources().getDrawable(
+					com.reader.main.R.drawable.umd);
+		}
+		if (str.equals("txt")) {
+			b.mBookImage = mContext.getResources().getDrawable(
+					com.reader.main.R.drawable.txt);
+		}
+		mBookInfoList.add(b);
+		Message msg = Message.obtain();
+		msg.setTarget(myhand);
+		msg.sendToTarget();
+	}
+
+	public int getCount() {
+		return mBookInfoList.size();
+	}
+
+	public View getView(int position, View convertView, ViewGroup parent) {
+		ViewHolder holder = null;
+		if (convertView == null) {
+			holder = new ViewHolder();
+			convertView = mInflater.inflate(com.reader.main.R.layout.listitem,
+					null);
+			holder.img = (ImageView) convertView
+					.findViewById(com.reader.main.R.id.img);
+			holder.title = (TextView) convertView
+					.findViewById(com.reader.main.R.id.title);
+			holder.process = (TextView) convertView
+					.findViewById(com.reader.main.R.id.process);
+			holder.size = (TextView) convertView
+					.findViewById(com.reader.main.R.id.filesize);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
+		}
+		holder.img.setBackgroundDrawable(mBookInfoList.get(position)
+				.getBookImage());
+		String bookfulldir = mBookInfoList.get(position).bookName;
+		String name = bookfulldir.substring(bookfulldir.lastIndexOf('/') + 1,
+				bookfulldir.lastIndexOf('.')).toLowerCase();
+		holder.title.setText(name);
+		holder.size.setText(mBookInfoList.get(position).mSize / 1024 + "k");
+		holder.process.setText(mBookInfoList.get(position).mProcess);
+		return convertView;
+	}
+
+	public Object getItem(int position) {
+		return mBookInfoList.get(position).bookName;
+	}
+
+	public long getItemId(int arg0) {
+		return 0;
+	}
+}

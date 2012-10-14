@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.reader.record.BookInfo;
-import com.reader.main.FileManager;
 
 public class BookAdapter extends BaseAdapter {
 
@@ -90,12 +89,8 @@ public class BookAdapter extends BaseAdapter {
 		String name = bookfulldir.substring(bookfulldir.lastIndexOf('/') + 1,
 				bookfulldir.lastIndexOf('.')).toLowerCase();
 		holder.title.setText(name);
-		holder.size.setText(mBookInfoList.get(position).mSize/1024+"k");
-		if (parent.getContext().getClass().equals(FileManager.class)) {
-			holder.process.setVisibility(View.GONE);
-		} else {
-			holder.process.setText(mBookInfoList.get(position).mProcess);
-		}
+		holder.size.setText(mBookInfoList.get(position).mSize / 1024 + "k");
+		holder.process.setText(mBookInfoList.get(position).mProcess);
 		return convertView;
 	}
 

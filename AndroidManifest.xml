@@ -29,5 +29,12 @@
         <activity
             android:name=".WebActivity" >
         </activity>
+        <service
+            android:name="com.reader.searchfile.service.SearchFileService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.reader.searchfile.service.ISearchFileService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>
