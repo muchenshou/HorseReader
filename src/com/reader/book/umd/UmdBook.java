@@ -203,16 +203,6 @@ public class UmdBook extends Book {
 		charinfo.length = 2;
 		charinfo.position = pos;
 		return charinfo;
-		/*
-		 * int size = umdInfo.getSize();
-		 * 
-		 * if (mEnd >= size || mEnd < 0) { return null; } try { ByteBuffer buf =
-		 * ByteBuffer.allocate(2); this.getContent(mEnd, buf); buf.flip();
-		 * CharInfo charinfo = new CharInfo(); charinfo.character =
-		 * buf.getChar(); charinfo.length = 2; charinfo.position = mEnd; return
-		 * charinfo; } catch (IOException e) { e.printStackTrace(); }
-		 */
-		// return null;
 	}
 
 	public CharInfo getPreChar(int start) {

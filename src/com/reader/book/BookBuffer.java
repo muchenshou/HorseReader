@@ -10,10 +10,17 @@ package com.reader.book;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.LinkedList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BookBuffer implements Runnable {
 	private Book mBook = null;
 	private int mBufferSize = 8 * 1024;// buffer 4k
+	private Lock mBufferlock = new ReentrantLock();
+	private Condition getContentFromBuffer = mBufferlock.newCondition();
+	private Condition putContentIntoBuffer = mBufferlock.newCondition();
+
 	class BookBufBlock {
 		ByteBuffer mBufBlock;
 		int mBlockNum;
@@ -87,15 +94,15 @@ public class BookBuffer implements Runnable {
 		return true;
 	}
 
-	boolean handleBuf(int location){
-		if (this.mBufList.getCur().mBlockNum == -1){
+	boolean handleBuf(int location) {
+		if (this.mBufList.getCur().mBlockNum == -1) {
 			return false;
 		}
-		if (mBufList.element(location/this.mBufferSize)==null){
+		if (mBufList.element(location / this.mBufferSize) == null) {
 			return false;
 		}
-		this.mBufList.setCur(mBufList.element(location/this.mBufferSize));
-		this.mBufList.getCur().mBlockNum = location/this.mBufferSize;
+		this.mBufList.setCur(mBufList.element(location / this.mBufferSize));
+		this.mBufList.getCur().mBlockNum = location / this.mBufferSize;
 		return true;
 	}
 
@@ -111,15 +118,16 @@ public class BookBuffer implements Runnable {
 	}
 
 	public byte getByte(final int location) {
-		synchronized (this) {
+		try {
+			mBufferlock.lock();
 			if (location >= this.mBook.size())
 				return 0;
 			if (have(location)) {
-				return this.mBufList.getCur().mBufBlock.get(location % this.mBufferSize);
+				return this.mBufList.getCur().mBufBlock.get(location
+						% this.mBufferSize);
 			}
 			if (this.handleBuf(location)) {
-				this.notifyAll();
-				//Log.i("[Thread]", "location:" + location);
+				putContentIntoBuffer.signal();
 				return this.getByte(location);
 			}
 
@@ -128,41 +136,42 @@ public class BookBuffer implements Runnable {
 					this.mBufList.getCur().mBufBlock);
 			this.mBufList.getCur().mBlockNum = location / this.mBufferSize;
 
-			this.notifyAll();
-
-			//long two = System.currentTimeMillis();
-			// Log.i("[Thread2]", "" + (two - one)+"ms");
-
+			putContentIntoBuffer.signal();
 			return this.getByte(location);
+		} finally {
+			mBufferlock.unlock();
 		}
+
 	}
 
 	public void run() {
 		while (!Thread.currentThread().isInterrupted()) {
-
-			synchronized (this) {
+			try {
+				mBufferlock.lock();
 				try {
-					// this.isWaitting = true;
-					this.wait();
+					putContentIntoBuffer.await();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					// e.printStackTrace();
 				}
-				// this.isWaitting = false;
-				// Log.i("[thread]","getcontent");
-				if (mBufList.getPre().mBlockNum == -1){
+				if (mBufList.getPre().mBlockNum == -1) {
 					this.mBufList.getPre().mBufBlock.clear();
-					mBook.getContent((mBufList.getCur().mBlockNum - 1) * this.mBufferSize,
+					mBook.getContent((mBufList.getCur().mBlockNum - 1)
+							* this.mBufferSize,
 							this.mBufList.getPre().mBufBlock);
 					this.mBufList.getPre().mBlockNum = mBufList.getCur().mBlockNum - 1;
 				}
-				if (mBufList.getNext().mBlockNum == -1){
+				if (mBufList.getNext().mBlockNum == -1) {
 					this.mBufList.getNext().mBufBlock.clear();
-					mBook.getContent((mBufList.getCur().mBlockNum +1) * this.mBufferSize,
+					mBook.getContent((mBufList.getCur().mBlockNum + 1)
+							* this.mBufferSize,
 							this.mBufList.getNext().mBufBlock);
 					this.mBufList.getNext().mBlockNum = mBufList.getCur().mBlockNum + 1;
 				}
-				this.notifyAll();
+				//this.notifyAll();
+			} finally {
+				mBufferlock.unlock();
 			}
+
 		}
 	}
 }
