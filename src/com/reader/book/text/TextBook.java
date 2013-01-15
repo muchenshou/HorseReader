@@ -48,12 +48,12 @@ public class TextBook extends Book {
 						utf++;
 						if (utf > 3)
 							return UTF8;
+					} else {
+						utf = 0;
 					}
 				}
 			}
 		}
-		if (utf > 0)
-			return UTF8;
 		return GBK;
 	}
 
@@ -91,7 +91,6 @@ public class TextBook extends Book {
 
 	public void openBook() {
 		try {
-			Log.i("openbook", "openbook");
 			mFile = new RandomAccessFile(bookFile, "r");
 			mTextCode = this.getTextCode();
 		} catch (FileNotFoundException e) {

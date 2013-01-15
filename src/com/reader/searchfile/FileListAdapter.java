@@ -9,6 +9,7 @@ import com.reader.ui.BookAdapter.ViewHolder;
 import com.reader.util.FileInfo;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -18,8 +19,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class FileListAdapter extends BaseAdapter implements
-		SearchFileTask.SearchFileTaskCallBack {
+public class FileListAdapter extends BaseAdapter {
 	public final class ViewHolder {
 		public ImageView img;
 		public TextView title;
@@ -29,18 +29,23 @@ public class FileListAdapter extends BaseAdapter implements
 
 	List<BookInfo> mBookInfoList = new ArrayList<BookInfo>();
 	Context mContext;
-	Handler myhand;
 	LayoutInflater mInflater;
 
-	public FileListAdapter(Context context, Handler hand) {
+	public FileListAdapter(Context context) {
 		super();
 		mContext = context;
-		myhand = hand;
 		mBookInfoList.clear();
 		mInflater = LayoutInflater.from(mContext);
 	}
 
-	public synchronized void findOneFile(String filePath) {
+	public void setData(List<String> list) {
+		mBookInfoList.clear();
+		for (String path : list) {
+			addFile(path);
+		}
+	}
+
+	public synchronized void addFile(String filePath) {
 		FileInfo lFileInfo = new FileInfo();
 		File lFile = new File(filePath);
 		lFileInfo.canRead = lFile.canRead();
@@ -66,9 +71,6 @@ public class FileListAdapter extends BaseAdapter implements
 					com.reader.main.R.drawable.txt);
 		}
 		mBookInfoList.add(b);
-		Message msg = Message.obtain();
-		msg.setTarget(myhand);
-		msg.sendToTarget();
 	}
 
 	public int getCount() {
@@ -104,6 +106,7 @@ public class FileListAdapter extends BaseAdapter implements
 		return convertView;
 	}
 
+	
 	public Object getItem(int position) {
 		return mBookInfoList.get(position).bookName;
 	}

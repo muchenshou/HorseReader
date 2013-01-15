@@ -1,25 +1,23 @@
 package com.reader.fragment;
 
 import java.io.File;
-import java.util.LinkedList;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.reader.main.R;
-import com.reader.record.BookInfo;
 import com.reader.record.BookLibrary;
 import com.reader.searchfile.FileListAdapter;
-import com.reader.searchfile.SearchFileTask;
-import com.reader.ui.BookAdapter;
+import com.reader.util.FilenameExtFilter;
 import com.reader.main.ReadingActivity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,18 +33,12 @@ public class LocalFileListFragment extends Fragment implements
 		View.OnClickListener, OnItemClickListener {
 	ListView mListView;
 	FileListAdapter mFileListAdapter;
-	MyHandler mMyhandler = new MyHandler(Looper.getMainLooper());
 
-	class MyHandler extends Handler {
-		public MyHandler(Looper L) {
-			super(L);
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			mFileListAdapter.notifyDataSetChanged();
-		}
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		mFileListAdapter.notifyDataSetChanged();
+		Log.i("songlog", "mfilelistadapter:"+mFileListAdapter.getCount());
 	}
 
 	@Override
@@ -57,7 +49,7 @@ public class LocalFileListFragment extends Fragment implements
 		this.mListView = (ListView) tv.findViewById(R.id.filelist);
 		this.mListView.setOnItemClickListener(this);
 		mListView.setScrollingCacheEnabled(false);
-		mFileListAdapter = new FileListAdapter(getActivity(), mMyhandler);
+		mFileListAdapter = new FileListAdapter(getActivity());
 		mListView.setAdapter(mFileListAdapter);
 		Button update = (Button) tv.findViewById(R.id.updateButton);
 		update.setClickable(true);
@@ -73,17 +65,14 @@ public class LocalFileListFragment extends Fragment implements
 	private void searchBook(BookLibrary lib) {
 		if (!Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
-			Toast.makeText(this.getActivity(), "Œ¥∑¢œ÷SDø®£°", Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(this.getActivity(), "sd have unmouted",
+					Toast.LENGTH_LONG).show();
 			return;
 		}
 		lib.deleteAllBook();
-		Log.i("++++++++", "dafdfadfadsf");
-		SearchFileTask sft = new SearchFileTask(this.getActivity()
-				.getApplicationContext(), mFileListAdapter, lib);
+		SearchFileTask sft = new SearchFileTask(getActivity(), lib);
 		sft.execute(null);
 		return;
-
 	}
 
 	public void DisplayToast(String str) {
@@ -91,11 +80,9 @@ public class LocalFileListFragment extends Fragment implements
 	}
 
 	private void openFile(File f) {
-		// Intent intent = new Intent();
 		Intent intent = new Intent(this.getActivity(), ReadingActivity.class);
 		intent.putExtra("bookname", f.getPath());
 		startActivityForResult(intent, 0);
-
 	}
 
 	public void onClick(View v) {
@@ -112,4 +99,60 @@ public class LocalFileListFragment extends Fragment implements
 		openFile(new File(bookname));
 	}
 
+	public class SearchFileTask extends AsyncTask<Void, Void, Void> {
+		BookLibrary mBookLib;
+		private Context mContext;
+		private List<String> bookList = new ArrayList<String>();
+		/**
+		 * @param context
+		 * @param cl
+		 */
+		public SearchFileTask(Context context, BookLibrary lib) {
+			mContext = context;
+			mBookLib = lib;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			String exts[] = { "txt", "umd" };
+			bookList.clear();
+			try {
+				searchFileForExts(exts);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		public void searchFileForExts(String[] exts) throws RemoteException {
+			FilenameExtFilter fef = new FilenameExtFilter(exts);
+			searchBookFromDir(new File(Environment
+					.getExternalStorageDirectory().getPath()), fef);
+
+		}
+
+		private void searchBookFromDir(File file, FilenameFilter filter) {
+			File[] array = file.listFiles(filter);
+			if (array == null) {
+				return;
+			}
+			for (int i = 0; i < array.length; i++) {
+				if (array[i].isDirectory() == true) {
+					searchBookFromDir(array[i], filter);
+				} else {
+					mBookLib.addBook(array[i].getPath());
+					bookList.add(array[i].getPath());
+					Log.i("songlog",array[i].getPath());
+				}
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			Toast.makeText(mContext, "finish", Toast.LENGTH_LONG).show();
+			mFileListAdapter.setData(bookList);
+			mFileListAdapter.notifyDataSetChanged();
+			super.onPostExecute(result);
+		}
+	}
 }

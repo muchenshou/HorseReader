@@ -189,7 +189,6 @@ public class UmdBook extends Book {
 	public int size() {
 		// TODO Auto-generated method stub
 		return this.umdInfo.getSize();
-
 	}
 
 	public CharInfo getChar(int pos) {

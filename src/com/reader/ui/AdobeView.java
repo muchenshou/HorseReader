@@ -83,6 +83,7 @@ public class AdobeView extends ViewGroup{
 		} else {
 			this.getChildAt(1).layout(l, t + childHeight, r - 3 * (r - l) / 5,
 					b);
+			if (this.getChildAt(2) != null)
 			this.getChildAt(2).layout(l, t + childHeight, r, b);
 		}
 	}

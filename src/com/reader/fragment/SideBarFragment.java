@@ -52,8 +52,6 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 
 		actionBar.setHomeAction(new Action() {
 			public void performAction(View view) {
-				// Toast.makeText(getActivity(), "Added action.",
-				// Toast.LENGTH_SHORT).show();
 				adobe.switchView();
 			}
 
