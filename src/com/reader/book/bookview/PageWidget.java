@@ -23,21 +23,21 @@ import android.widget.Scroller;
 
 public class PageWidget implements BookViewAnimation {
 
-	//private static final String TAG = "hmg";
+	// private static final String TAG = "hmg";
 	private int mWidth = 0;
 	private int mHeight = 0;
-	private int mCornerX = 0; // ÍÏ×§µã¶ÔÓ¦µÄÒ³½Å
+	private int mCornerX = 0; // ï¿½ï¿½×§ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Ò³ï¿½ï¿½
 	private int mCornerY = 0;
 	private Path mPath0;
 	private Path mPath1;
 
-	PointF mTouch = new PointF(); // ÍÏ×§µã
-	PointF mBezierStart1 = new PointF(); // ±´Èû¶ûÇúÏßÆðÊ¼µã
-	PointF mBezierControl1 = new PointF(); // ±´Èû¶ûÇúÏß¿ØÖÆµã
-	PointF mBeziervertex1 = new PointF(); // ±´Èû¶ûÇúÏß¶¥µã
-	PointF mBezierEnd1 = new PointF(); // ±´Èû¶ûÇúÏß½áÊøµã
+	PointF mTouch = new PointF(); // ï¿½ï¿½×§ï¿½ï¿½
+	PointF mBezierStart1 = new PointF(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
+	PointF mBezierControl1 = new PointF(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½ï¿½Æµï¿½
+	PointF mBeziervertex1 = new PointF(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¶ï¿½ï¿½ï¿½
+	PointF mBezierEnd1 = new PointF(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½ï¿½ï¿½
 
-	PointF mBezierStart2 = new PointF(); // ÁíÒ»Ìõ±´Èû¶ûÇúÏß
+	PointF mBezierStart2 = new PointF(); // ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	PointF mBezierControl2 = new PointF();
 	PointF mBeziervertex2 = new PointF();
 	PointF mBezierEnd2 = new PointF();
@@ -50,7 +50,7 @@ public class PageWidget implements BookViewAnimation {
 	Matrix mMatrix;
 	float[] mMatrixArray = { 0, 0, 0, 0, 0, 0, 0, 0, 1.0f };
 
-	boolean mIsRTandLB; // ÊÇ·ñÊôÓÚÓÒÉÏ×óÏÂ
+	boolean mIsRTandLB; // ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	float mMaxLength = (float) Math.hypot(mWidth, mHeight);
 	int[] mBackShadowColors;
 	int[] mFrontShadowColors;
@@ -85,12 +85,12 @@ public class PageWidget implements BookViewAnimation {
 		mMatrix = new Matrix();
 		mScroller = new Scroller(context);
 
-		mTouch.x = 0.01f; // ²»ÈÃx,yÎª0,·ñÔòÔÚµã¼ÆËãÊ±»áÓÐÎÊÌâ
+		mTouch.x = 0.01f; // ï¿½ï¿½ï¿½ï¿½x,yÎª0,ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		mTouch.y = 0.01f;
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : ¼ÆËãÍÏ×§µã¶ÔÓ¦µÄÍÏ×§½Å
+	 * Author : hmg25 Version: 1.0 Description : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×§ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½×§ï¿½ï¿½
 	 */
 	public void calcCornerXY(float x, float y) {
 		if (x <= mWidth / 2)
@@ -124,6 +124,8 @@ public class PageWidget implements BookViewAnimation {
 			this.mBookView.postInvalidate();
 		}
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			abortAnimation();
+			calcCornerXY(event.getX(), event.getY());
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
 			// calcCornerXY(mTouch.x, mTouch.y);
@@ -144,11 +146,11 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : Çó½âÖ±ÏßP1P2ºÍÖ±ÏßP3P4µÄ½»µã×ø±ê
+	 * Author : hmg25 Version: 1.0 Description : ï¿½ï¿½ï¿½Ö±ï¿½ï¿½P1P2ï¿½ï¿½Ö±ï¿½ï¿½P3P4ï¿½Ä½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	public PointF getCross(PointF P1, PointF P2, PointF P3, PointF P4) {
 		PointF CrossP = new PointF();
-		// ¶þÔªº¯ÊýÍ¨Ê½£º y=ax+b
+		// ï¿½ï¿½Ôªï¿½ï¿½ï¿½ï¿½Í¨Ê½ï¿½ï¿½ y=ax+b
 		float a1 = (P2.y - P1.y) / (P2.x - P1.x);
 		float b1 = ((P1.x * P2.y) - (P2.x * P1.y)) / (P1.x - P2.x);
 
@@ -173,8 +175,8 @@ public class PageWidget implements BookViewAnimation {
 				/ 2;
 		mBezierStart1.y = mCornerY;
 
-		// µ±mBezierStart1.x < 0»òÕßmBezierStart1.x > 480Ê±
-		// Èç¹û¼ÌÐø·­Ò³£¬»á³öÏÖBUG¹ÊÔÚ´ËÏÞÖÆ
+		// ï¿½ï¿½mBezierStart1.x < 0ï¿½ï¿½ï¿½ï¿½mBezierStart1.x > 480Ê±
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½BUGï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (mTouch.x > 0 && mTouch.x < mWidth) {
 			if (mBezierStart1.x < 0 || mBezierStart1.x > mWidth) {
 				if (mBezierStart1.x < 0)
@@ -220,8 +222,8 @@ public class PageWidget implements BookViewAnimation {
 		// + mBezierEnd2.y);
 
 		/*
-		 * mBeziervertex1.x ÍÆµ¼
-		 * ((mBezierStart1.x+mBezierEnd1.x)/2+mBezierControl1.x)/2 »¯¼òµÈ¼ÛÓÚ
+		 * mBeziervertex1.x ï¿½Æµï¿½
+		 * ((mBezierStart1.x+mBezierEnd1.x)/2+mBezierControl1.x)/2 ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½
 		 * (mBezierStart1.x+ 2*mBezierControl1.x+mBezierEnd1.x) / 4
 		 */
 		mBeziervertex1.x = (mBezierStart1.x + 2 * mBezierControl1.x + mBezierEnd1.x) / 4;
@@ -283,7 +285,7 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : ´´½¨ÒõÓ°µÄGradientDrawable
+	 * Author : hmg25 Version: 1.0 Description : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½GradientDrawable
 	 */
 	private void createDrawable() {
 		int[] color = { 0x333333, 0xb0333333 };
@@ -328,7 +330,7 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : »æÖÆ·­ÆðÒ³µÄÒõÓ°
+	 * Author : hmg25 Version: 1.0 Description : ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½Ó°
 	 */
 	public void drawCurrentPageShadow(Canvas canvas) {
 		double degree;
@@ -343,7 +345,7 @@ public class PageWidget implements BookViewAnimation {
 					- Math.atan2(mTouch.y - mBezierControl1.y, mTouch.x
 							- mBezierControl1.x);
 		}
-		// ·­ÆðÒ³ÒõÓ°¶¥µãÓëtouchµãµÄ¾àÀë
+		// ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½touchï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
 		double d1 = (float) 25 * 1.414 * Math.cos(degree);
 		double d2 = (float) 25 * 1.414 * Math.sin(degree);
 		float x = (float) (mTouch.x + d1);
@@ -431,7 +433,7 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : »æÖÆ·­ÆðÒ³±³Ãæ
+	 * Author : hmg25 Version: 1.0 Description : ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½
 	 */
 	private void drawCurrentBackArea(Canvas canvas, Bitmap bitmap) {
 		int i = (int) (mBezierStart1.x + mBezierControl1.x) / 2;
@@ -498,8 +500,8 @@ public class PageWidget implements BookViewAnimation {
 
 	private void startAnimation(int delayMillis) {
 		int dx, dy;
-		// dx Ë®Æ½·½Ïò»¬¶¯µÄ¾àÀë£¬¸ºÖµ»áÊ¹¹ö¶¯Ïò×ó¹ö¶¯
-		// dy ´¹Ö±·½Ïò»¬¶¯µÄ¾àÀë£¬¸ºÖµ»áÊ¹¹ö¶¯ÏòÉÏ¹ö¶¯
+		// dx Ë®Æ½ï¿½ï¿½ï¿½ò»¬¶ï¿½ï¿½Ä¾ï¿½ï¿½ë£¬ï¿½ï¿½Öµï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// dy ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ò»¬¶ï¿½ï¿½Ä¾ï¿½ï¿½ë£¬ï¿½ï¿½Öµï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¹ï¿½ï¿½ï¿½
 		if (mCornerX > 0) {
 			dx = -(int) (mWidth + mTouch.x);
 		} else {
@@ -508,7 +510,7 @@ public class PageWidget implements BookViewAnimation {
 		if (mCornerY > 0) {
 			dy = (int) (mHeight - mTouch.y);
 		} else {
-			dy = (int) (1 - mTouch.y); // ·ÀÖ¹mTouch.y×îÖÕ±äÎª0
+			dy = (int) (1 - mTouch.y); // ï¿½ï¿½Ö¹mTouch.yï¿½ï¿½ï¿½Õ±ï¿½Îª0
 		}
 		mScroller.startScroll((int) mTouch.x, (int) mTouch.y, dx, dy,
 				delayMillis);
@@ -527,45 +529,16 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : ÊÇ·ñ´Ó×ó±ß·­ÏòÓÒ±ß
+	 * Author : hmg25 Version: 1.0 Description : ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ß·ï¿½ï¿½ï¿½ï¿½Ò±ï¿½
 	 */
-	private boolean DragToRight() {
+	public boolean DragToRight() {
 		if (mCornerX > 0)
 			return false;
 		return true;
 	}
 
 	public boolean AfterTouch(View v, MotionEvent event) {
-		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
-
-		if (event.getAction() == MotionEvent.ACTION_DOWN
-				&& event.getX() < rect.exactCenterX() + 40
-				&& event.getX() > rect.exactCenterX() - 40
-				&& event.getY() > rect.exactCenterY() - 20
-				&& event.getY() < rect.exactCenterY() + 20) { // gridview
-			// ((ReadingActivity) this.getContext()).setBookSet();
-			return false;
-		}
-
-		boolean ret = false;
-
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			abortAnimation();
-			calcCornerXY(event.getX(), event.getY());
-			this.mBookView.Draw(this.mBookView.mCurPageCanvas);
-			if (DragToRight()) {
-				this.mBookView.prePage();
-				this.mBookView.Draw(this.mBookView.mNextPageCanvas);
-
-			} else {
-				this.mBookView.nextPage();
-				this.mBookView.Draw(this.mBookView.mNextPageCanvas);
-			}
-		}
-
-		ret = doTouchEvent(event);
-		return ret;
-
+		return doTouchEvent(event);
 	}
 
 	private BookView mBookView;
@@ -596,4 +569,22 @@ public class PageWidget implements BookViewAnimation {
 		calcCornerXY(0, 0);
 	}
 
+	Bitmap mCurPageBitmap = null;
+	Bitmap mNextPageBitmap = null;
+
+	public Bitmap getCurBitmap(boolean update) {
+		if (!update)
+			return mCurPageBitmap;
+		mCurPageBitmap = Bitmap.createBitmap(mBookView.getWidth(),
+				mBookView.getHeight(), Bitmap.Config.ARGB_8888);
+		return mCurPageBitmap;
+	}
+
+	public Bitmap getNextBitmap(boolean update) {
+		if (!update)
+			return mNextPageBitmap;
+		mNextPageBitmap = Bitmap.createBitmap(mBookView.getWidth(),
+				mBookView.getHeight(), Bitmap.Config.ARGB_8888);
+		return mNextPageBitmap;
+	}
 }

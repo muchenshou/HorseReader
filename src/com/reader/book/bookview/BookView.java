@@ -18,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,10 +42,11 @@ public class BookView extends View implements View.OnTouchListener {
 	private BookProgressObj mBookProgressObj;
 	private Paint mPaint;
 
-	Bitmap mCurPageBitmap = null; // ��ǰҳ
+	Bitmap mCurPageBitmap = null; // ��ǰҳ
 	Bitmap mNextPageBitmap = null;
 	Canvas mCurPageCanvas;
 	Canvas mNextPageCanvas;
+
 	public BookView(Context context, Book book) {
 		super(context);
 		setOnTouchListener(this);
@@ -60,7 +62,7 @@ public class BookView extends View implements View.OnTouchListener {
 		mBookNameObj.setBookName(book.getName());
 
 		mBookProgressObj = new BookProgressObj(this.bookreading, book.size());
-		
+
 		this.mAnimation = new PageWidget(getContext());
 		this.mAnimation.setBookView(this);
 	}
@@ -93,13 +95,13 @@ public class BookView extends View implements View.OnTouchListener {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-		mCurPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		mNextPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		mCurPageBitmap = mAnimation.getCurBitmap(true);//Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		mNextPageBitmap = mAnimation.getNextBitmap(true);//Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 		mCurPageCanvas = new Canvas(mCurPageBitmap);
 		mNextPageCanvas = new Canvas(mNextPageBitmap);
 		this.mAnimation.AfterSizeChange(w, h, oldw, oldh);
-		
-		bookreading.update(w-20,
+
+		bookreading.update(w - 20,
 				h - BookView.getTextHeight(this.mPageConfig.getOthersPaint())
 						- 20);
 		//
@@ -134,15 +136,17 @@ public class BookView extends View implements View.OnTouchListener {
 		mBookNameObj.Draw(canvas, this.mPaint);
 		mBookProgressObj.Draw(canvas, this.mPageConfig.getOthersPaint());
 	}
-	public void computeScroll(){
+
+	public void computeScroll() {
 		super.computeScroll();
 		this.mAnimation.computeScroll();
 	}
-	
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		this.mAnimation.AfterDraw(canvas);
 	}
+
 	public void update() {
 		bookreading.update();
 		if (this.mInit == false) {
@@ -158,7 +162,29 @@ public class BookView extends View implements View.OnTouchListener {
 	}
 
 	public boolean onTouch(View v, MotionEvent event) {
-		return this.mAnimation.AfterTouch(v, event);
+		this.mAnimation.AfterTouch(v, event);
+		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
+
+		if (event.getAction() == MotionEvent.ACTION_DOWN
+				&& event.getX() < rect.exactCenterX() + 40
+				&& event.getX() > rect.exactCenterX() - 40
+				&& event.getY() > rect.exactCenterY() - 20
+				&& event.getY() < rect.exactCenterY() + 20) { // gridview
+			return false;
+		}
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+			Draw(mCurPageCanvas);
+			if (mAnimation.DragToRight()) {
+				prePage();
+				Draw(mNextPageCanvas);
+
+			} else {
+				nextPage();
+				Draw(mNextPageCanvas);
+			}
+		}
+		return true;
 	}
 
 	public void nextLine() {
