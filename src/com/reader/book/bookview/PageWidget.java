@@ -112,6 +112,10 @@ public class PageWidget implements BookViewAnimation {
 			mIsRTandLB = false;
 	}
 
+	enum status {
+		before, ing, after
+	};
+
 	public boolean doTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -131,15 +135,14 @@ public class PageWidget implements BookViewAnimation {
 			calcCornerXY(event.getX(), event.getY());
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
-			// this.postInvalidate();
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
-			if (canDragOver()) {
+			//if (canDragOver()) {
 				startAnimation(1200);
-			} else {
-				mTouch.x = mCornerX - 0.09f;
-				mTouch.y = mCornerY - 0.09f;
-			}
+			//} else {
+			//	mTouch.x = mCornerX - 0.09f;
+			//	mTouch.y = mCornerY - 0.09f;
+			//}
 
 			this.mBookView.postInvalidate();
 		}
@@ -217,16 +220,6 @@ public class PageWidget implements BookViewAnimation {
 		mBezierEnd2 = getCross(mTouch, mBezierControl2, mBezierStart1,
 				mBezierStart2);
 
-		// Log.i("hmg", "mBezierEnd1.x  " + mBezierEnd1.x + "  mBezierEnd1.y  "
-		// + mBezierEnd1.y);
-		// Log.i("hmg", "mBezierEnd2.x  " + mBezierEnd2.x + "  mBezierEnd2.y  "
-		// + mBezierEnd2.y);
-
-		/*
-		 * mBeziervertex1.x �Ƶ�
-		 * ((mBezierStart1.x+mBezierEnd1.x)/2+mBezierControl1.x)/2 ����ȼ���
-		 * (mBezierStart1.x+ 2*mBezierControl1.x+mBezierEnd1.x) / 4
-		 */
 		mBeziervertex1.x = (mBezierStart1.x + 2 * mBezierControl1.x + mBezierEnd1.x) / 4;
 		mBeziervertex1.y = (2 * mBezierControl1.y + mBezierStart1.y + mBezierEnd1.y) / 4;
 		mBeziervertex2.x = (mBezierStart2.x + 2 * mBezierControl2.x + mBezierEnd2.x) / 4;
@@ -513,7 +506,7 @@ public class PageWidget implements BookViewAnimation {
 		} else {
 			dy = (int) (1 - mTouch.y); // ��ֹmTouch.y���ձ�Ϊ0
 		}
-		mScroller.startScroll((int) mTouch.x, (int) mTouch.y, dx, dy,
+		mScroller.startScroll((int) mTouch.x, (int) mTouch.y, dx - 1, dy - 1,
 				delayMillis);
 	}
 

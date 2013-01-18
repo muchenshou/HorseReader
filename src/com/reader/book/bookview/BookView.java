@@ -191,7 +191,7 @@ public class BookView extends View implements View.OnTouchListener {
 			//} else 
 			//{
 				//nextPage();
-			next = bookreading.getNextPagePosition();
+			cur = next = bookreading.getNextPagePosition();
 				mPageObj.setPageString(bookreading.getPageStr(next));
 				//bookreading.nextPage();
 			//}
