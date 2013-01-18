@@ -7,8 +7,8 @@ import android.view.View;
 
 public interface BookViewAnimation {
 	//public void startAnimation();
-	public Bitmap getCurBitmap(boolean update);
-	public Bitmap getNextBitmap(boolean update);
+	public void setCurBitmap(Bitmap bitmap);
+	public void setNextBitmap(Bitmap bitmap);
 	public boolean DragToRight();
 	public void abortAnimation();
 	public void setBookView(BookView bookview);

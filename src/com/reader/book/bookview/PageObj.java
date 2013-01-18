@@ -44,12 +44,6 @@ public class PageObj extends DrawableObj {
 		this.pageString = str;
 	}
 
-	public void setLocal(int local) {
-		if (local < 0)
-			return;
-		pageString = this.mBookView.bookreading.getPageStr(local);
-	}
-
 	@Override
 	public void Draw(Canvas canvas, Paint paint) {
 		int y = 15;

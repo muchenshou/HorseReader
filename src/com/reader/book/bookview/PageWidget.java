@@ -17,6 +17,10 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Scroller;
@@ -124,11 +128,9 @@ public class PageWidget implements BookViewAnimation {
 			this.mBookView.postInvalidate();
 		}
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			abortAnimation();
 			calcCornerXY(event.getX(), event.getY());
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
-			// calcCornerXY(mTouch.x, mTouch.y);
 			// this.postInvalidate();
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -141,7 +143,6 @@ public class PageWidget implements BookViewAnimation {
 
 			this.mBookView.postInvalidate();
 		}
-		// return super.onTouchEvent(event);
 		return true;
 	}
 
@@ -523,7 +524,7 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	public boolean canDragOver() {
-		if (mTouchToCornerDis > mWidth / 10)
+		if (mTouchToCornerDis > mWidth / 100)
 			return true;
 		return false;
 	}
@@ -557,11 +558,15 @@ public class PageWidget implements BookViewAnimation {
 
 	public void AfterDraw(Canvas canvas) {
 		canvas.drawColor(0xFFAAAAAA);
+		if (mNextPageBitmap == null) {
+			canvas.drawBitmap(mCurPageBitmap, 0, 0, null);
+			return;
+		}
 		calcPoints();
-		drawCurrentPageArea(canvas, this.mBookView.mCurPageBitmap, mPath0);
-		drawNextPageAreaAndShadow(canvas, this.mBookView.mNextPageBitmap);
+		drawCurrentPageArea(canvas, mCurPageBitmap, mPath0);
+		drawNextPageAreaAndShadow(canvas, mNextPageBitmap);
 		drawCurrentPageShadow(canvas);
-		drawCurrentBackArea(canvas, this.mBookView.mCurPageBitmap);
+		drawCurrentBackArea(canvas, mCurPageBitmap);
 	}
 
 	public void update() {
@@ -572,19 +577,11 @@ public class PageWidget implements BookViewAnimation {
 	Bitmap mCurPageBitmap = null;
 	Bitmap mNextPageBitmap = null;
 
-	public Bitmap getCurBitmap(boolean update) {
-		if (!update)
-			return mCurPageBitmap;
-		mCurPageBitmap = Bitmap.createBitmap(mBookView.getWidth(),
-				mBookView.getHeight(), Bitmap.Config.ARGB_8888);
-		return mCurPageBitmap;
+	public void setCurBitmap(Bitmap bitmap) {
+		mCurPageBitmap = bitmap;
 	}
 
-	public Bitmap getNextBitmap(boolean update) {
-		if (!update)
-			return mNextPageBitmap;
-		mNextPageBitmap = Bitmap.createBitmap(mBookView.getWidth(),
-				mBookView.getHeight(), Bitmap.Config.ARGB_8888);
-		return mNextPageBitmap;
+	public void setNextBitmap(Bitmap bitmap) {
+		mNextPageBitmap = bitmap;
 	}
 }

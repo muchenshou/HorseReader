@@ -107,9 +107,7 @@ public class BookReading {
 				mPage.mLines.add(this.getLine(mPage.mLines.get(
 						mPage.mLines.size() - 1).getEnd()));
 			}
-
 		}
-
 		return mPage.getStrings();
 	}
 
@@ -134,6 +132,11 @@ public class BookReading {
 		return this.getPageStr(local);
 	}
 
+	public int getNextPagePosition() {
+		if (mPage.mLines.size() == 0)
+			return 0;
+		return mPage.mLines.getLast().getEnd();
+	}
 	private LinkedList<Line> mBufLine = new LinkedList<Line>();
 
 	private int preLineNum(int s) {
