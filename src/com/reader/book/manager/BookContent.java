@@ -18,6 +18,7 @@ import com.reader.config.PageConfig;
 
 import android.graphics.Paint;
 import android.util.Log;
+import java.util.Set;
 
 public class BookContent {
 	int mStart = 0;
@@ -29,15 +30,17 @@ public class BookContent {
 	Page mPage = new Page();
 	public Book mBook = null;
 	private PageConfig mPageConfig;
+
 	public BookContent(Book book, PageConfig pageConfig) {
 		mBook = book;
 		mPageConfig = pageConfig;
 		this.mPaint = mPageConfig.getPaint();
 	}
 
-	public String getCurContent(){
+	public String getCurContent() {
 		return mPage.getStrings().get(0);
 	}
+
 	Line getLine(int start) {
 		float[] widths = new float[1];
 		char[] ch = new char[1];
@@ -77,8 +80,7 @@ public class BookContent {
 	}
 
 	public int getLineHeight() {
-		return BookView.getTextHeight(mPaint)
-				+ this.mPageConfig.mPadding;
+		return BookView.getTextHeight(mPaint) + this.mPageConfig.mPadding;
 	}
 
 	public void update(int w, int h) {
@@ -91,6 +93,9 @@ public class BookContent {
 	}
 
 	public List<String> getPageStr(int start) {
+		if (mPage.mLines.size() != 0 && mPage.mLines.get(0).mStart == start) {
+			return mPage.getStrings();
+		}
 		mPage.mLines.clear();
 		for (; mPage.mLines.size() < pageline;) {
 			if (mPage.mLines.size() == 0) {
@@ -137,6 +142,7 @@ public class BookContent {
 			return 0;
 		return mPage.mLines.getLast().getEnd();
 	}
+
 	private LinkedList<Line> mBufLine = new LinkedList<Line>();
 
 	private int preLineNum(int s) {
@@ -149,7 +155,7 @@ public class BookContent {
 		if (charinfo.character == '\n') {
 			start -= charinfo.length;
 		}
-		
+
 		charinfo = this.mBook.getPreChar(start);
 		start -= charinfo.length;
 		while (charinfo.character != '\n') {
@@ -162,8 +168,8 @@ public class BookContent {
 
 		start += line.mLength;
 		this.mBufLine.clear();
-		
-		Log.i("prelinenum","sa:"+savevalue);
+
+		Log.i("prelinenum", "sa:" + savevalue);
 		while (line.mStart < savevalue) {
 			mBufLine.add(line);
 			line = this.getLine(start);
@@ -171,7 +177,7 @@ public class BookContent {
 				break;
 			start += line.mLength;
 		}
-		Log.i("prelinenum","start:"+line.mStart);
+		Log.i("prelinenum", "start:" + line.mStart);
 		return 0;
 	}
 
@@ -183,30 +189,32 @@ public class BookContent {
 		return false;
 	}
 
-	public boolean isBookStart(){
+	public boolean isBookStart() {
 		if (mPage.mLines.size() == 0)
 			return true;
 		if (mPage.mLines.get(0).mStart == 0)
 			return true;
 		return false;
 	}
+
 	public List<String> prePage() {
 		LinkedList<Line> prepage = new LinkedList<Line>();
-		if (this.isBookStart()){
+		if (this.isBookStart()) {
 			return mPage.getStrings();
 		}
 		this.preLineNum(this.mPage.mLines.get(0).mStart);
 		prepage.addAll(0, this.mBufLine);
-		for (;prepage.size()<this.pageline && !isBookEnd();) {
+		for (; prepage.size() < this.pageline && !isBookEnd();) {
 			preLineNum(prepage.get(0).mStart);
-			for (Line l: mBufLine){
+			for (Line l : mBufLine) {
 				Log.i("[prepage]", l.strLine.toString());
 			}
 			prepage.addAll(0, this.mBufLine);
 		}
 		this.mPage.mLines.clear();
-		this.mPage.mLines.addAll(0, prepage.subList(prepage.size()-pageline, prepage.size()-1));
-		return  mPage.getStrings();
+		this.mPage.mLines.addAll(0,
+				prepage.subList(prepage.size() - pageline, prepage.size() - 1));
+		return mPage.getStrings();
 	}
 
 	class Line {
