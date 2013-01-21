@@ -14,6 +14,8 @@ import java.util.NoSuchElementException;
 import com.reader.book.bookview.BookView;
 import com.reader.book.Book;
 import com.reader.book.CharInfo;
+import com.reader.book.Line;
+import com.reader.book.Page;
 import com.reader.config.PageConfig;
 
 import android.graphics.Paint;
@@ -74,9 +76,9 @@ public class BookContent {
 	}
 
 	public int getCurPosition() {
-		if (mPage.mLines.size() == 0)
+		if (mPage.getLinesSize() == 0)
 			return 0;
-		return mPage.mLines.get(0).mStart;
+		return mPage.getPageStartPosition();
 	}
 
 	public int getLineHeight() {
@@ -93,33 +95,24 @@ public class BookContent {
 	}
 
 	public List<String> getPageStr(int start) {
-		if (mPage.mLines.size() != 0 && mPage.mLines.get(0).mStart == start) {
+		if (mPage.getPageEndPosition() == start) {
 			return mPage.getStrings();
 		}
-		mPage.mLines.clear();
-		for (; mPage.mLines.size() < pageline;) {
-			if (mPage.mLines.size() == 0) {
+		mPage.clear();
+		for (; mPage.getLinesSize() < pageline;) {
+			if (mPage.getLinesSize() == 0) {
 
 				if (this.getLine(start) == null) {
 					break;
 				}
-				mPage.mLines.add(this.getLine(start));
+				mPage.addLine(this.getLine(start));
 			} else {
-				if (this.getLine(mPage.mLines.get(mPage.mLines.size() - 1)
-						.getEnd()) == null) {
+				if (this.getLine(mPage.getPageEndPosition()+ 1) == null) {
 					break;
 				}
-				mPage.mLines.add(this.getLine(mPage.mLines.get(
-						mPage.mLines.size() - 1).getEnd()));
+				mPage.addLine(this.getLine(mPage.getPageEndPosition() + 1));
 			}
 		}
-		return mPage.getStrings();
-	}
-
-	public List<String> nextLine() {
-		mPage.mLines.remove(0);
-		mPage.mLines.add(this.getLine(mPage.mLines.get(mPage.mLines.size() - 1)
-				.getEnd()));
 		return mPage.getStrings();
 	}
 
@@ -129,7 +122,7 @@ public class BookContent {
 		}
 		int local = 0;
 		try {
-			local = mPage.mLines.getLast().getEnd();
+			local = mPage.getPageEndPosition() + 1;
 		} catch (NoSuchElementException e) {
 			return mPage.getStrings();
 		}
@@ -138,16 +131,14 @@ public class BookContent {
 	}
 
 	public int getNextPagePosition() {
-		if (mPage.mLines.size() == 0)
-			return 0;
-		return mPage.mLines.getLast().getEnd();
+		return mPage.getPageEndPosition() + 1;
 	}
 
 	private LinkedList<Line> mBufLine = new LinkedList<Line>();
 
 	private int preLineNum(int s) {
 		int start = s;
-		Log.i("start local", "" + mPage.mLines.get(0).mStart);
+		Log.i("start local", "" + mPage.getPageStartPosition());
 		if (start <= 0)
 			return 0;
 		int savevalue = start;
@@ -190,9 +181,9 @@ public class BookContent {
 	}
 
 	public boolean isBookStart() {
-		if (mPage.mLines.size() == 0)
+		if (mPage.getLinesSize() == 0)
 			return true;
-		if (mPage.mLines.get(0).mStart == 0)
+		if (mPage.getPageEndPosition() == 0)
 			return true;
 		return false;
 	}
@@ -202,7 +193,7 @@ public class BookContent {
 		if (this.isBookStart()) {
 			return mPage.getStrings();
 		}
-		this.preLineNum(this.mPage.mLines.get(0).mStart);
+		this.preLineNum(this.mPage.getPageStartPosition());
 		prepage.addAll(0, this.mBufLine);
 		for (; prepage.size() < this.pageline && !isBookEnd();) {
 			preLineNum(prepage.get(0).mStart);
@@ -211,31 +202,10 @@ public class BookContent {
 			}
 			prepage.addAll(0, this.mBufLine);
 		}
-		this.mPage.mLines.clear();
-		this.mPage.mLines.addAll(0,
-				prepage.subList(prepage.size() - pageline, prepage.size() - 1));
+		this.mPage.clear();
+		//this.mPage.mLines.addAll(0,
+		//		prepage.subList(prepage.size() - pageline, prepage.size() - 1));
 		return mPage.getStrings();
 	}
 
-	class Line {
-		int mStart = 0;
-		int mLength = 0;// the length of the bytes
-		StringBuffer strLine = new StringBuffer();
-
-		int getEnd() {
-			return mStart + mLength;
-		}
-	}
-
-	class Page {
-		LinkedList<Line> mLines = new LinkedList<Line>();
-
-		List<String> getStrings() {
-			List<String> strs = new LinkedList<String>();
-			for (int i = 0; i < mLines.size(); i++) {
-				strs.add(mLines.get(i).strLine.toString());
-			}
-			return strs;
-		}
-	}
 }
