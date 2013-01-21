@@ -7,9 +7,11 @@
  * */
 package com.reader.book.manager;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 import com.reader.book.bookview.BookView;
 import com.reader.book.Book;
@@ -20,7 +22,6 @@ import com.reader.config.PageConfig;
 
 import android.graphics.Paint;
 import android.util.Log;
-import java.util.Set;
 
 public class BookContent {
 	int mStart = 0;
@@ -29,7 +30,9 @@ public class BookContent {
 	private float pageWidth = (float) 0.0;
 	private float pageHeight = (float) 0.0;
 	private Paint mPaint = null;
-	Page mPage = new Page();
+	// Page mPage = new Page();
+	LinkedList<Page> mPageBuffer = new LinkedList<Page>();
+	private final int PageBufferSize = 10;
 	public Book mBook = null;
 	private PageConfig mPageConfig;
 
@@ -40,7 +43,9 @@ public class BookContent {
 	}
 
 	public String getCurContent() {
-		return mPage.getStrings().get(0);
+		if (mPageBuffer.isEmpty())
+			return null;
+		return mPageBuffer.element().getStrings().get(0);
 	}
 
 	Line getLine(int start) {
@@ -76,9 +81,8 @@ public class BookContent {
 	}
 
 	public int getCurPosition() {
-		if (mPage.getLinesSize() == 0)
-			return 0;
-		return mPage.getPageStartPosition();
+		if (mPageBuffer.isEmpty()) return 0;
+		return mPageBuffer.element().getPageStartPosition();
 	}
 
 	public int getLineHeight() {
@@ -95,50 +99,50 @@ public class BookContent {
 	}
 
 	public List<String> getPageStr(int start) {
-		if (mPage.getPageEndPosition() == start) {
-			return mPage.getStrings();
+		if (!mPageBuffer.isEmpty()) {
+			Page page;
+			if ((page = existCurPage(start)) != null) {
+				return page.getStrings();
+			}
 		}
-		mPage.clear();
-		for (; mPage.getLinesSize() < pageline;) {
-			if (mPage.getLinesSize() == 0) {
+		Page page = new Page();
+		page.clear();
+		for (; page.getLinesSize() < pageline;) {
+			if (page.getLinesSize() == 0) {
 
 				if (this.getLine(start) == null) {
 					break;
 				}
-				mPage.addLine(this.getLine(start));
+				page.addLine(this.getLine(start));
 			} else {
-				if (this.getLine(mPage.getPageEndPosition()+ 1) == null) {
+				if (this.getLine(page.getPageEndPosition() + 1) == null) {
 					break;
 				}
-				mPage.addLine(this.getLine(mPage.getPageEndPosition() + 1));
+				page.addLine(this.getLine(page.getPageEndPosition() + 1));
 			}
 		}
-		return mPage.getStrings();
-	}
 
-	public List<String> nextPage() {
-		if (isBookEnd()) {
-			return mPage.getStrings();
+		mPageBuffer.add(page);
+		while (mPageBuffer.size() > this.PageBufferSize) {
+			Page p = mPageBuffer.removeFirst();
+			Log.i("songlog", "getPageStr:"+p);
 		}
-		int local = 0;
-		try {
-			local = mPage.getPageEndPosition() + 1;
-		} catch (NoSuchElementException e) {
-			return mPage.getStrings();
-		}
-
-		return this.getPageStr(local);
+		return page.getStrings();
 	}
 
 	public int getNextPagePosition() {
-		return mPage.getPageEndPosition() + 1;
+		if (!mPageBuffer.isEmpty()) {
+			Page page = mPageBuffer.getLast();
+			Log.i("songlog","getnext:"+page);
+			return page.getPageEndPosition() + 1;
+		}
+		return 0;
 	}
 
 	private LinkedList<Line> mBufLine = new LinkedList<Line>();
 
-	private int preLineNum(int s) {
+	private int preLinePosition(int s) {
 		int start = s;
-		Log.i("start local", "" + mPage.getPageStartPosition());
 		if (start <= 0)
 			return 0;
 		int savevalue = start;
@@ -172,40 +176,67 @@ public class BookContent {
 		return 0;
 	}
 
-	public List<String> preLine() {
-		return null;
-	}
-
 	public boolean isBookEnd() {
 		return false;
 	}
 
 	public boolean isBookStart() {
-		if (mPage.getLinesSize() == 0)
+		if (mPageBuffer.isEmpty())
 			return true;
-		if (mPage.getPageEndPosition() == 0)
+		Page page = mPageBuffer.getFirst();
+		if (page.getLinesSize() == 0)
+			return true;
+		if (page.getPageEndPosition() == 0)
 			return true;
 		return false;
 	}
-
-	public List<String> prePage() {
+	private Page existCurPage(int pos) {
+		for (Page p: mPageBuffer) {
+			if (p.getPageStartPosition() == pos) {
+				return p;
+			}
+		}
+		return null;
+	}
+	private Page existPrePage(int pos) {
+		for (Page p: mPageBuffer) {
+			if (p.getPageEndPosition() + 1 == pos) {
+				return p;
+			}
+		}
+		return null;
+	}
+	public List<String> prePage(int cur) {
+		int curPosition = cur;
+		Page page;
+		if ((page = existPrePage(curPosition)) != null) {
+			return page.getStrings();
+		}
 		LinkedList<Line> prepage = new LinkedList<Line>();
 		if (this.isBookStart()) {
-			return mPage.getStrings();
+			return getPageStr(0);
 		}
-		this.preLineNum(this.mPage.getPageStartPosition());
+		this.preLinePosition(curPosition);
 		prepage.addAll(0, this.mBufLine);
 		for (; prepage.size() < this.pageline && !isBookEnd();) {
-			preLineNum(prepage.get(0).mStart);
+			preLinePosition(prepage.get(0).mStart);
 			for (Line l : mBufLine) {
 				Log.i("[prepage]", l.strLine.toString());
 			}
 			prepage.addAll(0, this.mBufLine);
 		}
-		this.mPage.clear();
-		//this.mPage.mLines.addAll(0,
-		//		prepage.subList(prepage.size() - pageline, prepage.size() - 1));
-		return mPage.getStrings();
+		page = new Page();
+		page.clear();
+		for (Line l : prepage) {
+			page.addLine(l);
+		}
+
+		mPageBuffer.add(page);
+		while (mPageBuffer.size() > this.PageBufferSize) {
+			mPageBuffer.removeFirst();
+		}
+
+		return page.getStrings();
 	}
 
 }
