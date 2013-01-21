@@ -48,7 +48,7 @@ public class PageObj extends DrawableObj {
 	public void Draw(Canvas canvas, Paint paint) {
 		int y = 15;
 		for (String strLine : pageString) {
-			y += this.mBookView.bookreading.getLineHeight();
+			y += this.mBookView.mBookContent.getLineHeight();
 			canvas.drawText(strLine, 10, y, paint);
 		}
 	}

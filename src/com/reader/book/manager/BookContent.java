@@ -14,11 +14,12 @@ import java.util.NoSuchElementException;
 import com.reader.book.bookview.BookView;
 import com.reader.book.Book;
 import com.reader.book.CharInfo;
+import com.reader.config.PageConfig;
 
 import android.graphics.Paint;
 import android.util.Log;
 
-public class BookReading {
+public class BookContent {
 	int mStart = 0;
 	int mEnd = 0;
 	public int pageline = 5;
@@ -27,12 +28,11 @@ public class BookReading {
 	private Paint mPaint = null;
 	Page mPage = new Page();
 	public Book mBook = null;
-	private BookView mBookView;
-
-	public BookReading(Book book, BookView bookview) {
+	private PageConfig mPageConfig;
+	public BookContent(Book book, PageConfig pageConfig) {
 		mBook = book;
-		mBookView = bookview;
-		this.mPaint = mBookView.getPageConfig().getPaint();
+		mPageConfig = pageConfig;
+		this.mPaint = mPageConfig.getPaint();
 	}
 
 	public String getCurContent(){
@@ -78,7 +78,7 @@ public class BookReading {
 
 	public int getLineHeight() {
 		return BookView.getTextHeight(mPaint)
-				+ this.mBookView.getPageConfig().mPadding;
+				+ this.mPageConfig.mPadding;
 	}
 
 	public void update(int w, int h) {
@@ -211,7 +211,7 @@ public class BookReading {
 
 	class Line {
 		int mStart = 0;
-		int mLength = 0;// bytes
+		int mLength = 0;// the length of the bytes
 		StringBuffer strLine = new StringBuffer();
 
 		int getEnd() {

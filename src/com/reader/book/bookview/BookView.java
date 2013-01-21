@@ -9,7 +9,7 @@ package com.reader.book.bookview;
 
 import com.reader.book.Book;
 import com.reader.book.manager.BookManager;
-import com.reader.book.manager.BookReading;
+import com.reader.book.manager.BookContent;
 import com.reader.config.PageConfig;
 
 import android.content.Context;
@@ -29,8 +29,7 @@ public class BookView extends View implements View.OnTouchListener {
 	protected byte bookContent;
 	protected byte[] content;
 	protected int padding = 5;
-	BookManager mBookManager;
-	public BookReading bookreading;
+	public BookContent mBookContent;
 	private BookViewAnimation mAnimation;
 	public Bitmap m_book_bg = null;
 	Book mBook;
@@ -54,7 +53,7 @@ public class BookView extends View implements View.OnTouchListener {
 		this.mBook = book;
 		mPageConfig = new PageConfig(context);
 		mPaint = mPageConfig.getPaint();
-		bookreading = new BookReading(book, this);
+		mBookContent = new BookContent(book, mPageConfig);
 
 		mPageObj = new PageObj(this, book);
 		mTimeObj = new TimeObj();
@@ -62,7 +61,7 @@ public class BookView extends View implements View.OnTouchListener {
 		mBookNameObj = new BookNameObj();
 		mBookNameObj.setBookName(book.getName());
 
-		mBookProgressObj = new BookProgressObj(this.bookreading, book.size());
+		mBookProgressObj = new BookProgressObj(this.mBookContent, book.size());
 
 		this.mAnimation = new PageWidget(getContext());
 		this.mAnimation.setBookView(this);
@@ -105,7 +104,7 @@ public class BookView extends View implements View.OnTouchListener {
 		
 		this.mAnimation.AfterSizeChange(w, h, oldw, oldh);
 
-		bookreading.update(w - 20,
+		mBookContent.update(w - 20,
 				h - BookView.getTextHeight(this.mPageConfig.getOthersPaint())
 						- 20);
 		//
@@ -152,14 +151,14 @@ public class BookView extends View implements View.OnTouchListener {
 	}
 
 	public void update() {
-		bookreading.update();
+		mBookContent.update();
 		if (this.mInit == false) {
-			this.mPageObj.setPageString(bookreading.getPageStr(mBook.openOffset));
+			this.mPageObj.setPageString(mBookContent.getPageStr(mBook.openOffset));
 			mInit = true;
 		} else {
-			this.mPageObj.setPageString(bookreading.getPageStr(bookreading.getCurPosition()));
+			this.mPageObj.setPageString(mBookContent.getPageStr(mBookContent.getCurPosition()));
 		}
-		cur = bookreading.getCurPosition();
+		cur = mBookContent.getCurPosition();
 		Draw(mCurPageCanvas);
 		mAnimation.setCurBitmap(mCurPageBitmap);
 		this.mAnimation.update();
@@ -181,7 +180,7 @@ public class BookView extends View implements View.OnTouchListener {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			// draw current page and set it
 			mAnimation.abortAnimation();
-			mPageObj.setPageString(bookreading.getPageStr(cur));
+			mPageObj.setPageString(mBookContent.getPageStr(cur));
 			Draw(mCurPageCanvas);
 			mAnimation.setCurBitmap(mCurPageBitmap);
 			// draw next page and set it
@@ -191,8 +190,8 @@ public class BookView extends View implements View.OnTouchListener {
 			//} else 
 			//{
 				//nextPage();
-			cur = next = bookreading.getNextPagePosition();
-				mPageObj.setPageString(bookreading.getPageStr(next));
+			cur = next = mBookContent.getNextPagePosition();
+				mPageObj.setPageString(mBookContent.getPageStr(next));
 				//bookreading.nextPage();
 			//}
 			Draw(mNextPageCanvas);
@@ -209,7 +208,7 @@ public class BookView extends View implements View.OnTouchListener {
 	}
 	
 	public void setLocal(int offset) {
-		this.bookreading.getPageStr(offset);
+		this.mBookContent.getPageStr(offset);
 		this.update();
 	}
 }

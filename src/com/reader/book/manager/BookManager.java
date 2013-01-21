@@ -27,7 +27,7 @@ public class BookManager{
 	private BookView bookView;
 	public ReadingActivity bookActivity;
 
-	int bufferlocal = -1;// ÎÄ±¾¿éµÄÎ»ÖÃ
+	int bufferlocal = -1;// ï¿½Ä±ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 	int BUFLEN = 4 * 1024;
 
 	int position = 0;
@@ -68,10 +68,10 @@ public class BookManager{
 	}
 
 	public String getReadingContent(){
-		return this.bookView.bookreading.getCurContent();
+		return this.bookView.mBookContent.getCurContent();
 	}
 	public int getReadingPosition() {
-		return this.bookView.bookreading.getCurPosition();
+		return this.bookView.mBookContent.getCurPosition();
 	}
 
 }
