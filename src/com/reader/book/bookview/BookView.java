@@ -109,10 +109,10 @@ public class BookView extends View implements View.OnTouchListener {
 		float len = mBookNameObj.getNameMeasure(mPageConfig.getOthersPaint());
 		this.mBookNameObj.setPosition((w - (int) len) / 2, h - 5);
 		//
-		this.mBookProgressObj.setPosition(0, h - 5);
+		this.mBookProgressObj.setPosition(5, h - 5);
 		//
 		len = mPageConfig.getOthersPaint().measureText("00:00");
-		mTimeObj.setPosition(w - (int) len, h - 5);
+		mTimeObj.setPosition(w - (int) len -5, h - 5);
 
 		Bitmap BG = this.m_book_bg;
 
@@ -140,7 +140,6 @@ public class BookView extends View implements View.OnTouchListener {
 
 	public void computeScroll() {
 		super.computeScroll();
-		this.mAnimation.computeScroll();
 	}
 
 	@Override
@@ -181,7 +180,6 @@ public class BookView extends View implements View.OnTouchListener {
 		}
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			// draw current page and set it
-			mAnimation.abortAnimation();
 			mPageObj.setPageString(mBookContent.getPageStr(cur));
 			Draw(mCurPageCanvas);
 			mAnimation.setCurBitmap(mCurPageBitmap);
