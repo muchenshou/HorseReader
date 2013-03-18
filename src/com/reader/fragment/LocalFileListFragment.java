@@ -1,6 +1,7 @@
 package com.reader.fragment;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,10 @@ import java.util.List;
 import com.reader.main.R;
 import com.reader.record.BookLibrary;
 import com.reader.searchfile.FileListAdapter;
+import com.reader.searchfile.SearchFile;
+import com.reader.searchfile.SearchFile.FindOneBehavior;
+import com.reader.searchfile.SearchFileMultiThread;
+import com.reader.searchfile.SearchFileSingleThread;
 import com.reader.util.FilenameExtFilter;
 import com.reader.main.ReadingActivity;
 
@@ -98,53 +103,40 @@ public class LocalFileListFragment extends Fragment implements
 		// history
 		openFile(new File(bookname));
 	}
-
+	
 	public class SearchFileTask extends AsyncTask<Void, Void, Void> {
 		BookLibrary mBookLib;
 		private Context mContext;
 		private List<String> bookList = new ArrayList<String>();
+		SearchFile.FindOneBehavior mSearchFileCallBack = new FindOneBehavior() {
+			
+			@Override
+			public boolean accept(File pathname) {
+				mBookLib.addBook(pathname.getPath());
+				bookList.add(pathname.getPath());
+				return false;
+			}
+		};
+		SearchFile mSearchFile;
 		/**
 		 * @param context
 		 * @param cl
 		 */
 		public SearchFileTask(Context context, BookLibrary lib) {
+			String exts[] = { "txt", "umd" };
+			FileFilter fef = new FilenameExtFilter(exts);
 			mContext = context;
 			mBookLib = lib;
+			mSearchFile = new SearchFileMultiThread(mSearchFileCallBack, Environment
+					.getExternalStorageDirectory().getPath());
+			mSearchFile.setFilter(fef);
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			String exts[] = { "txt", "umd" };
 			bookList.clear();
-			try {
-				searchFileForExts(exts);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			mSearchFile.search();
 			return null;
-		}
-
-		public void searchFileForExts(String[] exts) throws RemoteException {
-			FilenameExtFilter fef = new FilenameExtFilter(exts);
-			searchBookFromDir(new File(Environment
-					.getExternalStorageDirectory().getPath()), fef);
-
-		}
-
-		private void searchBookFromDir(File file, FilenameFilter filter) {
-			File[] array = file.listFiles(filter);
-			if (array == null) {
-				return;
-			}
-			for (int i = 0; i < array.length; i++) {
-				if (array[i].isDirectory() == true) {
-					searchBookFromDir(array[i], filter);
-				} else {
-					mBookLib.addBook(array[i].getPath());
-					bookList.add(array[i].getPath());
-					Log.i("songlog",array[i].getPath());
-				}
-			}
 		}
 
 		@Override

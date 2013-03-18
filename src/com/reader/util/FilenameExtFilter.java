@@ -20,11 +20,12 @@
 package com.reader.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class FilenameExtFilter implements FilenameFilter {
+public class FilenameExtFilter implements FileFilter {
 
     private HashSet<String> mExts = new HashSet<String>();
 
@@ -39,9 +40,9 @@ public class FilenameExtFilter implements FilenameFilter {
         return mExts.contains(ext.toLowerCase());
     }
 
-    public boolean accept(File dir, String filename) {
-
-        File file = new File(dir + File.separator + filename);
+	@Override
+	public boolean accept(File file) {
+		String filename = file.getAbsolutePath();
         if (file.isDirectory()) {
             return true;
         }
@@ -51,7 +52,7 @@ public class FilenameExtFilter implements FilenameFilter {
             String ext = (String) filename.subSequence(dotPosition + 1, filename.length());
             return contains(ext.toLowerCase());
         }
+        return true;
+	}
 
-        return false;
-    }
 }

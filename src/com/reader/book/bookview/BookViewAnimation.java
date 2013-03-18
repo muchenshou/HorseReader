@@ -12,9 +12,9 @@ public interface BookViewAnimation {
 	public boolean DragToRight();
 	public void abortAnimation();
 	public void setBookView(BookView bookview);
-	public boolean AfterTouch(View v, MotionEvent event);
-	public void AfterSizeChange(int w, int h, int oldw, int oldh);
-	public void AfterDraw(Canvas canvas);
+	public boolean onTouch(View v, MotionEvent event);
+	public void onSizeChange(int w, int h, int oldw, int oldh);
+	public void onDraw(Canvas canvas);
 	public void update();
 	public void computeScroll();
 }

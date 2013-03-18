@@ -30,18 +30,18 @@ public class PageWidget implements BookViewAnimation {
 	// private static final String TAG = "hmg";
 	private int mWidth = 0;
 	private int mHeight = 0;
-	private int mCornerX = 0; // ��ק���Ӧ��ҳ��
+	private int mCornerX = 0; // 锟斤拷拽锟斤拷锟接︼拷锟揭筹拷锟�
 	private int mCornerY = 0;
 	private Path mPath0;
 	private Path mPath1;
 
-	PointF mTouch = new PointF(); // ��ק��
-	PointF mBezierStart1 = new PointF(); // �����������ʼ��
-	PointF mBezierControl1 = new PointF(); // ��������߿��Ƶ�
-	PointF mBeziervertex1 = new PointF(); // ��������߶���
-	PointF mBezierEnd1 = new PointF(); // ��������߽����
+	PointF mTouch = new PointF(); // 锟斤拷拽锟斤拷
+	PointF mBezierStart1 = new PointF(); // 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟绞硷拷锟�
+	PointF mBezierControl1 = new PointF(); // 锟斤拷锟斤拷锟斤拷锟斤拷呖锟斤拷频锟�
+	PointF mBeziervertex1 = new PointF(); // 锟斤拷锟斤拷锟斤拷锟斤拷叨锟斤拷锟�
+	PointF mBezierEnd1 = new PointF(); // 锟斤拷锟斤拷锟斤拷锟斤拷呓锟斤拷锟斤拷
 
-	PointF mBezierStart2 = new PointF(); // ��һ�����������
+	PointF mBezierStart2 = new PointF(); // 锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
 	PointF mBezierControl2 = new PointF();
 	PointF mBeziervertex2 = new PointF();
 	PointF mBezierEnd2 = new PointF();
@@ -54,7 +54,7 @@ public class PageWidget implements BookViewAnimation {
 	Matrix mMatrix;
 	float[] mMatrixArray = { 0, 0, 0, 0, 0, 0, 0, 0, 1.0f };
 
-	boolean mIsRTandLB; // �Ƿ�������������
+	boolean mIsRTandLB; // 锟角凤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
 	float mMaxLength = (float) Math.hypot(mWidth, mHeight);
 	int[] mBackShadowColors;
 	int[] mFrontShadowColors;
@@ -89,12 +89,12 @@ public class PageWidget implements BookViewAnimation {
 		mMatrix = new Matrix();
 		mScroller = new Scroller(context);
 
-		mTouch.x = 0.01f; // ����x,yΪ0,�����ڵ����ʱ��������
+		mTouch.x = 0.01f; // 锟斤拷锟斤拷x,y为0,锟斤拷锟斤拷锟节碉拷锟斤拷锟绞憋拷锟斤拷锟斤拷锟斤拷锟�
 		mTouch.y = 0.01f;
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : ������ק���Ӧ����ק��
+	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟斤拷锟斤拷拽锟斤拷锟接︼拷锟斤拷锟阶э拷锟�
 	 */
 	public void calcCornerXY(float x, float y) {
 		if (x <= mWidth / 2)
@@ -150,11 +150,11 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : ���ֱ��P1P2��ֱ��P3P4�Ľ������
+	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟街憋拷锟絇1P2锟斤拷直锟斤拷P3P4锟侥斤拷锟斤拷锟斤拷锟�
 	 */
 	public PointF getCross(PointF P1, PointF P2, PointF P3, PointF P4) {
 		PointF CrossP = new PointF();
-		// ��Ԫ����ͨʽ�� y=ax+b
+		// 锟斤拷元锟斤拷锟斤拷通式锟斤拷 y=ax+b
 		float a1 = (P2.y - P1.y) / (P2.x - P1.x);
 		float b1 = ((P1.x * P2.y) - (P2.x * P1.y)) / (P1.x - P2.x);
 
@@ -179,8 +179,8 @@ public class PageWidget implements BookViewAnimation {
 				/ 2;
 		mBezierStart1.y = mCornerY;
 
-		// ��mBezierStart1.x < 0����mBezierStart1.x > 480ʱ
-		// ������ҳ�������BUG���ڴ�����
+		// 锟斤拷mBezierStart1.x < 0锟斤拷锟斤拷mBezierStart1.x > 480时
+		// 锟斤拷锟斤拷锟斤拷页锟斤拷锟斤拷锟斤拷锟紹UG锟斤拷锟节达拷锟斤拷锟斤拷
 		if (mTouch.x > 0 && mTouch.x < mWidth) {
 			if (mBezierStart1.x < 0 || mBezierStart1.x > mWidth) {
 				if (mBezierStart1.x < 0)
@@ -279,7 +279,7 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : ������Ӱ��GradientDrawable
+	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟斤拷锟斤拷影锟斤拷GradientDrawable
 	 */
 	private void createDrawable() {
 		int[] color = { 0x333333, 0xb0333333 };
@@ -324,7 +324,7 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : ���Ʒ���ҳ����Ӱ
+	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟狡凤拷锟斤拷页锟斤拷锟斤拷影
 	 */
 	public void drawCurrentPageShadow(Canvas canvas) {
 		double degree;
@@ -339,7 +339,7 @@ public class PageWidget implements BookViewAnimation {
 					- Math.atan2(mTouch.y - mBezierControl1.y, mTouch.x
 							- mBezierControl1.x);
 		}
-		// ����ҳ��Ӱ������touch��ľ���
+		// 锟斤拷锟斤拷页锟斤拷影锟斤拷锟斤拷锟斤拷touch锟斤拷木锟斤拷锟�
 		double d1 = (float) 25 * 1.414 * Math.cos(degree);
 		double d2 = (float) 25 * 1.414 * Math.sin(degree);
 		float x = (float) (mTouch.x + d1);
@@ -427,7 +427,7 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : ���Ʒ���ҳ����
+	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟狡凤拷锟斤拷页锟斤拷锟斤拷
 	 */
 	private void drawCurrentBackArea(Canvas canvas, Bitmap bitmap) {
 		int i = (int) (mBezierStart1.x + mBezierControl1.x) / 2;
@@ -494,8 +494,8 @@ public class PageWidget implements BookViewAnimation {
 
 	private void startAnimation(int delayMillis) {
 		int dx, dy;
-		// dx ˮƽ���򻬶��ľ��룬��ֵ��ʹ�����������
-		// dy ��ֱ���򻬶��ľ��룬��ֵ��ʹ�������Ϲ���
+		// dx 水平锟斤拷锟津滑讹拷锟侥撅拷锟诫，锟斤拷值锟斤拷使锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
+		// dy 锟斤拷直锟斤拷锟津滑讹拷锟侥撅拷锟诫，锟斤拷值锟斤拷使锟斤拷锟斤拷锟斤拷锟较癸拷锟斤拷
 		if (mCornerX > 0) {
 			dx = -(int) (mWidth + mTouch.x);
 		} else {
@@ -504,7 +504,7 @@ public class PageWidget implements BookViewAnimation {
 		if (mCornerY > 0) {
 			dy = (int) (mHeight - mTouch.y);
 		} else {
-			dy = (int) (1 - mTouch.y); // ��ֹmTouch.y���ձ�Ϊ0
+			dy = (int) (1 - mTouch.y); // 锟斤拷止mTouch.y锟斤拷锟秸憋拷为0
 		}
 		mScroller.startScroll((int) mTouch.x, (int) mTouch.y, dx - 1, dy - 1,
 				delayMillis);
@@ -523,7 +523,7 @@ public class PageWidget implements BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : �Ƿ����߷����ұ�
+	 * Author : hmg25 Version: 1.0 Description : 锟角凤拷锟斤拷锟竭凤拷锟斤拷锟揭憋拷
 	 */
 	public boolean DragToRight() {
 		if (mCornerX > 0)
@@ -531,7 +531,7 @@ public class PageWidget implements BookViewAnimation {
 		return true;
 	}
 
-	public boolean AfterTouch(View v, MotionEvent event) {
+	public boolean onTouch(View v, MotionEvent event) {
 		return doTouchEvent(event);
 	}
 
@@ -541,7 +541,7 @@ public class PageWidget implements BookViewAnimation {
 		mBookView = bookview;
 	}
 
-	public void AfterSizeChange(int w, int h, int oldw, int oldh) {
+	public void onSizeChange(int w, int h, int oldw, int oldh) {
 		// TODO Auto-generated method stub
 		this.mWidth = w;
 		this.mHeight = h;
@@ -549,7 +549,7 @@ public class PageWidget implements BookViewAnimation {
 		mMaxLength = (float) Math.hypot(mWidth, mHeight);
 	}
 
-	public void AfterDraw(Canvas canvas) {
+	public void onDraw(Canvas canvas) {
 		canvas.drawColor(0xFFAAAAAA);
 		if (mNextPageBitmap == null) {
 			canvas.drawBitmap(mCurPageBitmap, 0, 0, null);
