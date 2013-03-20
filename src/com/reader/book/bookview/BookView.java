@@ -61,7 +61,8 @@ public class BookView extends View implements View.OnTouchListener {
 
 		mBookProgressObj = new BookProgressObj(this.mBookContent, book.size());
 
-		this.mAnimation = new PageWidget(getContext());
+		//this.mAnimation = new PageWidget(getContext());
+		this.mAnimation = new NoTurnAnimation(getContext());
 		this.mAnimation.setBookView(this);
 	}
 
