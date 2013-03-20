@@ -6,6 +6,7 @@
 package com.reader.book.bookview;
 
 import android.content.Context;
+import android.content.SyncAdapterType;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
@@ -15,6 +16,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
@@ -69,8 +71,9 @@ public class PageWidget extends BookViewAnimation {
 	GradientDrawable mFrontShadowDrawableVRL;
 
 	Paint mPaint;
-	
+
 	private static int DELAY_TURN_RIGHT = 400;
+
 	public PageWidget(Context context) {
 		// TODO Auto-generated constructor stub
 		mPath0 = new Path();
@@ -89,6 +92,7 @@ public class PageWidget extends BookViewAnimation {
 
 		mTouch.x = 0.01f; // 锟斤拷锟斤拷x,y为0,锟斤拷锟斤拷锟节碉拷锟斤拷锟绞憋拷锟斤拷锟斤拷锟斤拷锟�
 		mTouch.y = 0.01f;
+
 	}
 
 	/**
@@ -117,7 +121,7 @@ public class PageWidget extends BookViewAnimation {
 	public boolean doTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
-
+			mState = STATE_TOUCHING;
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
 
@@ -127,28 +131,28 @@ public class PageWidget extends BookViewAnimation {
 			if (mTouch.y >= mHeight) {
 				mTouch.y = mHeight - 0.01f;
 			}
-			this.mBookView.postInvalidate();
 		}
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			calcCornerXY(event.getX(), event.getY());
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
+			mState = STATE_TOUCH_START;
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
-			//if (canDragOver()) {
-				startAnimation(DELAY_TURN_RIGHT);
-			//} else {
-			//	mTouch.x = mCornerX - 0.09f;
-			//	mTouch.y = mCornerY - 0.09f;
-			//}
+			// if (canDragOver()) {
+			startAnimation(DELAY_TURN_RIGHT);
+			// } else {
+			// mTouch.x = mCornerX - 0.09f;
+			// mTouch.y = mCornerY - 0.09f;
+			// }
 
-			this.mBookView.postInvalidate();
 		}
 		return true;
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟街憋拷锟絇1P2锟斤拷直锟斤拷P3P4锟侥斤拷锟斤拷锟斤拷锟�
+	 * Author : hmg25 Version: 1.0 Description :
+	 * 锟斤拷锟街憋拷锟絇1P2锟斤拷直锟斤拷P3P4锟侥斤拷锟斤拷锟斤拷锟�
 	 */
 	public PointF getCross(PointF P1, PointF P2, PointF P3, PointF P4) {
 		PointF CrossP = new PointF();
@@ -224,7 +228,7 @@ public class PageWidget extends BookViewAnimation {
 		mBeziervertex2.y = (2 * mBezierControl2.y + mBezierStart2.y + mBezierEnd2.y) / 4;
 	}
 
-	private void drawCurrentPageArea(Canvas canvas, Bitmap bitmap, Path path) {
+	private void drawCurrentPageArea(Canvas canvas, Bitmap bitmap) {
 		mPath0.reset();
 		mPath0.moveTo(mBezierStart1.x, mBezierStart1.y);
 		mPath0.quadTo(mBezierControl1.x, mBezierControl1.y, mBezierEnd1.x,
@@ -237,7 +241,7 @@ public class PageWidget extends BookViewAnimation {
 		mPath0.close();
 
 		canvas.save();
-		canvas.clipPath(path, Region.Op.XOR);
+		canvas.clipPath(mPath0, Region.Op.XOR);
 		canvas.drawBitmap(bitmap, 0, 0, null);
 		canvas.restore();
 	}
@@ -479,21 +483,28 @@ public class PageWidget extends BookViewAnimation {
 		mFolderShadowDrawable.draw(canvas);
 		canvas.restore();
 	}
-
+	
 	public void animation() {
+		if (mState != STATE_ANIMATION)
+			return;
 		long now = System.currentTimeMillis();
-		if ( now < mEnd) {
-			mTouch.x = mStartX +mX*(now - mStart)/DELAY_TURN_RIGHT;
-			mTouch.y = mStartY +mY*(now -mStart)/DELAY_TURN_RIGHT;
+		if (now < mEnd) {
+			mTouch.x = mStartX + mX * (now - mStart) / DELAY_TURN_RIGHT;
+			mTouch.y = mStartY + mY * (now - mStart) / DELAY_TURN_RIGHT;
+			this.mBookView.postInvalidate();
+		} else {
+			mState = STATE_ANIMATION_END;
 			this.mBookView.postInvalidate();
 		}
 	}
+
 	long mStart;
-	long mEnd=0;
+	long mEnd = 0;
 	int mX;
 	int mY;
 	int mStartX;
 	int mStartY;
+
 	private void startAnimation(int delayMillis) {
 		int dx, dy;
 		// dx 水平锟斤拷锟津滑讹拷锟侥撅拷锟诫，锟斤拷值锟斤拷使锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
@@ -510,12 +521,11 @@ public class PageWidget extends BookViewAnimation {
 		}
 		mX = dx - 1;
 		mY = dy - 1;
-		mStartX = (int)mTouch.x;
-		mStartY = (int)mTouch.y;
-		//mScroller.startScroll((int) mTouch.x, (int) mTouch.y, dx - 1, dy - 1,
-		//		delayMillis);
+		mStartX = (int) mTouch.x;
+		mStartY = (int) mTouch.y;
 		mStart = System.currentTimeMillis();
 		mEnd = mStart + delayMillis;
+		this.mState = STATE_ANIMATION;
 	}
 
 	public boolean canDragOver() {
@@ -552,13 +562,12 @@ public class PageWidget extends BookViewAnimation {
 	}
 
 	public void onDraw(Canvas canvas) {
-		canvas.drawColor(0xFFAAAAAA);
 		if (mNextPageBitmap == null) {
 			canvas.drawBitmap(mCurPageBitmap, 0, 0, null);
 			return;
 		}
 		calcPoints();
-		drawCurrentPageArea(canvas, mCurPageBitmap, mPath0);
+		drawCurrentPageArea(canvas, mCurPageBitmap);
 		drawNextPageAreaAndShadow(canvas, mNextPageBitmap);
 		drawCurrentPageShadow(canvas);
 		drawCurrentBackArea(canvas, mCurPageBitmap);

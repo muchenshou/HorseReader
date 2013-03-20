@@ -144,33 +144,39 @@ public class BookView extends View implements View.OnTouchListener {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		if (mAnimation.state() == BookViewAnimation.NONE) {
+			canvas.drawBitmap(mCurPageBitmap, 0, 0, mPaint);
+			return;
+		}
+		if (mAnimation.state() == BookViewAnimation.STATE_ANIMATION_END) {
+			mBookContent.turnToNext();
+			mPageObj.setPageString(mBookContent.getCurPage());
+			Draw(mCurPageCanvas);
+			canvas.drawBitmap(mCurPageBitmap, 0, 0, mPaint);
+			mAnimation.setState(BookViewAnimation.NONE);
+			postInvalidate();
+			return;
+		}
 		this.mAnimation.onDraw(canvas);
 	}
 
 	public void update() {
 		mBookContent.update();
 		if (this.mInit == false) {
-			this.mPageObj.setPageString(mBookContent
-					.getPageStr(mBook.openOffset));
+			mBookContent.setCurPosition(mBook.openOffset);
+			this.mPageObj.setPageString(mBookContent.getCurPage());
 			mInit = true;
 		} else {
-			this.mPageObj.setPageString(mBookContent.getPageStr(mBookContent
-					.getCurPosition()));
+			this.mPageObj.setPageString(mBookContent.getCurPage());
 		}
-		cur = mBookContent.getCurPosition();
 		Draw(mCurPageCanvas);
 		mAnimation.setCurBitmap(mCurPageBitmap);
 		this.mAnimation.update();
 		postInvalidate();
 	}
 
-	int cur;
-	int next;
-
 	public boolean onTouch(View v, MotionEvent event) {
-
 		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
-
 		if (event.getAction() == MotionEvent.ACTION_DOWN
 				&& event.getX() < rect.exactCenterX() + 40
 				&& event.getX() > rect.exactCenterX() - 40
@@ -178,29 +184,25 @@ public class BookView extends View implements View.OnTouchListener {
 				&& event.getY() < rect.exactCenterY() + 20) { // gridview
 			return false;
 		}
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			// draw current page and set it
-			mPageObj.setPageString(mBookContent.getPageStr(cur));
+		mAnimation.onTouch(v, event);
+		if (mAnimation.state() == BookViewAnimation.STATE_TOUCH_START) {
+			// Draw current page and Set
+			mPageObj.setPageString(mBookContent.getCurPage());
 			Draw(mCurPageCanvas);
 			mAnimation.setCurBitmap(mCurPageBitmap);
-			// draw next page and set it
-
-			cur = next = mBookContent.getNextPagePosition();
-			mPageObj.setPageString(mBookContent.getPageStr(next));
+			
+			// Draw next or pre page and Set it
+			mPageObj.setPageString(mBookContent.getNextPage());
 			Draw(mNextPageCanvas);
 			mAnimation.setNextBitmap(mNextPageBitmap);
-			this.mAnimation.onTouch(v, event);
-			this.postInvalidate();
-		} else if (event.getAction() == MotionEvent.ACTION_UP) {
-			this.mAnimation.onTouch(v, event);
-		} else {
-			this.mAnimation.onTouch(v, event);
+			
 		}
+		postInvalidate();
 		return true;
 	}
 
 	public void setLocal(int offset) {
-		this.mBookContent.getPageStr(offset);
+		this.mBookContent.setCurPosition(offset);
 		this.update();
 	}
 }

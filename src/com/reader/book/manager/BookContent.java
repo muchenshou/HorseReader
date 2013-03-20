@@ -46,7 +46,7 @@ public class BookContent {
 	public String getCurContent() {
 		if (mPageBuffer.isEmpty())
 			return null;
-		return mPageBuffer.getCurPage().getStrings().get(0);
+		return mPageBuffer.existPage(mCurPosition).getStrings().get(0);
 	}
 
 	Line getLine(int start) {
@@ -82,8 +82,7 @@ public class BookContent {
 	}
 
 	public int getCurPosition() {
-		if (mPageBuffer.isEmpty()) return 0;
-		return mPageBuffer.getCurPage().getPageStartPosition();
+		return mCurPosition;
 	}
 
 	public int getLineHeight() {
@@ -98,8 +97,30 @@ public class BookContent {
 	public void update() {
 		pageline = (int) (pageHeight / getLineHeight());
 	}
-
-	public List<String> getPageStr(int start) {
+	private int mCurPosition = 0;
+	public void setCurPosition(int cur) {
+		mCurPosition = cur;
+		getPageStr(mCurPosition);
+	}
+	public List<String> getCurPage() {
+		return getPageStr(mCurPosition);
+	}
+	
+	public List<String> getNextPage() {
+		return getPageStr(getNextPagePosition());
+	}
+	
+	public List<String> getPrePage() {
+		return getPageStr(getprePagePosition());
+	}
+	
+	public void turnToPre() {
+		setCurPosition(getprePagePosition());
+	}
+	public void turnToNext() {
+		setCurPosition(getNextPagePosition());
+	}
+	private List<String> getPageStr(int start) {
 		if (!mPageBuffer.isEmpty()) {
 			Page page;
 			if ((page = mPageBuffer.existPage(start)) != null) {
@@ -129,9 +150,7 @@ public class BookContent {
 
 	public int getNextPagePosition() {
 		if (!mPageBuffer.isEmpty()) {
-			Page page = mPageBuffer.getCurPage();
-			Log.i("songlog","getnext:"+page);
-			return page.getPageEndPosition() + 1;
+			return mPageBuffer.existPage(mCurPosition).getPageEndPosition() + 1;
 		}
 		return 0;
 	}
@@ -182,7 +201,7 @@ public class BookContent {
 	public boolean isBookStart() {
 		if (mPageBuffer.isEmpty())
 			return true;
-		Page page = mPageBuffer.getCurPage();
+		Page page = mPageBuffer.existPage(mCurPosition);
 		if (page.getLinesSize() == 0)
 			return true;
 		if (page.getPageEndPosition() == 0)
@@ -190,8 +209,8 @@ public class BookContent {
 		return false;
 	}
 
-	public int prePagePosition(int cur) {
-		int curPosition = cur;
+	public int getprePagePosition() {
+		int curPosition = mCurPosition;
 		Page page;
 		if ((page = mPageBuffer.existPrePage(curPosition)) != null) {
 			return page.getPageStartPosition();
