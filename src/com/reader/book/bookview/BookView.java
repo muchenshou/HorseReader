@@ -149,7 +149,11 @@ public class BookView extends View implements View.OnTouchListener {
 			return;
 		}
 		if (mAnimation.state() == BookViewAnimation.STATE_ANIMATION_END) {
-			mBookContent.turnToNext();
+			if (mAnimation.DragToRight())
+				mBookContent.turnToPre();
+			else
+				mBookContent.turnToNext();
+			
 			mPageObj.setPageString(mBookContent.getCurPage());
 			Draw(mCurPageCanvas);
 			canvas.drawBitmap(mCurPageBitmap, 0, 0, mPaint);
@@ -192,10 +196,12 @@ public class BookView extends View implements View.OnTouchListener {
 			mAnimation.setCurBitmap(mCurPageBitmap);
 			
 			// Draw next or pre page and Set it
-			mPageObj.setPageString(mBookContent.getNextPage());
+			if (mAnimation.DragToRight())
+				mPageObj.setPageString(mBookContent.getPrePage());
+			else
+				mPageObj.setPageString(mBookContent.getNextPage());
 			Draw(mNextPageCanvas);
 			mAnimation.setNextBitmap(mNextPageBitmap);
-			
 		}
 		postInvalidate();
 		return true;

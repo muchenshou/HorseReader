@@ -144,7 +144,7 @@ public class BookContent {
 			}
 		}
 
-		mPageBuffer.setCurPage(mPageBuffer.addPage(page));
+		mPageBuffer.addPage(mPageBuffer.addPage(page));
 		return page.getStrings();
 	}
 

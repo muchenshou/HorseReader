@@ -6,16 +6,6 @@ public class PageBuffer {
 	LinkedList<Page> mPages = new LinkedList<Page>();
 	Page mCurPage = null;
 	final int PAGESIZE = 10;
-	public void setCurPage (Page page) {
-		int index = mPages.indexOf(page);
-		mCurPage = page;
-		if (index == -1) {
-			addPage(page);
-		}
-	}
-	public Page getCurPage() {
-		return mCurPage;
-	}
 	
 	public Page existPage(int pos){
 		for (Page p: mPages) {
