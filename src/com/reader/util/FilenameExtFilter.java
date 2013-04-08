@@ -52,7 +52,7 @@ public class FilenameExtFilter implements FileFilter {
             String ext = (String) filename.subSequence(dotPosition + 1, filename.length());
             return contains(ext.toLowerCase());
         }
-        return true;
+        return false;
 	}
 
 }

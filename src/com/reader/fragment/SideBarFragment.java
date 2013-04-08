@@ -22,7 +22,6 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 	int mCurCheckPosition = 0;
 	ListView listview;
 	AdobeView adobe;
-	// copied by hetao
 	public static final int[] TITLES = { R.string.records, R.string.local,
 			R.string.internet, R.string.about };
 
@@ -41,12 +40,12 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 		listview.setOnItemClickListener(this);
 		return adobe;
 	}
-
+	ActionBar actionBar;
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		final ActionBar actionBar = (ActionBar) adobe
+		actionBar = (ActionBar) adobe
 				.findViewById(R.id.actionbar);
 		actionBar.setTitle("Home");
 
@@ -78,12 +77,25 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 			FragmentTransaction ft = fm.beginTransaction();
 			ft.replace(R.id.content, hf);
 			ft.commit();
+			actionBar.removeAllActions();
 		}
 		if (arg2 == 1) {
 			FragmentManager fm = this.getFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			ft.replace(R.id.content, lf);
 			ft.commit();
+			actionBar.removeAllActions();
+			actionBar.addAction(new Action() {
+				@Override
+				public void performAction(View view) {
+					lf.onClick(view);
+				}
+				
+				@Override
+				public int getDrawable() {
+					return R.drawable.menu_refresh;
+				}
+			});
 
 		}
 		if (arg2 == 2) {
@@ -91,12 +103,14 @@ public class SideBarFragment extends Fragment implements OnItemClickListener {
 			FragmentTransaction ft = fm.beginTransaction();
 			ft.replace(R.id.content, nf);
 			ft.commit();
+			actionBar.removeAllActions();
 		}
 		if (arg2 == 3) {
 			FragmentManager fm = this.getFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			ft.replace(R.id.content, about);
 			ft.commit();
+			actionBar.removeAllActions();
 		}
 
 	}

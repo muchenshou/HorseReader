@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 
 public class AdobeView extends ViewGroup{
@@ -98,20 +99,22 @@ public class AdobeView extends ViewGroup{
 			child = this.getChildAt(1);
 			animation1 = new TranslateAnimation(
 					(0.0f - (float) child.getWidth()), 0.0f, 0.0f, 0.0f);
-			animation1.setDuration(500);
+			animation1.setDuration(300);
 			child2 = this.getChildAt(2);
 
 			animation2 = new TranslateAnimation(
 					(0.0f - (float) child.getWidth()), 0.0f, 0.0f, 0.0f);
+			animation2.setInterpolator(new AccelerateInterpolator());
 			animation2.setDuration(500);
 			// child.startAnimation(animation1);
 			child2.startAnimation(animation2);
+			
 		} else {
 			child = this.getChildAt(1);
 			child2 = this.getChildAt(2);
 			animation2 = new TranslateAnimation(
 					0.0f + (float) child.getWidth(), 0.0f, 0.0f, 0.0f);
-			animation2.setDuration(500);
+			animation2.setDuration(300);
 			child2.startAnimation(animation2);
 		}
 

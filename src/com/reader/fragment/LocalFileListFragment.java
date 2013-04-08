@@ -43,7 +43,6 @@ public class LocalFileListFragment extends Fragment implements
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		mFileListAdapter.notifyDataSetChanged();
-		Log.i("songlog", "mfilelistadapter:"+mFileListAdapter.getCount());
 	}
 
 	@Override
@@ -56,15 +55,7 @@ public class LocalFileListFragment extends Fragment implements
 		mListView.setScrollingCacheEnabled(false);
 		mFileListAdapter = new FileListAdapter(getActivity());
 		mListView.setAdapter(mFileListAdapter);
-		Button update = (Button) tv.findViewById(R.id.updateButton);
-		update.setClickable(true);
-		update.setOnClickListener(this);
 		return tv;
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
 	}
 
 	private void searchBook(BookLibrary lib) {
@@ -76,7 +67,7 @@ public class LocalFileListFragment extends Fragment implements
 		}
 		lib.deleteAllBook();
 		SearchFileTask sft = new SearchFileTask(getActivity(), lib);
-		sft.execute(null);
+		sft.execute();
 		return;
 	}
 
@@ -91,11 +82,8 @@ public class LocalFileListFragment extends Fragment implements
 	}
 
 	public void onClick(View v) {
-		if (v.getId() == R.id.updateButton) {
-			BookLibrary lib = new BookLibrary(this.getActivity());
-			searchBook(lib);
-		}
-
+		BookLibrary lib = new BookLibrary(this.getActivity());
+		searchBook(lib);
 	}
 
 	public void onItemClick(AdapterView<?> l, View arg1, int position, long arg3) {
@@ -103,21 +91,22 @@ public class LocalFileListFragment extends Fragment implements
 		// history
 		openFile(new File(bookname));
 	}
-	
+
 	public class SearchFileTask extends AsyncTask<Void, Void, Void> {
 		BookLibrary mBookLib;
 		private Context mContext;
 		private List<String> bookList = new ArrayList<String>();
 		SearchFile.FindOneBehavior mSearchFileCallBack = new FindOneBehavior() {
-			
+
 			@Override
 			public boolean accept(File pathname) {
-				mBookLib.addBook(pathname.getPath());
+				// mBookLib.addBook(pathname.getPath());
 				bookList.add(pathname.getPath());
 				return false;
 			}
 		};
 		SearchFile mSearchFile;
+
 		/**
 		 * @param context
 		 * @param cl
@@ -127,8 +116,8 @@ public class LocalFileListFragment extends Fragment implements
 			FileFilter fef = new FilenameExtFilter(exts);
 			mContext = context;
 			mBookLib = lib;
-			mSearchFile = new SearchFileMultiThread(mSearchFileCallBack, Environment
-					.getExternalStorageDirectory().getPath());
+			mSearchFile = new SearchFileMultiThread(mSearchFileCallBack,
+					Environment.getExternalStorageDirectory().getPath());
 			mSearchFile.setFilter(fef);
 		}
 

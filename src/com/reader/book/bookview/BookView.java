@@ -61,8 +61,8 @@ public class BookView extends View implements View.OnTouchListener {
 
 		mBookProgressObj = new BookProgressObj(this.mBookContent, book.size());
 
-		//this.mAnimation = new PageWidget(getContext());
-		this.mAnimation = new NoTurnAnimation(getContext());
+		this.mAnimation = new PageWidget(getContext());
+		//this.mAnimation = new NoTurnAnimation(getContext());
 		this.mAnimation.setBookView(this);
 	}
 
@@ -211,5 +211,11 @@ public class BookView extends View implements View.OnTouchListener {
 	public void setLocal(int offset) {
 		this.mBookContent.setCurPosition(offset);
 		this.update();
+	}
+
+	public void setTurnAnimation(BookViewAnimation noTurnAnimation) {
+		this.mAnimation = noTurnAnimation;
+		mAnimation.setBookView(this);
+		this.mAnimation.onSizeChange(getWidth(), getHeight(), 0, 0);
 	}
 }

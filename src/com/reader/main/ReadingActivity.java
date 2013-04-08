@@ -12,13 +12,18 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 
 import com.reader.book.bookview.BookView;
+import com.reader.book.bookview.NoTurnAnimation;
+import com.reader.book.bookview.PageWidget;
 import com.reader.book.manager.BookManager;
+import com.reader.preference.ReadingSetting;
 import com.reader.record.BookHistory;
 import com.reader.ui.ReadingMenu;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -95,19 +100,33 @@ public class ReadingActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 
-	private ReadingMenu mReadingMenu;
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add("menu");// 必须创建一项
-		mReadingMenu = new ReadingMenu(this);
-		mReadingMenu.Create();
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	public static int TURN_SETTING = 1;
+
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
-		mReadingMenu.show(this.bookView);
+		startActivityForResult(new Intent(this, ReadingSetting.class),
+				TURN_SETTING);
 		return false;// 返回为true 则显示系统menu
 	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.i("songlog",""+resultCode+"onActivityresult"+requestCode);
+		SharedPreferences spf = PreferenceManager.getDefaultSharedPreferences(this);
+		String str = spf.getString("turn_page", "none");
+		Log.i("songlog",""+resultCode+"onActivityresult"+requestCode+str);
+		if (str.equals("none")) {
+			bookView.setTurnAnimation(new NoTurnAnimation(this));
+		}
+		if (str.equals("real")) {
+			bookView.setTurnAnimation(new PageWidget(this));
+		}
+	}
+
 }

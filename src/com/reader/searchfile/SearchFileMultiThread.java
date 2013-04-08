@@ -62,7 +62,6 @@ public class SearchFileMultiThread extends SearchFile{
 			// ignore
 			// e.printStackTrace();
 		}
-		Log.d("songlog", "hello");
 	}
 
 	public static void main(String[] args) {

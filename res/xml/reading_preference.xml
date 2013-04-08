@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="key"
+    android:summary="settings about reading"
+    android:title="Settings" >
+    <ListPreference
+        android:entries="@array/list_entries"
+        android:entryValues="@array/list_entries_value"
+        android:key="turn_page"
+        android:summary="@string/setting_turnpage"
+        android:title="@string/setting_turnpage" >
+    </ListPreference>
+
+</PreferenceScreen>

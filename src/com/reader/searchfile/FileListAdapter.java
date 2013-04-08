@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,8 +99,9 @@ public class FileListAdapter extends BaseAdapter {
 		holder.img.setBackgroundDrawable(mBookInfoList.get(position)
 				.getBookImage());
 		String bookfulldir = mBookInfoList.get(position).bookName;
+		Log.i("songlog", bookfulldir);
 		String name = bookfulldir.substring(bookfulldir.lastIndexOf('/') + 1,
-				bookfulldir.lastIndexOf('.')).toLowerCase();
+				bookfulldir.lastIndexOf('.')==-1?bookfulldir.length()-1:bookfulldir.lastIndexOf('.')).toLowerCase();
 		holder.title.setText(name);
 		holder.size.setText(mBookInfoList.get(position).mSize / 1024 + "k");
 		holder.process.setText(mBookInfoList.get(position).mProcess);

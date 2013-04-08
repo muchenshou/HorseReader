@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">悠悠读书</string>
-    <string name="records">历史记录</string>
+    <string name="records">书架</string>
     <string name="local">本地</string>
     <string name="internet">书库</string>
     <string name="about">关于</string>
+    <string name="setting_turnpage">翻页效果</string>
 </resources>
