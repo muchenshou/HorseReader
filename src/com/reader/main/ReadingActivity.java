@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
 
 import com.reader.book.bookview.BookView;
 import com.reader.book.bookview.NoTurnAnimation;
-import com.reader.book.bookview.PageWidget;
+import com.reader.book.bookview.SimulateTurnPage;
 import com.reader.book.manager.BookManager;
 import com.reader.preference.ReadingSetting;
 import com.reader.record.BookHistory;
@@ -125,7 +125,7 @@ public class ReadingActivity extends Activity {
 			bookView.setTurnAnimation(new NoTurnAnimation(this));
 		}
 		if (str.equals("real")) {
-			bookView.setTurnAnimation(new PageWidget(this));
+			bookView.setTurnAnimation(new SimulateTurnPage(this));
 		}
 	}
 
