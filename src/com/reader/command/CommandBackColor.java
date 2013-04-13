@@ -12,7 +12,6 @@ public class CommandBackColor implements Command{
 	@Override
 	public void excute() {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

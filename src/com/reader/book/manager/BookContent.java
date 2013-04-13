@@ -29,7 +29,6 @@ public class BookContent {
 	private Paint mPaint = null;
 	// Page mPage = new Page();
 	PageBuffer mPageBuffer = new PageBuffer();
-	private final int PageBufferSize = 10;
 	public Book mBook = null;
 	private PageConfig mPageConfig;
 

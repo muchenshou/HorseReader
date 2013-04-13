@@ -18,7 +18,6 @@ public class BookBuffer implements Runnable {
 	private Book mBook = null;
 	private int mBufferSize = 8 * 1024;// buffer 4k
 	private Lock mBufferlock = new ReentrantLock();
-	private Condition getContentFromBuffer = mBufferlock.newCondition();
 	private Condition putContentIntoBuffer = mBufferlock.newCondition();
 
 	class BookBufBlock {

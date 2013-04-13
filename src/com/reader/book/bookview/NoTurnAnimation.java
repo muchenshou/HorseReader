@@ -10,8 +10,6 @@ import android.view.View;
 
 public class NoTurnAnimation extends BookViewAnimation {
 	private Bitmap mCurBitmap;
-	private Bitmap mNextBitmap;
-	private BookView mBookView;
 	int mWidth;
 	boolean isTurnToPre;
 	Context mContext;
@@ -55,7 +53,6 @@ public class NoTurnAnimation extends BookViewAnimation {
 
 	@Override
 	public void setNextBitmap(Bitmap bitmap) {
-		mNextBitmap = bitmap;
 	}
 
 	@Override
@@ -65,7 +62,6 @@ public class NoTurnAnimation extends BookViewAnimation {
 
 	@Override
 	public void setBookView(BookView bookview) {
-		mBookView = bookview;
 	}
 
 	@Override

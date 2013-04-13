@@ -106,7 +106,6 @@ public class AdobeView extends ViewGroup{
 					(0.0f - child.getWidth()), 0.0f, 0.0f, 0.0f);
 			animation2.setInterpolator(new AccelerateInterpolator());
 			animation2.setDuration(500);
-			// child.startAnimation(animation1);
 			child2.startAnimation(animation2);
 			
 		} else {
