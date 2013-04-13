@@ -4,12 +4,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import android.util.Log;
 
 public class SearchFileMultiThread extends SearchFile{
 	LinkedBlockingQueue<String> mDirs = new LinkedBlockingQueue<String>();
@@ -51,6 +46,7 @@ public class SearchFileMultiThread extends SearchFile{
 		mDirs.add(RootDir);
 	}
 
+	@Override
 	public void search() {
 		for (int i=0; i<THREAD_NUM;i++) {
 			executor.execute(new searchFunc());

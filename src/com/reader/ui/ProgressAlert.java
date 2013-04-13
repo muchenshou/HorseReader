@@ -40,17 +40,20 @@ public class ProgressAlert extends PopupWindow implements
 		this.setFocusable(true);
 	}
 
+	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 			
 	}
 
+	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 
 	}
 
+	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		ReadingActivity ac = (ReadingActivity)mContext;
+		ReadingActivity ac = mContext;
 		mContext.bookView.getPageConfig().setTextSize(seekBar.getProgress());
 		mContext.bookView.getPageConfig().saveConfig();
 		ac.bookmanager.getBookView().update();

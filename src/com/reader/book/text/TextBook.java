@@ -14,8 +14,6 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
-import android.util.Log;
-
 import com.reader.book.Book;
 import com.reader.book.BookBuffer;
 import com.reader.book.CharInfo;
@@ -57,6 +55,7 @@ public class TextBook extends Book {
 		return GBK;
 	}
 
+	@Override
 	public void closeBook() {
 		try {
 			mFile.close();
@@ -65,10 +64,12 @@ public class TextBook extends Book {
 		}
 	}
 
+	@Override
 	public void excuteCmd(int cmd) {
 
 	}
 
+	@Override
 	public int getContent(int start, ByteBuffer buffer) {
 		int readlen = 0;
 		try {
@@ -89,6 +90,7 @@ public class TextBook extends Book {
 		return readlen;
 	}
 
+	@Override
 	public void openBook() {
 		try {
 			mFile = new RandomAccessFile(bookFile, "r");
@@ -99,10 +101,12 @@ public class TextBook extends Book {
 
 	}
 
+	@Override
 	public int size() {
 		return (int) bookFile.length();
 	}
 
+	@Override
 	public CharInfo getChar(int pos) {
 		if (mTextCode == GBK) {
 			return getCharGbk(pos);
@@ -118,7 +122,7 @@ public class TextBook extends Book {
 			return null;
 		CharInfo charinfo = new CharInfo();
 		byte bytes[] = new byte[2];
-		if ((int) this.bookBuffer.getByte(pos) >= 0) {
+		if (this.bookBuffer.getByte(pos) >= 0) {
 			charinfo.character = (char) this.bookBuffer.getByte(pos);
 			charinfo.length = 1;
 		}
@@ -128,7 +132,7 @@ public class TextBook extends Book {
 			charinfo.length = 2;
 		}
 
-		if ((int) this.bookBuffer.getByte(pos) < 0) {
+		if (this.bookBuffer.getByte(pos) < 0) {
 			bytes[0] = this.bookBuffer.getByte(pos);
 			bytes[1] = this.bookBuffer.getByte(pos + 1);
 			try {
@@ -147,7 +151,7 @@ public class TextBook extends Book {
 			return null;
 		CharInfo charinfo = new CharInfo();
 		byte bytes[] = new byte[3];
-		if ((int) this.bookBuffer.getByte(pos) >= 0) {
+		if (this.bookBuffer.getByte(pos) >= 0) {
 			charinfo.character = (char) this.bookBuffer.getByte(pos);
 			charinfo.length = 1;
 		}
@@ -157,7 +161,7 @@ public class TextBook extends Book {
 			charinfo.length = 2;
 		}
 
-		if ((int) this.bookBuffer.getByte(pos) < 0) {
+		if (this.bookBuffer.getByte(pos) < 0) {
 			bytes[0] = this.bookBuffer.getByte(pos);
 			bytes[1] = this.bookBuffer.getByte(pos + 1);
 			bytes[2] = this.bookBuffer.getByte(pos + 2);
@@ -172,6 +176,7 @@ public class TextBook extends Book {
 		return charinfo;
 	}
 
+	@Override
 	public CharInfo getPreChar(int start) {
 		if (mTextCode == GBK) {
 			return getPreCharGbk(start);
@@ -202,6 +207,7 @@ public class TextBook extends Book {
 		return getChar(start - 3);
 	}
 
+	@Override
 	public boolean isEof() {
 		return EOFBOOK;
 	}

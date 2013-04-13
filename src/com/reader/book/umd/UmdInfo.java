@@ -154,7 +154,7 @@ public class UmdInfo {
 					BytesTransfer.byteAlign(title);
 
 					String str = new String(title, "Unicode");
-					Chapter cha = (Chapter) this.chapterList.get(i);
+					Chapter cha = this.chapterList.get(i);
 					cha.setChapterName(str);
 					// System.out.println("the " + i + " chapter title is " +
 					// str);
@@ -188,7 +188,7 @@ public class UmdInfo {
 
 				switch (dataType) {
 				case UmdParse.TEXT_OR_IMAGE: {
-					if (UmdParse.ISTEXT == (int) tmp[0]) {
+					if (UmdParse.ISTEXT == tmp[0]) {
 						System.out.println("this is text!");
 					}
 					break;
@@ -231,12 +231,12 @@ public class UmdInfo {
 		}
 		int size = this.blockList.size();
 		for (int i = 0; i < size; i++) {
-			Block block = (Block) blockList.get(i);
+			Block block = blockList.get(i);
 			block.setBlockNo(i);
 		}
 		size = this.chapterList.size();
 		for (int i = 0; i < size; i++) {
-			Chapter cha = (Chapter) chapterList.get(i);
+			Chapter cha = chapterList.get(i);
 			cha.setChapterNo(i);
 		}
 		return true;

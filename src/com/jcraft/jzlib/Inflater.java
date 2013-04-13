@@ -93,7 +93,8 @@ final public class Inflater extends ZStream{
     return istate.inflateInit(nowrap?-w:w);
   }
 
-  public int inflate(int f){
+  @Override
+public int inflate(int f){
     if(istate==null) return Z_STREAM_ERROR;
     int ret = istate.inflate(f);
     if(ret == Z_STREAM_END) 
@@ -101,7 +102,8 @@ final public class Inflater extends ZStream{
     return ret;
   }
 
-  public int end(){
+  @Override
+public int end(){
     finished = true;
     if(istate==null) return Z_STREAM_ERROR;
     int ret=istate.inflateEnd();
@@ -127,7 +129,8 @@ final public class Inflater extends ZStream{
     return istate.inflateSetDictionary(dictionary, dictLength);
   }
 
-  public boolean finished(){
+  @Override
+public boolean finished(){
     return istate.mode==12 /*DONE*/;
   }
 }

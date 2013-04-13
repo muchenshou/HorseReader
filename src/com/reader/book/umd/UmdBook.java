@@ -35,6 +35,7 @@ public class UmdBook extends Book {
 	public String getName(){
 		return umdInfo.getName();
 	}
+	@Override
 	public int getContent(int start, ByteBuffer contentBuffer) {
         int length = contentBuffer.capacity();
         byte[] content;
@@ -163,6 +164,7 @@ public class UmdBook extends Book {
 		}
 	}
 
+	@Override
 	public void openBook() {
 
 		try {
@@ -172,6 +174,7 @@ public class UmdBook extends Book {
 		}
 	}
 
+	@Override
 	public void closeBook() {
 		if (umdStream != null) {
 			try {
@@ -182,15 +185,18 @@ public class UmdBook extends Book {
 		}
 	}
 
+	@Override
 	public void excuteCmd(int cmd) {
 
 	}
 
+	@Override
 	public int size() {
 		// TODO Auto-generated method stub
 		return this.umdInfo.getSize();
 	}
 
+	@Override
 	public CharInfo getChar(int pos) {
 		// if(mEnd > boo)
 		if (pos >= this.size())
@@ -204,6 +210,7 @@ public class UmdBook extends Book {
 		return charinfo;
 	}
 
+	@Override
 	public CharInfo getPreChar(int start) {
 		return getChar(start - 2);
 	}

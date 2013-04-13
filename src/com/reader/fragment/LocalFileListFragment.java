@@ -2,19 +2,8 @@ package com.reader.fragment;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.reader.main.R;
-import com.reader.record.BookLibrary;
-import com.reader.searchfile.FileListAdapter;
-import com.reader.searchfile.SearchFile;
-import com.reader.searchfile.SearchFile.FindOneBehavior;
-import com.reader.searchfile.SearchFileMultiThread;
-import com.reader.searchfile.SearchFileSingleThread;
-import com.reader.util.FilenameExtFilter;
-import com.reader.main.ReadingActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,20 +11,27 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.reader.main.R;
+import com.reader.main.ReadingActivity;
+import com.reader.record.BookLibrary;
+import com.reader.searchfile.FileListAdapter;
+import com.reader.searchfile.SearchFile;
+import com.reader.searchfile.SearchFile.FindOneBehavior;
+import com.reader.searchfile.SearchFileMultiThread;
+import com.reader.ui.ActionBar.Action;
+import com.reader.util.FilenameExtFilter;
+
 public class LocalFileListFragment extends Fragment implements
-		View.OnClickListener, OnItemClickListener {
+		View.OnClickListener, OnItemClickListener , Action{
 	ListView mListView;
 	FileListAdapter mFileListAdapter;
 
@@ -81,11 +77,13 @@ public class LocalFileListFragment extends Fragment implements
 		startActivityForResult(intent, 0);
 	}
 
+	@Override
 	public void onClick(View v) {
 		BookLibrary lib = new BookLibrary(this.getActivity());
 		searchBook(lib);
 	}
 
+	@Override
 	public void onItemClick(AdapterView<?> l, View arg1, int position, long arg3) {
 		String bookname = (String) l.getAdapter().getItem(position);
 		// history
@@ -135,5 +133,20 @@ public class LocalFileListFragment extends Fragment implements
 			mFileListAdapter.notifyDataSetChanged();
 			super.onPostExecute(result);
 		}
+	}
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+	    super.onSaveInstanceState(outState);
+	    outState.putString("DO NOT CRASH", "OK");
+	}
+	@Override
+	public int getDrawable() {
+		return R.drawable.menu_refresh;
+	}
+
+	@Override
+	public void performAction(View view) {
+		onClick(view);
 	}
 }

@@ -5,28 +5,6 @@
     android:layout_height="match_parent"
     android:text="dddddn" >
 
-    <!--
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/channelgallery_bg" >
-
-        <ImageButton
-            android:id="@+id/imagebtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:src="@drawable/cartoon_content" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="title" />
-    </LinearLayout>
-    -->
-
     <com.reader.ui.ActionBar
         android:id="@+id/actionbar"
         style="@style/ActionBar" />
@@ -38,7 +16,7 @@
         android:background="@drawable/sidebar_background"
         android:scrollingCache="false" />
 
-    <LinearLayout
+    <android.support.v4.view.ViewPager
         android:id="@+id/content"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

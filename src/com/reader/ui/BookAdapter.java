@@ -53,18 +53,22 @@ public class BookAdapter extends BaseAdapter {
 
 	}
 
+	@Override
 	public int getCount() {
 		return this.mBookInfoList.size();
 	}
 
+	@Override
 	public Object getItem(int position) {
 		return mBookInfoList.get(position).bookName;
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return 0;
 	}
 
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder = null;
 		if (convertView == null) {

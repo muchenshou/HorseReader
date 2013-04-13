@@ -19,6 +19,7 @@ public class CommandNextChapter implements Command {
 		activity = a;
 	}
 
+	@Override
 	public void excute() {
 		BookManager _bookmanager = activity.bookmanager;
 		UmdBook umd = (UmdBook) _bookmanager.getBook();

@@ -98,12 +98,12 @@ public class AdobeView extends ViewGroup{
 		if (!mHide) {
 			child = this.getChildAt(1);
 			animation1 = new TranslateAnimation(
-					(0.0f - (float) child.getWidth()), 0.0f, 0.0f, 0.0f);
+					(0.0f - child.getWidth()), 0.0f, 0.0f, 0.0f);
 			animation1.setDuration(300);
 			child2 = this.getChildAt(2);
 
 			animation2 = new TranslateAnimation(
-					(0.0f - (float) child.getWidth()), 0.0f, 0.0f, 0.0f);
+					(0.0f - child.getWidth()), 0.0f, 0.0f, 0.0f);
 			animation2.setInterpolator(new AccelerateInterpolator());
 			animation2.setDuration(500);
 			// child.startAnimation(animation1);
@@ -113,7 +113,7 @@ public class AdobeView extends ViewGroup{
 			child = this.getChildAt(1);
 			child2 = this.getChildAt(2);
 			animation2 = new TranslateAnimation(
-					0.0f + (float) child.getWidth(), 0.0f, 0.0f, 0.0f);
+					0.0f + child.getWidth(), 0.0f, 0.0f, 0.0f);
 			animation2.setDuration(300);
 			child2.startAnimation(animation2);
 		}

@@ -146,7 +146,8 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
         mTitleView.setOnClickListener(listener);
     }
 
-    public void onClick(View view) {
+    @Override
+	public void onClick(View view) {
         final Object tag = view.getTag();
         if (tag instanceof Action) {
             final Action action = (Action) tag;
@@ -262,7 +263,8 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
             mDrawable = drawable;
         }
 
-        public int getDrawable() {
+        @Override
+		public int getDrawable() {
             return mDrawable;
         }
     }
@@ -277,7 +279,8 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
             mIntent = intent;
         }
 
-        public void performAction(View view) {
+        @Override
+		public void performAction(View view) {
             try {
                mContext.startActivity(mIntent); 
             } catch (ActivityNotFoundException e) {

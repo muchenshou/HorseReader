@@ -21,7 +21,7 @@ public class BookFactory {
 			return  new UmdBook(file);
 		}
 		if (str.equals("txt")){
-			return (Book) new TextBook(file);
+			return new TextBook(file);
 		}
 		return null;
 

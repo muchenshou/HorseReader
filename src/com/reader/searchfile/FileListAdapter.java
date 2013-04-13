@@ -5,13 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.reader.record.BookInfo;
-import com.reader.ui.BookAdapter.ViewHolder;
 import com.reader.util.FileInfo;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,10 +70,12 @@ public class FileListAdapter extends BaseAdapter {
 		mBookInfoList.add(b);
 	}
 
+	@Override
 	public int getCount() {
 		return mBookInfoList.size();
 	}
 
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder = null;
 		if (convertView == null) {
@@ -109,10 +107,12 @@ public class FileListAdapter extends BaseAdapter {
 	}
 
 	
+	@Override
 	public Object getItem(int position) {
 		return mBookInfoList.get(position).bookName;
 	}
 
+	@Override
 	public long getItemId(int arg0) {
 		return 0;
 	}

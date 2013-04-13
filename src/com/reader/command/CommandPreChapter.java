@@ -19,6 +19,7 @@ public class CommandPreChapter implements Command {
 		activity = a;
 	}
 
+	@Override
 	public void excute() {
 		// TODO Auto-generated method stub
 		BookManager _bookmanager = activity.bookmanager;

@@ -6,7 +6,6 @@
 package com.reader.book.bookview;
 
 import android.content.Context;
-import android.content.SyncAdapterType;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
@@ -15,17 +14,10 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Scroller;
 
 public class SimulateTurnPage extends BookViewAnimation {
 
@@ -342,8 +334,8 @@ public class SimulateTurnPage extends BookViewAnimation {
 							- mBezierControl1.x);
 		}
 		// 锟斤拷锟斤拷页锟斤拷影锟斤拷锟斤拷锟斤拷touch锟斤拷木锟斤拷锟�
-		double d1 = (float) 25 * 1.414 * Math.cos(degree);
-		double d2 = (float) 25 * 1.414 * Math.sin(degree);
+		double d1 = 25 * 1.414 * Math.cos(degree);
+		double d2 = 25 * 1.414 * Math.sin(degree);
 		float x = (float) (mTouch.x + d1);
 		float y;
 		if (mIsRTandLB) {
@@ -537,22 +529,26 @@ public class SimulateTurnPage extends BookViewAnimation {
 	/**
 	 * Author : hmg25 Version: 1.0 Description : 锟角凤拷锟斤拷锟竭凤拷锟斤拷锟揭憋拷
 	 */
+	@Override
 	public boolean DragToRight() {
 		if (mCornerX > 0)
 			return false;
 		return true;
 	}
 
+	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		return doTouchEvent(event);
 	}
 
 	private BookView mBookView;
 
+	@Override
 	public void setBookView(BookView bookview) {
 		mBookView = bookview;
 	}
 
+	@Override
 	public void onSizeChange(int w, int h, int oldw, int oldh) {
 		// TODO Auto-generated method stub
 		this.mWidth = w;
@@ -561,6 +557,7 @@ public class SimulateTurnPage extends BookViewAnimation {
 		mMaxLength = (float) Math.hypot(mWidth, mHeight);
 	}
 
+	@Override
 	public void onDraw(Canvas canvas) {
 		if (mNextPageBitmap == null) {
 			canvas.drawBitmap(mCurPageBitmap, 0, 0, null);
@@ -574,6 +571,7 @@ public class SimulateTurnPage extends BookViewAnimation {
 		animation();
 	}
 
+	@Override
 	public void update() {
 		calcCornerXY(0, 0);
 	}
@@ -581,10 +579,12 @@ public class SimulateTurnPage extends BookViewAnimation {
 	Bitmap mCurPageBitmap = null;
 	Bitmap mNextPageBitmap = null;
 
+	@Override
 	public void setCurBitmap(Bitmap bitmap) {
 		mCurPageBitmap = bitmap;
 	}
 
+	@Override
 	public void setNextBitmap(Bitmap bitmap) {
 		mNextPageBitmap = bitmap;
 	}

@@ -139,6 +139,7 @@ public class BookView extends View implements View.OnTouchListener {
 		mBookProgressObj.Draw(canvas, this.mPageConfig.getOthersPaint());
 	}
 
+	@Override
 	public void computeScroll() {
 		super.computeScroll();
 	}
@@ -180,6 +181,7 @@ public class BookView extends View implements View.OnTouchListener {
 		postInvalidate();
 	}
 
+	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
 		if (event.getAction() == MotionEvent.ACTION_DOWN

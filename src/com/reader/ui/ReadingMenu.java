@@ -89,6 +89,7 @@ public class ReadingMenu implements OnItemClickListener {
 
 	}
 
+	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 		new CommandFactory((ReadingActivity) ReadingMenu.this.mContext)
 				.CreateCommand(mMenuItemList.get(pos).command).excute();
@@ -97,18 +98,22 @@ public class ReadingMenu implements OnItemClickListener {
 
 	class MenuAdapter extends BaseAdapter {
 
+		@Override
 		public int getCount() {
 			return mMenuItemList.size();
 		}
 
+		@Override
 		public Object getItem(int position) {
 			return null;
 		}
 
+		@Override
 		public long getItemId(int position) {
 			return 0;
 		}
 
+		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			convertView = LayoutInflater.from(mContext).inflate(
 					R.layout.menuitem, null);

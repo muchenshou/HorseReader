@@ -14,7 +14,7 @@ import java.io.RandomAccessFile;
 
 public class UmdParse extends RandomAccessFile {
 
-	public static int UMDFLAG = (int) 0x899b9ade;
+	public static int UMDFLAG = 0x899b9ade;
 	public static final int ISTEXT = 1;
 	public static final int ISIMAGE = 0;
 	public static final int BLOCKSIZE = 32768;
@@ -49,7 +49,7 @@ public class UmdParse extends RandomAccessFile {
 	}
 
 	public int getSeperator() throws IOException {//#ºÅ
-		return (int) this.readByte();
+		return this.readByte();
 	}
 
 	public short getDataType() throws IOException {
@@ -59,7 +59,7 @@ public class UmdParse extends RandomAccessFile {
 	public byte[] getInfo() throws IOException {
 		byte numOfByte[] = new byte[2];
 		this.read(numOfByte);
-		byte tmp[] = new byte[(int) numOfByte[1] - 5];
+		byte tmp[] = new byte[numOfByte[1] - 5];
 		System.out.println("this is read " + tmp.length);
 		this.read(tmp);
 		return tmp;

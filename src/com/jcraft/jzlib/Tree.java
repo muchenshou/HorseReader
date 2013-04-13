@@ -218,7 +218,7 @@ final class Tree{
 	m = s.heap[--h];
 	if (m > max_code) continue;
 	if (tree[m*2+1] != bits) {
-	  s.opt_len += ((long)bits - (long)tree[m*2+1])*(long)tree[m*2];
+	  s.opt_len += ((long)bits - (long)tree[m*2+1])*tree[m*2];
 	  tree[m*2+1] = (short)bits;
 	}
 	n--;

@@ -7,12 +7,8 @@
  * */
 package com.reader.book.manager;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Queue;
-
 import com.reader.book.bookview.BookView;
 import com.reader.book.Book;
 import com.reader.book.CharInfo;

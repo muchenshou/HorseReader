@@ -9,6 +9,7 @@ package com.reader.command;
 
 public class CommandWordsColor implements Command{
 
+	@Override
 	public void excute() {
 		// TODO Auto-generated method stub
 		

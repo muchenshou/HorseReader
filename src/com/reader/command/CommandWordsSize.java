@@ -9,6 +9,7 @@ package com.reader.command;
 
 public class CommandWordsSize implements Command{
 
+	@Override
 	public void excute() {
 
 	}

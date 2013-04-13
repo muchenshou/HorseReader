@@ -18,11 +18,12 @@ public class CommandTextsize implements Command{
 	public CommandTextsize(ReadingActivity a) {
 		activity = a;
 	}
+	@Override
 	public void excute() {
 		// TODO Auto-generated method stub
 		mTextSizeProress = new ProgressAlert(activity);
 		mTextSizeProress.showAtLocation(
-				((ReadingActivity) activity).bookView,
+				activity.bookView,
 				Gravity.CENTER, 0, 0);
 	}
 

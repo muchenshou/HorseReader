@@ -17,6 +17,7 @@ public class CommandExit implements Command{
 		activity = a;
 		popup = com;
 	}
+	@Override
 	public void excute() {
 		// TODO Auto-generated method stub
 		popup.dismiss();

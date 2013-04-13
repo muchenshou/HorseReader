@@ -21,6 +21,7 @@ public class NoTurnAnimation extends BookViewAnimation {
 		private int verticalMinDistance = 20;
 		private int minVelocity = 0;
 
+		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 				float velocityY) {
 			if (e1.getX() - e2.getX() > verticalMinDistance

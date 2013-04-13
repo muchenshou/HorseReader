@@ -21,7 +21,6 @@ package com.reader.util;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.HashSet;
 

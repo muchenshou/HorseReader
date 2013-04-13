@@ -17,8 +17,6 @@ import com.reader.book.bookview.SimulateTurnPage;
 import com.reader.book.manager.BookManager;
 import com.reader.preference.ReadingSetting;
 import com.reader.record.BookHistory;
-import com.reader.ui.ReadingMenu;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;

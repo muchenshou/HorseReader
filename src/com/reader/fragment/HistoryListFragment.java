@@ -9,7 +9,6 @@ import com.reader.main.ReadingActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ public class HistoryListFragment extends Fragment implements
 		mListView.setAdapter(adapter);
 	}
 
+	@Override
 	public void onItemClick(AdapterView<?> l, View arg1, int pos, long arg3) {
 		BookAdapter adapter = (BookAdapter) l.getAdapter();
 		openFile(new File((String) adapter.getItem(pos)));
@@ -50,5 +50,10 @@ public class HistoryListFragment extends Fragment implements
 		startActivityForResult(intent, 0);
 
 	}
-
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+	    super.onSaveInstanceState(outState);
+	    outState.putString("DO NOT CRASH", "OK");
+	}
 }
