@@ -33,24 +33,18 @@ public class AdobeView extends ViewGroup{
 			Log.i(TAG, "resolvesize" + resolveSize(0, widthMeasureSpec)
 					+ "height:" + resolveSize(0, heightMeasureSpec));
 		}
-		View child = this.getChildAt(0);
+		View child ;
 
-		int widthSpec = MeasureSpec.makeMeasureSpec(
-				getDefaultSize(0, widthMeasureSpec), MeasureSpec.EXACTLY);
-		int heightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.AT_MOST);
-		if (DEBUG) {
-			Log.i(TAG, "make measure:" + widthSpec + "height:" + heightSpec);
-		}
-
-		child.measure(widthSpec, 0);
-		child = this.getChildAt(1);
+		int widthSpec;
+		int heightSpec;
+		child = this.getChildAt(0);
 
 		widthSpec = MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY);
 		heightSpec = MeasureSpec.makeMeasureSpec(
 				getDefaultSize(0, heightMeasureSpec), MeasureSpec.EXACTLY);
 
 		child.measure(widthSpec, heightSpec);
-		child = this.getChildAt(2);
+		child = this.getChildAt(1);
 		widthSpec = MeasureSpec.makeMeasureSpec(
 				getDefaultSize(0, widthMeasureSpec), MeasureSpec.EXACTLY);
 		heightSpec = MeasureSpec.makeMeasureSpec(

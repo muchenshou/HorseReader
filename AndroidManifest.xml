@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>-->
         <activity
-            android:name="com.reader.fragment.AdobeUiActivity"
+            android:name="com.reader.main.AdobeUiActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name" >
             <intent-filter>
@@ -32,16 +32,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".LocalBookActivity" >
-        </activity>
-        <activity android:name=".FileManager" >
-        </activity>
-        <activity android:name=".ReadingActivity" >
-        </activity>
-        <activity android:name=".WebActivity" >
-        </activity>
-        <activity android:name="com.reader.preference.ReadingSetting" >
         </activity>
 
         <service

@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.reader.ui.AdobeView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/action"
+<TabHost
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:text="dddddn" >
+    android:layout_height="match_parent">
 
-    <com.reader.ui.ActionBar
-        android:id="@+id/actionbar"
-        style="@style/ActionBar" />
-
-    <ListView
-        android:id="@+id/listview"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/sidebar_background"
-        android:scrollingCache="false" />
+        android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/content"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#F2F2F2" />
-    <!-- android:background="@drawable/file_list_bg" -->
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"/>
 
-</com.reader.ui.AdobeView>
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0"/>
+
+        <FrameLayout
+            android:id="@+android:id/realtabcontent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+</TabHost>

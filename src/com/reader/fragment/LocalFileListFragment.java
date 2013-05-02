@@ -5,13 +5,14 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.reader.main.R;
 import com.reader.main.ReadingActivity;
 import com.reader.record.BookLibrary;
@@ -27,19 +32,12 @@ import com.reader.searchfile.FileListAdapter;
 import com.reader.searchfile.SearchFile;
 import com.reader.searchfile.SearchFile.FindOneBehavior;
 import com.reader.searchfile.SearchFileMultiThread;
-import com.reader.ui.ActionBar.Action;
 import com.reader.util.FilenameExtFilter;
 
-public class LocalFileListFragment extends Fragment implements
-		View.OnClickListener, OnItemClickListener , Action{
+public class LocalFileListFragment extends SherlockFragment implements
+		View.OnClickListener, OnItemClickListener {
 	ListView mListView;
 	FileListAdapter mFileListAdapter;
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		mFileListAdapter.notifyDataSetChanged();
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,7 +47,8 @@ public class LocalFileListFragment extends Fragment implements
 		this.mListView = (ListView) tv.findViewById(R.id.filelist);
 		this.mListView.setOnItemClickListener(this);
 		mListView.setScrollingCacheEnabled(false);
-		mFileListAdapter = new FileListAdapter(getActivity());
+		if (mFileListAdapter == null)
+			mFileListAdapter = new FileListAdapter(getActivity());
 		mListView.setAdapter(mFileListAdapter);
 		return tv;
 	}
@@ -134,19 +133,28 @@ public class LocalFileListFragment extends Fragment implements
 			super.onPostExecute(result);
 		}
 	}
+
 	@Override
-	public void onSaveInstanceState(Bundle outState)
-	{
-	    super.onSaveInstanceState(outState);
-	    outState.putString("DO NOT CRASH", "OK");
-	}
-	@Override
-	public int getDrawable() {
-		return R.drawable.menu_refresh;
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("DO NOT CRASH", "OK");
 	}
 
 	@Override
-	public void performAction(View view) {
-		onClick(view);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.add("fresh").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		onClick(item.getActionView());
+		return super.onOptionsItemSelected(item);
+	}
+
 }
