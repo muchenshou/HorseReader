@@ -20,6 +20,7 @@ import com.reader.record.BookHistory;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -57,9 +58,11 @@ public class ReadingActivity extends Activity {
 			}
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
-			bookView = bookmanager.getBookView();
+			bookView = new BookView(this, bookmanager.openBook(position));
+			bookView.setFocusable(true);
+			this.bookView.setBgBitmap(BitmapFactory.decodeResource(
+					getResources(), R.drawable.bg));
 			setLookingBookView();
-			bookmanager.openBook(position);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -69,11 +72,9 @@ public class ReadingActivity extends Activity {
 	@Override
 	protected void onStop() {
 		BookHistory history = new BookHistory(this);
-		Log.i("ReadingOnStop",
-				"" + this.mBookName + this.bookmanager.getReadingPosition());
 		history.updateHistory(this.mBookName,
-				this.bookmanager.getReadingPosition());
-		float fPercent = (float) bookmanager.getReadingPosition()
+				this.bookView.mBookContent.getCurPosition());
+		float fPercent = (float) this.bookView.mBookContent.getCurPosition()
 				/ (float) bookmanager.getBookSize();
 		DecimalFormat df = new DecimalFormat("#0.0");
 		String strPercent = df.format(fPercent * 100) + "%";
@@ -82,16 +83,16 @@ public class ReadingActivity extends Activity {
 	}
 
 	private void setLookingBookView() {
-		setContentView(bookmanager.getBookView());
+		setContentView(bookView);
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-
 		// 按下键盘上返回按钮
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Intent intent = new Intent();
-			intent.putExtra("BookReading", bookmanager.getReadingPosition());
+			intent.putExtra("BookReading",
+					this.bookView.mBookContent.getCurPosition());
 			setResult(RESULT_OK, intent);
 			finish();
 		}
@@ -115,10 +116,9 @@ public class ReadingActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.i("songlog",""+resultCode+"onActivityresult"+requestCode);
-		SharedPreferences spf = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences spf = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		String str = spf.getString("turn_page", "none");
-		Log.i("songlog",""+resultCode+"onActivityresult"+requestCode+str);
 		if (str.equals("none")) {
 			bookView.setTurnAnimation(new NoTurnAnimation(this));
 		}

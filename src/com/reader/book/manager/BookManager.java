@@ -25,32 +25,20 @@ public class BookManager{
 	public static final int BUFSIZE = 512;
 	private Book book;
 	private BookView bookView;
-	public ReadingActivity bookActivity;
 
-	int bufferlocal = -1;// �ı����λ��
+	int bufferlocal = -1;
 	int BUFLEN = 4 * 1024;
 
 	int position = 0;
 
 	public BookManager(Context con, File file) throws IOException {
-		bookActivity = (ReadingActivity) con;
 		book = BookFactory.createBook(file);
-		bookView = new BookView(con,book);
-		bookView.setFocusable(true);
-
 	}
-
-	public BookView getBookView() {
-		return bookView;
-	}
-
 	
-	public void openBook(int position) throws IOException {
+	public Book openBook(int position) throws IOException {
 		book.openBook();
 		book.openOffset = position;
-		this.bookView.setBgBitmap(BitmapFactory.decodeResource(
-				bookActivity.getResources(), R.drawable.bg));
-
+		return book;
 	}
 
 	public void closeBook() {
@@ -61,17 +49,7 @@ public class BookManager{
 		return book.size();
 	}
 
-	
-
 	public Book getBook() {
 		return book;
 	}
-
-	public String getReadingContent(){
-		return this.bookView.mBookContent.getCurContent();
-	}
-	public int getReadingPosition() {
-		return this.bookView.mBookContent.getCurPosition();
-	}
-
 }

@@ -56,6 +56,6 @@ public class ProgressAlert extends PopupWindow implements
 		ReadingActivity ac = mContext;
 		mContext.bookView.getPageConfig().setTextSize(seekBar.getProgress());
 		mContext.bookView.getPageConfig().saveConfig();
-		ac.bookmanager.getBookView().update();
+		// ac.bookmanager.getBookView().update();
 	}
 }

@@ -24,18 +24,18 @@ public class SimulateTurnPage extends BookViewAnimation {
 	// private static final String TAG = "hmg";
 	private int mWidth = 0;
 	private int mHeight = 0;
-	private int mCornerX = 0; // 锟斤拷拽锟斤拷锟接︼拷锟揭筹拷锟�
+	private int mCornerX = 0; //
 	private int mCornerY = 0;
 	private Path mPath0;
 	private Path mPath1;
 
-	PointF mTouch = new PointF(); // 锟斤拷拽锟斤拷
-	PointF mBezierStart1 = new PointF(); // 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟绞硷拷锟�
-	PointF mBezierControl1 = new PointF(); // 锟斤拷锟斤拷锟斤拷锟斤拷呖锟斤拷频锟�
-	PointF mBeziervertex1 = new PointF(); // 锟斤拷锟斤拷锟斤拷锟斤拷叨锟斤拷锟�
-	PointF mBezierEnd1 = new PointF(); // 锟斤拷锟斤拷锟斤拷锟斤拷呓锟斤拷锟斤拷
+	PointF mTouch = new PointF(); //
+	PointF mBezierStart1 = new PointF(); //
+	PointF mBezierControl1 = new PointF(); //
+	PointF mBeziervertex1 = new PointF(); //
+	PointF mBezierEnd1 = new PointF(); //
 
-	PointF mBezierStart2 = new PointF(); // 锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
+	PointF mBezierStart2 = new PointF(); //
 	PointF mBezierControl2 = new PointF();
 	PointF mBeziervertex2 = new PointF();
 	PointF mBezierEnd2 = new PointF();
@@ -48,7 +48,7 @@ public class SimulateTurnPage extends BookViewAnimation {
 	Matrix mMatrix;
 	float[] mMatrixArray = { 0, 0, 0, 0, 0, 0, 0, 0, 1.0f };
 
-	boolean mIsRTandLB; // 锟角凤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	boolean mIsRTandLB; //
 	float mMaxLength = (float) Math.hypot(mWidth, mHeight);
 	int[] mBackShadowColors;
 	int[] mFrontShadowColors;
@@ -82,13 +82,13 @@ public class SimulateTurnPage extends BookViewAnimation {
 		mColorMatrixFilter = new ColorMatrixColorFilter(cm);
 		mMatrix = new Matrix();
 
-		mTouch.x = 0.01f; // 锟斤拷锟斤拷x,y为0,锟斤拷锟斤拷锟节碉拷锟斤拷锟绞憋拷锟斤拷锟斤拷锟斤拷锟�
+		mTouch.x = 0.01f; //
 		mTouch.y = 0.01f;
 
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟斤拷锟斤拷拽锟斤拷锟接︼拷锟斤拷锟阶э拷锟�
+	 * Author : hmg25 Version: 1.0 Description :
 	 */
 	public void calcCornerXY(float x, float y) {
 		if (x <= mWidth / 2)

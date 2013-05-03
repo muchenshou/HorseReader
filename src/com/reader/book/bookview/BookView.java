@@ -140,11 +140,6 @@ public class BookView extends View implements View.OnTouchListener {
 	}
 
 	@Override
-	public void computeScroll() {
-		super.computeScroll();
-	}
-
-	@Override
 	protected void onDraw(Canvas canvas) {
 		if (mAnimation.state() == BookViewAnimation.NONE) {
 			canvas.drawBitmap(mCurPageBitmap, 0, 0, mPaint);
@@ -208,11 +203,6 @@ public class BookView extends View implements View.OnTouchListener {
 		}
 		postInvalidate();
 		return true;
-	}
-
-	public void setLocal(int offset) {
-		this.mBookContent.setCurPosition(offset);
-		this.update();
 	}
 
 	public void setTurnAnimation(BookViewAnimation noTurnAnimation) {
