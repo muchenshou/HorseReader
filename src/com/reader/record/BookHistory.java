@@ -23,11 +23,9 @@ public class BookHistory {
 
 	public List<BookInfo> getHistory() {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		Cursor cursor = db
-				.rawQuery(
-						"select bookfiles._id,bookfiles.fulldirname,bookhistory.process,bookfiles.filesize from bookfiles,bookhistory "
-								+ " where bookfiles._id=bookhistory.bookid order by bookhistory.time desc",
-						null);
+		Cursor cursor = db.rawQuery(
+				"select _id,fulldirname,process,filesize from bookhistory",
+				null);
 		List<BookInfo> list = new ArrayList<BookInfo>();
 		while (cursor.moveToNext()) {
 			BookInfo info = new BookInfo();
@@ -44,16 +42,9 @@ public class BookHistory {
 
 	private void addHistory(String book, int pos) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		Cursor cur = db.rawQuery(String.format(
-				"select _id from bookfiles where fulldirname=\"%s\"", book),
-				null);
-
-		if (cur.moveToNext()) {
-			int id = cur.getInt(0);
-			db.execSQL(String.format(
-					"insert into bookhistory(bookid,position) values(%d,%d);",
-					id, pos));
-		}
+		db.execSQL(String.format(
+				"insert into bookhistory(fulldirname,position) values(\"%s\",%d);",
+				book, pos));
 
 		db.close();
 
@@ -61,12 +52,9 @@ public class BookHistory {
 
 	public boolean exist(String book) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		Cursor cur = db
-				.rawQuery(
-						String.format(
-								"select * from bookhistory where bookid in "
-										+ "(select _id from bookfiles where fulldirname=\"%s\")",
-								book), null);
+		Cursor cur = db.rawQuery(String.format(
+				"select * from bookhistory where fulldirname=\"%s\"", book),
+				null);
 		boolean exist = cur.moveToNext();
 		cur.close();
 		db.close();
@@ -90,14 +78,13 @@ public class BookHistory {
 			this.addHistory(bookname, 0);
 		}
 	}
-	
+
 	public int getPosition(String book) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
 		Cursor cur = db
 				.rawQuery(
 						String.format(
-								"select position from bookhistory where bookid in "
-										+ "(select _id from bookfiles where fulldirname=\"%s\")",
+								"select position from bookhistory where fulldirname=\"%s\"",
 								book), null);
 		int rtn = 0;
 		if (cur.moveToNext()) {
@@ -112,29 +99,24 @@ public class BookHistory {
 		SQLiteDatabase db = this.bookHelper.getWritableDatabase();
 		if (pos != -1)
 			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime'),position=%d where bookid in"
-							+ "(select _id from bookfiles where fulldirname=\"%s\");",
+					.format("update bookhistory set time=datetime('now','localtime'),position=%d where fulldirname=\"%s\";",
 							pos, bookname));
 		else
 			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime') where bookid in"
-							+ "(select _id from bookfiles where fulldirname=\"%s\");",
+					.format("update bookhistory set time=datetime('now','localtime') where fulldirname=\"%s\";",
 							bookname));
 		db.close();
 	}
-	
+
 	private void updateProcess(String bookname, String pos) {
 		SQLiteDatabase db = this.bookHelper.getWritableDatabase();
 		if (pos != null) {
 			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime'),process=\"%s\" where bookid in"
-							+ "(select _id from bookfiles where fulldirname=\"%s\");",
+					.format("update bookhistory set time=datetime('now','localtime'),process=\"%s\" where fulldirname=\"%s\";",
 							pos, bookname));
-		}
-		else
+		} else
 			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime') where bookid in"
-							+ "(select _id from bookfiles where fulldirname=\"%s\");",
+					.format("update bookhistory set time=datetime('now','localtime') where fulldirname=\"%s\";",
 							bookname));
 		db.close();
 	}

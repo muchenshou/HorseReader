@@ -9,6 +9,7 @@ import com.reader.main.ReadingActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,16 +27,12 @@ public class HistoryListFragment extends Fragment implements
 		mListView = new ListView(this.getActivity());
 		mListView.setOnItemClickListener(this);
 		mListView.setScrollingCacheEnabled(false);
-		return mListView;
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
 		BookHistory history = new BookHistory(this.getActivity());
 		BookAdapter adapter = new BookAdapter(this.getActivity(),
 				history.getHistory());
+		Log.i("hello","history:"+history.getHistory().size());
 		mListView.setAdapter(adapter);
+		return mListView;
 	}
 
 	@Override
@@ -50,10 +47,10 @@ public class HistoryListFragment extends Fragment implements
 		startActivityForResult(intent, 0);
 
 	}
+
 	@Override
-	public void onSaveInstanceState(Bundle outState)
-	{
-	    super.onSaveInstanceState(outState);
-	    outState.putString("DO NOT CRASH", "OK");
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("DO NOT CRASH", "OK");
 	}
 }

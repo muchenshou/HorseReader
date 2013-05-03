@@ -5,14 +5,12 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +25,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.reader.main.R;
 import com.reader.main.ReadingActivity;
-import com.reader.record.BookLibrary;
 import com.reader.searchfile.FileListAdapter;
 import com.reader.searchfile.SearchFile;
 import com.reader.searchfile.SearchFile.FindOneBehavior;
@@ -38,6 +35,7 @@ public class LocalFileListFragment extends SherlockFragment implements
 		View.OnClickListener, OnItemClickListener {
 	ListView mListView;
 	FileListAdapter mFileListAdapter;
+	ProgressDialog mProgAlert;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,15 +51,14 @@ public class LocalFileListFragment extends SherlockFragment implements
 		return tv;
 	}
 
-	private void searchBook(BookLibrary lib) {
+	private void searchBook() {
 		if (!Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
 			Toast.makeText(this.getActivity(), "sd have unmouted",
 					Toast.LENGTH_LONG).show();
 			return;
 		}
-		lib.deleteAllBook();
-		SearchFileTask sft = new SearchFileTask(getActivity(), lib);
+		SearchFileTask sft = new SearchFileTask(getActivity());
 		sft.execute();
 		return;
 	}
@@ -78,8 +75,7 @@ public class LocalFileListFragment extends SherlockFragment implements
 
 	@Override
 	public void onClick(View v) {
-		BookLibrary lib = new BookLibrary(this.getActivity());
-		searchBook(lib);
+		searchBook();
 	}
 
 	@Override
@@ -90,7 +86,6 @@ public class LocalFileListFragment extends SherlockFragment implements
 	}
 
 	public class SearchFileTask extends AsyncTask<Void, Void, Void> {
-		BookLibrary mBookLib;
 		private Context mContext;
 		private List<String> bookList = new ArrayList<String>();
 		SearchFile.FindOneBehavior mSearchFileCallBack = new FindOneBehavior() {
@@ -108,11 +103,10 @@ public class LocalFileListFragment extends SherlockFragment implements
 		 * @param context
 		 * @param cl
 		 */
-		public SearchFileTask(Context context, BookLibrary lib) {
+		public SearchFileTask(Context context) {
 			String exts[] = { "txt", "umd" };
 			FileFilter fef = new FilenameExtFilter(exts);
 			mContext = context;
-			mBookLib = lib;
 			mSearchFile = new SearchFileMultiThread(mSearchFileCallBack,
 					Environment.getExternalStorageDirectory().getPath());
 			mSearchFile.setFilter(fef);
@@ -126,10 +120,17 @@ public class LocalFileListFragment extends SherlockFragment implements
 		}
 
 		@Override
+		protected void onPreExecute() {
+			mProgAlert.show();
+			super.onPreExecute();
+		}
+
+		@Override
 		protected void onPostExecute(Void result) {
 			Toast.makeText(mContext, "finish", Toast.LENGTH_LONG).show();
 			mFileListAdapter.setData(bookList);
 			mFileListAdapter.notifyDataSetChanged();
+			mProgAlert.dismiss();
 			super.onPostExecute(result);
 		}
 	}
@@ -144,6 +145,10 @@ public class LocalFileListFragment extends SherlockFragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		mProgAlert = new ProgressDialog(getActivity());
+		mProgAlert.setCanceledOnTouchOutside(false);
+		mProgAlert.setCancelable(false);
+		mProgAlert.setMessage("ËÑË÷ÖÐ...");
 	}
 
 	@Override

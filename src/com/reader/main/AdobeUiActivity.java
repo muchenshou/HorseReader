@@ -6,8 +6,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -36,7 +40,6 @@ public class AdobeUiActivity extends SherlockFragmentActivity {
 		actionBar = (ActionBar) this.getSupportActionBar();
 		actionBar.setTitle(getResources().getString(TITLES[0]));
 		actionBar.setHomeButtonEnabled(true);
-
 		String[] strTitles = new String[4];
 		for (int i = 0; i < 4; i++) {
 			strTitles[i] = getResources().getString(TITLES[i]);
