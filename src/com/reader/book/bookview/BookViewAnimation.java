@@ -7,8 +7,8 @@ import android.view.View;
 
 public abstract class BookViewAnimation {
 	//public void startAnimation();
-	public abstract void setCurBitmap(Bitmap bitmap);
-	public abstract void setNextBitmap(Bitmap bitmap);
+	public abstract void setFrontBitmap(Bitmap bitmap);
+	public abstract void setBackBitmap(Bitmap bitmap);
 	public abstract boolean DragToRight();
 	public abstract void setBookView(BookView bookview);
 	public abstract boolean onTouch(View v, MotionEvent event);

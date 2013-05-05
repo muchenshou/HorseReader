@@ -67,7 +67,6 @@ public class SimulateTurnPage extends BookViewAnimation {
 	private static int DELAY_TURN_RIGHT = 400;
 
 	public SimulateTurnPage(Context context) {
-		// TODO Auto-generated constructor stub
 		mPath0 = new Path();
 		mPath1 = new Path();
 		createDrawable();
@@ -111,7 +110,6 @@ public class SimulateTurnPage extends BookViewAnimation {
 	};
 
 	public boolean doTouchEvent(MotionEvent event) {
-		// TODO Auto-generated method stub
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
 			mState = STATE_TOUCHING;
 			mTouch.x = event.getX();
@@ -144,11 +142,9 @@ public class SimulateTurnPage extends BookViewAnimation {
 
 	/**
 	 * Author : hmg25 Version: 1.0 Description :
-	 * 锟斤拷锟街憋拷锟絇1P2锟斤拷直锟斤拷P3P4锟侥斤拷锟斤拷锟斤拷锟�
 	 */
 	public PointF getCross(PointF P1, PointF P2, PointF P3, PointF P4) {
 		PointF CrossP = new PointF();
-		// 锟斤拷元锟斤拷锟斤拷通式锟斤拷 y=ax+b
 		float a1 = (P2.y - P1.y) / (P2.x - P1.x);
 		float b1 = ((P1.x * P2.y) - (P2.x * P1.y)) / (P1.x - P2.x);
 
@@ -173,8 +169,6 @@ public class SimulateTurnPage extends BookViewAnimation {
 				/ 2;
 		mBezierStart1.y = mCornerY;
 
-		// 锟斤拷mBezierStart1.x < 0锟斤拷锟斤拷mBezierStart1.x > 480时
-		// 锟斤拷锟斤拷锟斤拷页锟斤拷锟斤拷锟斤拷锟紹UG锟斤拷锟节达拷锟斤拷锟斤拷
 		if (mTouch.x > 0 && mTouch.x < mWidth) {
 			if (mBezierStart1.x < 0 || mBezierStart1.x > mWidth) {
 				if (mBezierStart1.x < 0)
@@ -318,7 +312,7 @@ public class SimulateTurnPage extends BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟狡凤拷锟斤拷页锟斤拷锟斤拷影
+	 * Author : hmg25 Version: 1.0 Description
 	 */
 	public void drawCurrentPageShadow(Canvas canvas) {
 		double degree;
@@ -333,7 +327,6 @@ public class SimulateTurnPage extends BookViewAnimation {
 					- Math.atan2(mTouch.y - mBezierControl1.y, mTouch.x
 							- mBezierControl1.x);
 		}
-		// 锟斤拷锟斤拷页锟斤拷影锟斤拷锟斤拷锟斤拷touch锟斤拷木锟斤拷锟�
 		double d1 = 25 * 1.414 * Math.cos(degree);
 		double d2 = 25 * 1.414 * Math.sin(degree);
 		float x = (float) (mTouch.x + d1);
@@ -421,7 +414,7 @@ public class SimulateTurnPage extends BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟狡凤拷锟斤拷页锟斤拷锟斤拷
+	 * Author : hmg25 Version: 1.0 Description : 
 	 */
 	private void drawCurrentBackArea(Canvas canvas, Bitmap bitmap) {
 		int i = (int) (mBezierStart1.x + mBezierControl1.x) / 2;
@@ -499,8 +492,6 @@ public class SimulateTurnPage extends BookViewAnimation {
 
 	private void startAnimation(int delayMillis) {
 		int dx, dy;
-		// dx 水平锟斤拷锟津滑讹拷锟侥撅拷锟诫，锟斤拷值锟斤拷使锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
-		// dy 锟斤拷直锟斤拷锟津滑讹拷锟侥撅拷锟诫，锟斤拷值锟斤拷使锟斤拷锟斤拷锟斤拷锟较癸拷锟斤拷
 		if (mCornerX > 0) {
 			dx = -(int) (mWidth + mTouch.x);
 		} else {
@@ -527,7 +518,7 @@ public class SimulateTurnPage extends BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 锟角凤拷锟斤拷锟竭凤拷锟斤拷锟揭憋拷
+	 * Author : hmg25 Version: 1.0 Description :
 	 */
 	@Override
 	public boolean DragToRight() {
@@ -550,7 +541,6 @@ public class SimulateTurnPage extends BookViewAnimation {
 
 	@Override
 	public void onSizeChange(int w, int h, int oldw, int oldh) {
-		// TODO Auto-generated method stub
 		this.mWidth = w;
 		this.mHeight = h;
 
@@ -580,12 +570,12 @@ public class SimulateTurnPage extends BookViewAnimation {
 	Bitmap mNextPageBitmap = null;
 
 	@Override
-	public void setCurBitmap(Bitmap bitmap) {
+	public void setFrontBitmap(Bitmap bitmap) {
 		mCurPageBitmap = bitmap;
 	}
 
 	@Override
-	public void setNextBitmap(Bitmap bitmap) {
+	public void setBackBitmap(Bitmap bitmap) {
 		mNextPageBitmap = bitmap;
 	}
 }

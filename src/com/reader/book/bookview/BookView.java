@@ -45,8 +45,9 @@ public class BookView extends View implements View.OnTouchListener {
 		mBookContent = new BookContent(book, mPageConfig);
 
 		mBookPage = new BookPage(mBookContent);
-		this.mAnimation = new SimulateTurnPage(getContext());
+		// this.mAnimation = new SimulateTurnPage(getContext());
 		// this.mAnimation = new NoTurnAnimation(getContext());
+		this.mAnimation = new SimpleAnimation(getContext());
 		this.mAnimation.setBookView(this);
 	}
 
@@ -123,7 +124,7 @@ public class BookView extends View implements View.OnTouchListener {
 			mBookContent.setCurPosition(mBook.openOffset);
 			mInit = true;
 		}
-		mAnimation.setCurBitmap(mBookPage.tranlateFrontBitmap(mBookContent
+		mAnimation.setFrontBitmap(mBookPage.tranlateFrontBitmap(mBookContent
 				.getCurPage()));
 		this.mAnimation.update();
 		postInvalidate();
@@ -142,15 +143,15 @@ public class BookView extends View implements View.OnTouchListener {
 		mAnimation.onTouch(v, event);
 		if (mAnimation.state() == BookViewAnimation.STATE_TOUCH_START) {
 			// Draw current page and Set
-			mAnimation.setCurBitmap(mBookPage.tranlateFrontBitmap(mBookContent
+			mAnimation.setFrontBitmap(mBookPage.tranlateFrontBitmap(mBookContent
 					.getCurPage()));
 
 			// Draw next or pre page and Set it
 			if (mAnimation.DragToRight())
-				mAnimation.setNextBitmap(mBookPage
+				mAnimation.setBackBitmap(mBookPage
 						.tranlateBackBitmap(mBookContent.getPrePage()));
 			else
-				mAnimation.setNextBitmap(mBookPage
+				mAnimation.setBackBitmap(mBookPage
 						.tranlateBackBitmap(mBookContent.getNextPage()));
 
 		}

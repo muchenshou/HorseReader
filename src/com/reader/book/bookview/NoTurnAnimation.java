@@ -47,12 +47,12 @@ public class NoTurnAnimation extends BookViewAnimation {
 		mMyDetector = new GestureDetector(new MyGestureDetector());
 	}
 	@Override
-	public void setCurBitmap(Bitmap bitmap) {
+	public void setFrontBitmap(Bitmap bitmap) {
 		mCurBitmap = bitmap;
 	}
 
 	@Override
-	public void setNextBitmap(Bitmap bitmap) {
+	public void setBackBitmap(Bitmap bitmap) {
 	}
 
 	@Override
