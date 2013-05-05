@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.reader.book.Book;
+import com.reader.book.manager.BookContent;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -32,10 +33,10 @@ class StringUtils {
 
 public class PageObj extends DrawableObj {
 
-	private BookView mBookView;
+	private BookContent mBookContent;
 
-	public PageObj(BookView bookView, Book book) {
-		mBookView = bookView;
+	public PageObj(BookContent bookContent, Book book) {
+		mBookContent = bookContent;
 	}
 
 	private List<String> pageString = new ArrayList<String>();
@@ -48,7 +49,7 @@ public class PageObj extends DrawableObj {
 	public void Draw(Canvas canvas, Paint paint) {
 		int y = 0;
 		for (String strLine : pageString) {
-			y += this.mBookView.mBookContent.getLineHeight();
+			y += mBookContent.getLineHeight();
 			canvas.drawText(strLine, 10, y, paint);
 		}
 	}
