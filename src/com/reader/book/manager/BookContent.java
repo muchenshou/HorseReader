@@ -30,7 +30,7 @@ public class BookContent {
 	// Page mPage = new Page();
 	PageBuffer mPageBuffer = new PageBuffer();
 	public Book mBook = null;
-	public PageConfig mPageConfig;
+	private PageConfig mPageConfig;
 
 	public BookContent(Book book, PageConfig pageConfig) {
 		mBook = book;
