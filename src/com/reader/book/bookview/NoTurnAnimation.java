@@ -14,6 +14,7 @@ public class NoTurnAnimation extends BookViewAnimation {
 	boolean isTurnToPre;
 	Context mContext;
 	GestureDetector mMyDetector;
+
 	class MyGestureDetector extends SimpleOnGestureListener {
 
 		private int verticalMinDistance = 20;
@@ -24,28 +25,31 @@ public class NoTurnAnimation extends BookViewAnimation {
 				float velocityY) {
 			if (e1.getX() - e2.getX() > verticalMinDistance
 					&& Math.abs(velocityX) > minVelocity) {
-				// Toast.makeText(this, "向左手势", Toast.LENGTH_SHORT).show();
+				isTurnToPre = false;
 			} else if (e2.getX() - e1.getX() > verticalMinDistance
 					&& Math.abs(velocityX) > minVelocity) {
-				// Toast.makeText(this, "向右手势", Toast.LENGTH_SHORT).show();
+				isTurnToPre = true;
 			}
 			mState = STATE_ANIMATION_END;
 			return false;
 		}
 
 		@Override
-		public void onShowPress(MotionEvent e) {
+		public boolean onSingleTapUp(MotionEvent e) {
 			if (e.getX() < mWidth / 2)
 				isTurnToPre = true;
 			else
 				isTurnToPre = false;
 			mState = STATE_ANIMATION_END;
+			return super.onSingleTapUp(e);
 		}
 
 	}
+
 	public NoTurnAnimation(Context context) {
 		mMyDetector = new GestureDetector(new MyGestureDetector());
 	}
+
 	@Override
 	public void setFrontBitmap(Bitmap bitmap) {
 		mCurBitmap = bitmap;
