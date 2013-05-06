@@ -11,6 +11,8 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 
 public class SimpleAnimation extends BookViewAnimation {
 
@@ -40,16 +42,23 @@ public class SimpleAnimation extends BookViewAnimation {
 		mShadowL = new GradientDrawable(
 				GradientDrawable.Orientation.LEFT_RIGHT, mFrontShadowColors);
 		mShadowL.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-		mMyDetector = new GestureDetector(new MyGestureDetector());
 	}
 
 	@Override
 	public void setFrontBitmap(Bitmap bitmap) {
+		if (isTurnToPre) {
+			mBackBitmap = bitmap;
+			return;
+		}
 		mFrontBitmap = bitmap;
 	}
 
 	@Override
 	public void setBackBitmap(Bitmap bitmap) {
+		if (isTurnToPre) {
+			mFrontBitmap = bitmap;
+			return;
+		}
 		mBackBitmap = bitmap;
 	}
 
@@ -68,36 +77,34 @@ public class SimpleAnimation extends BookViewAnimation {
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		mMyDetector.onTouchEvent(event);
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			mState = STATE_TOUCH_START;
-			mTouch = event.getX();
+			mTouch = mWidth;
 			clickDown = event.getX();
+			isTurnToPre = clickDown < mWidth / 2 ? true : false;
 		}
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
 			mState = STATE_TOUCHING;
-			mTouch = event.getX();
+			if (isTurnToPre){
+				mTouch = event.getX() - clickDown;
+			}else {
+				mTouch = mWidth + event.getX() - clickDown;
+			}
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 			clickUp = event.getX();
-			if (mIsGesture) {
-				mTouch = mPagedir == dir.GO ? mWidth : 0;
-				mIsGesture = false;
-				mStartX = (int) mTouch;
-				mEndX = mWidth - mTouch;
-
-			} else {
-				mPagedir = (clickUp - clickDown > 0) ? dir.GO : dir.BACK;
-				mStartX = (int) mTouch;
-				mEndX = mPagedir == dir.GO ? mWidth : 0;
+			if (isTurnToPre){
+				mTouch = clickUp - clickDown;
+				mEndX =  mWidth;
+			}else {
+				mTouch = mWidth + clickUp - clickDown;
+				mEndX =  0;
 			}
+			mStartX = (int) mTouch;
+			mPagedir = (clickUp - clickDown <= 0) ? dir.GO : dir.BACK;
 			isTurnToPre = mPagedir == dir.GO ? false : true;
-			if (isTurnToPre) {
-				Bitmap m;
-				m = mFrontBitmap;
-				mFrontBitmap = mBackBitmap;
-				mBackBitmap = m;
-			}
+			
+			
 			startAnimation(DELAY_TURN_RIGHT);
 		}
 		return true;
@@ -123,16 +130,9 @@ public class SimpleAnimation extends BookViewAnimation {
 	}
 
 	private void DrawFront(Canvas canvas) {
-		// Path path = new Path();
-		// path.reset();
-		// path.addRect(0, 0, 500, mAnimationView.getHeight(),
-		// Path.Direction.CCW);
-
 		canvas.save();
 		canvas.translate(-(mAnimationView.getWidth() - mTouch), 0);
-		// canvas.clipPath(path);
 		canvas.drawBitmap(mFrontBitmap, 0, 0, new Paint());
-
 		canvas.restore();
 	}
 
@@ -151,7 +151,6 @@ public class SimpleAnimation extends BookViewAnimation {
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -162,87 +161,34 @@ public class SimpleAnimation extends BookViewAnimation {
 	float mEndX;
 	float mX;
 	float mY;
+	int animationtime;
 
 	private void startAnimation(int delayMillis) {
+
 		mStart = System.currentTimeMillis();
-		mEnd = mStart + delayMillis;
 		mX = mEndX - mStartX;
+		animationtime = delayMillis;// (int)((float)delayMillis*((float)mX/(float)mWidth));
+		mEnd = mStart + animationtime;
 		this.mState = STATE_ANIMATION;
 		mAnimationView.postInvalidate();
 	}
+
+	private static final Interpolator sInterpolator = new AccelerateInterpolator();
 
 	private void animation() {
 		if (mState != STATE_ANIMATION)
 			return;
 		long now = System.currentTimeMillis();
 		if (now < mEnd) {
-			mTouch = mStartX + mX * (now - mStart) / DELAY_TURN_RIGHT;
+			mTouch = mStartX
+					+ mX
+					* sInterpolator.getInterpolation((float) (now - mStart)
+							/ (float) animationtime);
 			mAnimationView.postInvalidate();
 		} else {
 			mState = STATE_ANIMATION_END;
 			mTouch = mWidth;
 			mAnimationView.postInvalidate();
 		}
-	}
-
-	GestureDetector mMyDetector;
-	boolean mIsGesture = false;
-
-	class MyGestureDetector extends SimpleOnGestureListener {
-
-		private int verticalMinDistance = 150;
-		private int minVelocity = 0;
-
-		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
-			Log.i("hello", "onFling:"+e1.getX()+"Motion:"+e2.getX());
-			if (e1.getX() - e2.getX() > verticalMinDistance
-					&& Math.abs(velocityX) > minVelocity) {
-				// Toast.makeText(this, "向左手势", Toast.LENGTH_SHORT).show();
-				mIsGesture = true;
-				mPagedir = dir.GO;
-			} else if (e2.getX() - e1.getX() > verticalMinDistance
-					&& Math.abs(velocityX) > minVelocity) {
-				// Toast.makeText(this, "向右手势", Toast.LENGTH_SHORT).show();
-				mIsGesture = true;
-				mPagedir = dir.BACK;
-			}
-			return true;
-		}
-
-		@Override
-		public boolean onDown(MotionEvent e) {
-			Log.i("hello", "onDown:"+e.getX());
-			return super.onDown(e);
-		}
-
-		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
-			Log.i("hello", "onDown:"+e1.getX()+"Motion:"+e2.getX());
-			return super.onScroll(e1, e2, distanceX, distanceY);
-		}
-
-		@Override
-		public boolean onSingleTapConfirmed(MotionEvent e) {
-			Log.i("hello", "onDown:"+e.getX());
-			return super.onSingleTapConfirmed(e);
-		}
-
-		@Override
-		public boolean onSingleTapUp(MotionEvent e) {
-			// TODO Auto-generated method stub
-			return super.onSingleTapUp(e);
-		}
-
-//		@Override
-//		public void onShowPress(MotionEvent e) {
-//			if (e.getX() < mWidth / 2)
-//				mPagedir = dir.BACK;
-//			else
-//				mPagedir = dir.GO;
-//		}
-
 	}
 }
