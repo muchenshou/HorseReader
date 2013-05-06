@@ -7,9 +7,7 @@
  * */
 package com.reader.book.bookview;
 
-import com.reader.book.Book;
-import com.reader.book.manager.BookContent;
-import com.reader.config.PageConfig;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,6 +19,10 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.reader.book.Book;
+import com.reader.book.manager.BookContent;
+import com.reader.config.PageConfig;
 
 public class BookView extends View implements View.OnTouchListener {
 	protected int bookSize;
@@ -145,14 +147,28 @@ public class BookView extends View implements View.OnTouchListener {
 			// Draw current page and Set
 			mAnimation.setFrontBitmap(mBookPage.tranlateFrontBitmap(mBookContent
 					.getCurPage()));
-
+			
+			
 			// Draw next or pre page and Set it
-			if (mAnimation.DragToRight())
+			if (mAnimation.DragToRight()) {
+				long start = System.currentTimeMillis();
+				List<String> strs = mBookContent.getPrePage();
+				Log.i("hello","time1:"+(System.currentTimeMillis()-start));
+				start = System.currentTimeMillis();
 				mAnimation.setBackBitmap(mBookPage
-						.tranlateBackBitmap(mBookContent.getPrePage()));
-			else
+						.tranlateBackBitmap(strs));
+				Log.i("hello","time2:"+(System.currentTimeMillis()-start));
+			}
+			else {
+				long start = System.currentTimeMillis();
+				List<String> strs = mBookContent.getNextPage();
+				Log.i("hello","time1:"+(System.currentTimeMillis()-start));
+				start = System.currentTimeMillis();
 				mAnimation.setBackBitmap(mBookPage
-						.tranlateBackBitmap(mBookContent.getNextPage()));
+						.tranlateBackBitmap(strs));
+				Log.i("hello","time2:"+(System.currentTimeMillis()-start));
+			}
+			
 
 		}
 		postInvalidate();

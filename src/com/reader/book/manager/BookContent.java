@@ -9,16 +9,20 @@ package com.reader.book.manager;
 
 import java.util.LinkedList;
 import java.util.List;
-import com.reader.book.bookview.BookView;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import android.graphics.Paint;
+import android.util.Log;
+
 import com.reader.book.Book;
 import com.reader.book.CharInfo;
 import com.reader.book.Line;
 import com.reader.book.Page;
 import com.reader.book.PageBuffer;
+import com.reader.book.bookview.BookView;
 import com.reader.config.PageConfig;
-
-import android.graphics.Paint;
-import android.util.Log;
 
 public class BookContent {
 	int mStart = 0;
@@ -92,37 +96,49 @@ public class BookContent {
 	public void update() {
 		pageline = (int) (pageHeight / getLineHeight());
 	}
+
 	private int mCurPosition = 0;
+
 	public void setCurPosition(int cur) {
 		mCurPosition = cur;
 		getPageStr(mCurPosition);
 	}
+
 	public List<String> getCurPage() {
 		return getPageStr(mCurPosition);
 	}
-	
+
 	public List<String> getNextPage() {
 		return getPageStr(getNextPagePosition());
 	}
-	
+
 	public List<String> getPrePage() {
 		return getPageStr(getprePagePosition());
 	}
-	
+
 	public void turnToPre() {
 		setCurPosition(getprePagePosition());
 	}
+
 	public void turnToNext() {
 		setCurPosition(getNextPagePosition());
 	}
-	private List<String> getPageStr(int start) {
+
+	private synchronized List<String> getPageStr(int start) {
+		if (!thread.isAlive()) {
+			mCon = mLock.newCondition();
+			thread.start();
+		}
 		if (!mPageBuffer.isEmpty()) {
 			Page page;
 			if ((page = mPageBuffer.existPage(start)) != null) {
+				mLock.lock();
+				mCon.signal();
+				mLock.unlock();
 				return page.getStrings();
 			}
 		}
-		Page page = new Page();
+		final Page page = new Page();
 		page.clear();
 		for (; page.getLinesSize() < pageline;) {
 			if (page.getLinesSize() == 0) {
@@ -140,6 +156,9 @@ public class BookContent {
 		}
 
 		mPageBuffer.addPage(mPageBuffer.addPage(page));
+		mLock.lock();
+		mCon.signal();
+		mLock.unlock();
 		return page.getStrings();
 	}
 
@@ -149,6 +168,7 @@ public class BookContent {
 		}
 		return 0;
 	}
+
 	/**
 	 * when page turn for prevent page,this variable saved all lines
 	 * */
@@ -232,5 +252,27 @@ public class BookContent {
 		mPageBuffer.addPage(page);
 		return page.getPageStartPosition();
 	}
-	
+
+	Lock mLock = new ReentrantLock();
+	Condition mCon;
+	Thread thread = new Thread() {
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					mLock.lock();
+					mCon.await();
+					getNextPage();
+					mLock.unlock();
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+	};
+
 }
