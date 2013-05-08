@@ -8,6 +8,9 @@
 package com.reader.book.bookview;
 
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -51,6 +54,8 @@ public class BookView extends View implements View.OnTouchListener {
 		// this.mAnimation = new NoTurnAnimation(getContext());
 		this.mAnimation = new SimpleAnimation(getContext());
 		this.mAnimation.setBookView(this);
+		thread.setPriority(Thread.NORM_PRIORITY);
+		thread.start();
 	}
 
 	public PageConfig getPageConfig() {
@@ -113,14 +118,18 @@ public class BookView extends View implements View.OnTouchListener {
 			canvas.drawBitmap(
 					mBookPage.tranlateFrontBitmap(mBookContent.getCurPage()),
 					0, 0, mPaint);
+			
 			mAnimation.setState(BookViewAnimation.NONE);
+			lock.lock();
+			con.signal();
+			lock.unlock();
 			postInvalidate();
 			return;
 		}
 		this.mAnimation.onDraw(canvas);
 	}
 
-	public void update() {
+	private void update() {
 		mBookContent.update();
 		if (this.mInit == false) {
 			mBookContent.setCurPosition(mBook.openOffset);
@@ -131,7 +140,8 @@ public class BookView extends View implements View.OnTouchListener {
 		this.mAnimation.update();
 		postInvalidate();
 	}
-
+	
+	long filterPoint = 0;
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
@@ -140,6 +150,12 @@ public class BookView extends View implements View.OnTouchListener {
 				&& event.getX() > rect.exactCenterX() - 40
 				&& event.getY() > rect.exactCenterY() - 20
 				&& event.getY() < rect.exactCenterY() + 20) { // gridview
+			return false;
+		}
+		if (event.getAction() == MotionEvent.ACTION_DOWN && mAnimation.state() != BookViewAnimation.NONE) {
+			filterPoint = event.getDownTime();
+		}
+		if (filterPoint == event.getDownTime()) {
 			return false;
 		}
 		mAnimation.onTouch(v, event);
@@ -151,24 +167,15 @@ public class BookView extends View implements View.OnTouchListener {
 			
 			// Draw next or pre page and Set it
 			if (mAnimation.DragToRight()) {
-				long start = System.currentTimeMillis();
 				List<String> strs = mBookContent.getPrePage();
-				Log.i("hello","time1:"+(System.currentTimeMillis()-start));
-				start = System.currentTimeMillis();
 				mAnimation.setBackBitmap(mBookPage
 						.tranlateBackBitmap(strs));
-				Log.i("hello","time2:"+(System.currentTimeMillis()-start));
 			}
 			else {
-				long start = System.currentTimeMillis();
 				List<String> strs = mBookContent.getNextPage();
-				Log.i("hello","time1:"+(System.currentTimeMillis()-start));
-				start = System.currentTimeMillis();
 				mAnimation.setBackBitmap(mBookPage
 						.tranlateBackBitmap(strs));
-				Log.i("hello","time2:"+(System.currentTimeMillis()-start));
 			}
-			
 
 		}
 		postInvalidate();
@@ -180,4 +187,31 @@ public class BookView extends View implements View.OnTouchListener {
 		mAnimation.setBookView(this);
 		this.mAnimation.onSizeChange(getWidth(), getHeight(), 0, 0);
 	}
+	
+	Lock lock = new ReentrantLock();
+	Condition con = lock.newCondition();
+	Thread thread = new Thread(){
+
+		@Override
+		public void run() {
+			while(true) {
+				lock.lock();
+				try {
+					con.await();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+				Log.i("hello", "thread");
+				if (mAnimation.DragToRight()) {
+					mBookContent.getPrePage();
+				} else {
+					mBookContent.getNextPage();
+				}
+				lock.unlock();
+			}
+			
+		}
+		
+	};
 }

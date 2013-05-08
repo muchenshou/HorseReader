@@ -151,7 +151,7 @@ public class SimpleAnimation extends BookViewAnimation {
 
 	}
 
-	private static int DELAY_TURN_RIGHT = 300;
+	private static int DELAY_TURN_RIGHT = 230;
 	long mEnd;
 	long mStart;
 	float mStartX;

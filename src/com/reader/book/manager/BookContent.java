@@ -125,19 +125,13 @@ public class BookContent {
 	}
 
 	private synchronized List<String> getPageStr(int start) {
-		if (!thread.isAlive()) {
-			mCon = mLock.newCondition();
-			thread.start();
-		}
 		if (!mPageBuffer.isEmpty()) {
 			Page page;
 			if ((page = mPageBuffer.existPage(start)) != null) {
-				mLock.lock();
-				mCon.signal();
-				mLock.unlock();
 				return page.getStrings();
 			}
 		}
+		Log.i("hello","isempty");
 		final Page page = new Page();
 		page.clear();
 		for (; page.getLinesSize() < pageline;) {
@@ -156,9 +150,6 @@ public class BookContent {
 		}
 
 		mPageBuffer.addPage(mPageBuffer.addPage(page));
-		mLock.lock();
-		mCon.signal();
-		mLock.unlock();
 		return page.getStrings();
 	}
 
@@ -252,27 +243,5 @@ public class BookContent {
 		mPageBuffer.addPage(page);
 		return page.getPageStartPosition();
 	}
-
-	Lock mLock = new ReentrantLock();
-	Condition mCon;
-	Thread thread = new Thread() {
-
-		@Override
-		public void run() {
-			while (true) {
-				try {
-					mLock.lock();
-					mCon.await();
-					getNextPage();
-					mLock.unlock();
-					
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
-	};
 
 }
