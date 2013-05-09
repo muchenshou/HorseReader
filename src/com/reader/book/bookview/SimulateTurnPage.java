@@ -127,6 +127,16 @@ public class SimulateTurnPage extends BookViewAnimation {
 			mTouch.x = event.getX();
 			mTouch.y = event.getY();
 			mState = STATE_TOUCH_START;
+			// Draw current page and Set
+			setFrontBitmap(PageDisplay.Instance.tranlateFrontBitmap());
+			
+			// Draw next or pre page and Set it
+			if (DragToRight()) {
+				setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.PRE));
+			}
+			else {
+				setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.NEXT));
+			}
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 			// if (canDragOver()) {

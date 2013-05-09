@@ -7,7 +7,6 @@
  * */
 package com.reader.book.bookview;
 
-import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,7 +37,7 @@ public class BookView extends View implements View.OnTouchListener {
 	Book mBook;
 	private boolean mInit = false;
 	private PageConfig mPageConfig;
-	BookPage mBookPage;
+	PageDisplay mBookPage;
 	private Paint mPaint;
 
 	public BookView(Context context, Book book) {
@@ -49,10 +48,10 @@ public class BookView extends View implements View.OnTouchListener {
 		mPaint = mPageConfig.getPaint();
 		mBookContent = new BookContent(book, mPageConfig);
 
-		mBookPage = new BookPage(mBookContent);
-		// this.mAnimation = new SimulateTurnPage(getContext());
+		mBookPage = new PageDisplay(mBookContent);
+		 this.mAnimation = new SimulateTurnPage(getContext());
 		// this.mAnimation = new NoTurnAnimation(getContext());
-		this.mAnimation = new SimpleAnimation(getContext());
+		//this.mAnimation = new SimpleAnimation(getContext());
 		this.mAnimation.setBookView(this);
 		thread.setPriority(Thread.NORM_PRIORITY);
 		thread.start();
@@ -160,22 +159,7 @@ public class BookView extends View implements View.OnTouchListener {
 		}
 		mAnimation.onTouch(v, event);
 		if (mAnimation.state() == BookViewAnimation.STATE_TOUCH_START) {
-			// Draw current page and Set
-			mAnimation.setFrontBitmap(mBookPage.tranlateFrontBitmap(mBookContent
-					.getCurPage()));
 			
-			
-			// Draw next or pre page and Set it
-			if (mAnimation.DragToRight()) {
-				List<String> strs = mBookContent.getPrePage();
-				mAnimation.setBackBitmap(mBookPage
-						.tranlateBackBitmap(strs));
-			}
-			else {
-				List<String> strs = mBookContent.getNextPage();
-				mAnimation.setBackBitmap(mBookPage
-						.tranlateBackBitmap(strs));
-			}
 
 		}
 		postInvalidate();

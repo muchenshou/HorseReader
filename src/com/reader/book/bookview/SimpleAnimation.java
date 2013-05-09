@@ -1,5 +1,9 @@
 package com.reader.book.bookview;
 
+import java.util.List;
+
+import com.reader.record.BookDatabaseHelper;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -78,10 +82,26 @@ public class SimpleAnimation extends BookViewAnimation {
 			mState = STATE_TOUCH_START;
 			mTouch = mWidth;
 			clickDown = event.getX();
-			isTurnToPre = clickDown < mWidth / 2 ? true : false;
+			isTurnToPre = false;
+			setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.NEXT));
 		}
+		boolean pre = false;
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
 			mState = STATE_TOUCHING;
+			pre = clickDown < event.getX() ? true : false;
+			if (pre != isTurnToPre) {
+				isTurnToPre = pre;
+				// Draw current page and Set
+				setFrontBitmap(PageDisplay.Instance.tranlateFrontBitmap());
+				
+				// Draw next or pre page and Set it
+				if (DragToRight()) {
+					setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.PRE));
+				}
+				else {
+					setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.NEXT));
+				}
+			}
 			if (isTurnToPre){
 				mTouch = event.getX() - clickDown;
 			}else {

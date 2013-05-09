@@ -10,7 +10,8 @@ import com.reader.book.Book;
 import com.reader.book.manager.BookContent;
 import com.reader.config.PageConfig;
 
-public class BookPage {
+public class PageDisplay {
+	public static PageDisplay Instance;
 	private BookContent mBookContent;
 	private PageConfig mPageConfig;
 	private Paint mPaint;
@@ -23,8 +24,11 @@ public class BookPage {
 	private BookProgressObj mBookProgressObj;
 	public Bitmap m_book_bg = null;
 	private int m_backColor = 0xffff9e85;
+	public static int CUR = 0;
+	public static int PRE = 1;
+	public static int NEXT = 2;
 
-	public BookPage(BookContent bookContent) {
+	public PageDisplay(BookContent bookContent) {
 		mBookContent = bookContent;
 		mPageConfig = mBookContent.mPageConfig;
 		mPaint = mPageConfig.getPaint();
@@ -37,6 +41,7 @@ public class BookPage {
 		mBookNameObj.setBookName(mBook.getName());
 
 		mBookProgressObj = new BookProgressObj(this.mBookContent, mBook.size());
+		Instance = this;
 	}
 
 	public void Draw(Canvas canvas) {
@@ -74,6 +79,22 @@ public class BookPage {
 	}
 
 	public Bitmap tranlateBackBitmap(List<String> page) {
+		Canvas c = new Canvas(mBackPageBitmap);
+		mPageObj.setPageString(page);
+		Draw(c);
+		return mBackPageBitmap;
+	}
+
+	public Bitmap tranlateFrontBitmap() {
+		List<String> page = mBookContent.getCurPage();
+		Canvas c = new Canvas(mfrontPageBitmap);
+		mPageObj.setPageString(page);
+		Draw(c);
+		return mfrontPageBitmap;
+	}
+
+	public Bitmap tranlateBackBitmap(int dir) {
+		List<String> page = dir == PRE ? mBookContent.getPrePage():mBookContent.getNextPage();
 		Canvas c = new Canvas(mBackPageBitmap);
 		mPageObj.setPageString(page);
 		Draw(c);
