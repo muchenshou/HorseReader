@@ -72,8 +72,7 @@ public class GZIPInputStream extends InflaterInputStream {
     return inflater.istate.getGZIPHeader().getCRC();
   }
 
-  @Override
-public void readHeader() throws IOException {
+  public void readHeader() throws IOException {
 
     byte[] empty = "".getBytes();
     inflater.setOutput(empty, 0, 0);

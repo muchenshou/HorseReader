@@ -82,6 +82,13 @@ final public class Deflater extends ZStream{
       throw new GZIPException(ret+": "+msg);
   }
 
+  public Deflater(int level, int bits, int memlevel, JZlib.WrapperType wrapperType) throws GZIPException {
+    super();
+    int ret = init(level, bits, memlevel, wrapperType);
+    if(ret!=Z_OK)
+      throw new GZIPException(ret+": "+msg);
+  }
+
   public Deflater(int level, int bits, int memlevel) throws GZIPException {
     super();
     int ret = init(level, bits, memlevel);
@@ -98,6 +105,23 @@ final public class Deflater extends ZStream{
   public int init(int level, int bits){
     return init(level, bits, false);
   }
+  public int init(int level, int bits, int memlevel, JZlib.WrapperType wrapperType){
+    if(bits < 9 || bits > 15){
+      return Z_STREAM_ERROR;
+    }
+    if(wrapperType == JZlib.W_NONE) {
+      bits *= -1;
+    }
+    else if(wrapperType == JZlib.W_GZIP) {
+        bits += 16;
+    }
+    else if(wrapperType == JZlib.W_ANY) {
+        return Z_STREAM_ERROR;
+    }
+    else if(wrapperType == JZlib.W_ZLIB) {
+    }
+    return init(level, bits, memlevel);
+  }
   public int init(int level, int bits, int memlevel){
     finished = false;
     dstate=new Deflate(this);
@@ -109,8 +133,7 @@ final public class Deflater extends ZStream{
     return dstate.deflateInit(level, nowrap?-bits:bits);
   }
 
-  @Override
-public int deflate(int flush){
+  public int deflate(int flush){
     if(dstate==null){
       return Z_STREAM_ERROR;
     }
@@ -119,8 +142,7 @@ public int deflate(int flush){
       finished = true;
     return ret;
   }
-  @Override
-public int end(){
+  public int end(){
     finished = true;
     if(dstate==null) return Z_STREAM_ERROR;
     int ret=dstate.deflateEnd();
@@ -138,8 +160,7 @@ public int end(){
     return dstate.deflateSetDictionary(dictionary, dictLength);
   }
 
-  @Override
-public boolean finished(){
+  public boolean finished(){
     return finished;
   }
 

@@ -43,7 +43,11 @@ public class InflaterInputStream extends FilterInputStream {
   protected static final int DEFAULT_BUFSIZE = 512;
 
   public InflaterInputStream(InputStream in) throws IOException {
-    this(in, new Inflater());
+    this(in, false);
+  }
+
+  public InflaterInputStream(InputStream in, boolean nowrap) throws IOException {
+    this(in, new Inflater(nowrap));
     myinflater = true;
   }
 
@@ -75,14 +79,12 @@ public class InflaterInputStream extends FilterInputStream {
 
   private byte[] byte1 = new byte[1];
 
-  @Override
-public int read() throws IOException {
+  public int read() throws IOException {
     if (closed) { throw new IOException("Stream closed"); }
     return read(byte1, 0, 1) == -1 ? -1 : byte1[0] & 0xff;
   }
 
-  @Override
-public int read(byte[] b, int off, int len) throws IOException {
+  public int read(byte[] b, int off, int len) throws IOException {
     if (closed) { throw new IOException("Stream closed"); }
     if (b == null) {
       throw new NullPointerException();
@@ -122,8 +124,7 @@ public int read(byte[] b, int off, int len) throws IOException {
     return n;
   }
 
-  @Override
-public int available() throws IOException {
+  public int available() throws IOException {
     if (closed) { throw new IOException("Stream closed"); }
     if (eof) {
       return 0;
@@ -135,8 +136,7 @@ public int available() throws IOException {
 
   private byte[] b = new byte[512];
 
-  @Override
-public long skip(long n) throws IOException {
+  public long skip(long n) throws IOException {
     if (n < 0) {
       throw new IllegalArgumentException("negative skip length");
     }
@@ -160,8 +160,7 @@ public long skip(long n) throws IOException {
     return total;
   }
 
-  @Override
-public void close() throws IOException {
+  public void close() throws IOException {
     if (!closed) {
       if (myinflater)
         inflater.end();
@@ -190,17 +189,14 @@ public void close() throws IOException {
     inflater.setInput(buf, 0, len, true);
   }
 
-  @Override
-public boolean markSupported() {
+  public boolean markSupported() {
     return false;
   }
 
-  @Override
-public synchronized void mark(int readlimit) {
+  public synchronized void mark(int readlimit) {
   }
 
-  @Override
-public synchronized void reset() throws IOException {
+  public synchronized void reset() throws IOException {
     throw new IOException("mark/reset not supported");
   }
 

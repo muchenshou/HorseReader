@@ -9,9 +9,6 @@ package com.reader.book.manager;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import android.graphics.Paint;
 import android.util.Log;

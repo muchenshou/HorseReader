@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import com.reader.util.BytesTransfer;
+
 public class UmdInfo {
 
 	protected UmdParse umdStream;

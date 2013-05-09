@@ -11,20 +11,15 @@ import java.io.File;
 import java.io.IOException;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 
-import com.reader.main.R;
-import com.reader.book.bookview.BookView;
 import com.reader.book.Book;
 import com.reader.book.BookFactory;
-import com.reader.main.ReadingActivity;
 
 public class BookManager{
 
 	public static final int OPENBOOK = 7;
 	public static final int BUFSIZE = 512;
 	private Book book;
-	private BookView bookView;
 
 	int bufferlocal = -1;
 	int BUFLEN = 4 * 1024;

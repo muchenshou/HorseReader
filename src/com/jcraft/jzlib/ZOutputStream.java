@@ -70,14 +70,12 @@ public class ZOutputStream extends FilterOutputStream {
   }
 
   private byte[] buf1 = new byte[1];
-  @Override
-public void write(int b) throws IOException {
+  public void write(int b) throws IOException {
     buf1[0]=(byte)b;
     write(buf1, 0, 1);
   }
 
-  @Override
-public void write(byte b[], int off, int len) throws IOException {
+  public void write(byte b[], int off, int len) throws IOException {
     if(len==0) return;
     if(compress){
       dos.write(b, off, len);
@@ -132,8 +130,7 @@ public void write(byte b[], int off, int len) throws IOException {
     }
     end=true;
   }
-  @Override
-public void close() throws IOException {
+  public void close() throws IOException {
     try{
       try{finish();}
       catch (IOException ignored) {}
@@ -155,8 +152,7 @@ public void close() throws IOException {
     else return inflater.total_out;
   }
 
-  @Override
-public void flush() throws IOException {
+  public void flush() throws IOException {
     out.flush();
   }
 

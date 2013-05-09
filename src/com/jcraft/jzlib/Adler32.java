@@ -44,25 +44,21 @@ final public class Adler32 implements Checksum {
   private long s1=1L;
   private long s2=0L;
 
-  @Override
-public void reset(long init){
+  public void reset(long init){
     s1=init&0xffff;
     s2=(init>>16)&0xffff;
   }
 
-  @Override
-public void reset(){
+  public void reset(){
     s1=1L;
     s2=0L;
   }
 
-  @Override
-public long getValue(){
+  public long getValue(){
     return ((s2<<16)|s1);
   }
 
-  @Override
-public void update(byte[] buf, int index, int len){
+  public void update(byte[] buf, int index, int len){
 
     if(len==1){
       s1+=buf[index++]&0xff; s2+=s1;
@@ -92,8 +88,7 @@ public void update(byte[] buf, int index, int len){
     s2%=BASE;
   }
 
-  @Override
-public Adler32 copy(){
+  public Adler32 copy(){
     Adler32 foo = new Adler32();
     foo.s1 = this.s1;
     foo.s2 = this.s2;
@@ -102,7 +97,7 @@ public Adler32 copy(){
 
   // The following logic has come from zlib.1.2.
   static long combine(long adler1, long adler2, long len2){
-    long BASEL = BASE;
+    long BASEL = (long)BASE;
     long sum1;
     long sum2;
     long rem;  // unsigned int

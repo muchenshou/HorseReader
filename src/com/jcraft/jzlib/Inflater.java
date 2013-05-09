@@ -62,8 +62,23 @@ final public class Inflater extends ZStream{
     init();
   }
 
+  public Inflater(JZlib.WrapperType wrapperType) throws GZIPException {
+    this(DEF_WBITS, wrapperType);
+  }
+
+  public Inflater(int w, JZlib.WrapperType wrapperType) throws GZIPException {
+    super();
+    int ret = init(w, wrapperType);
+    if(ret!=Z_OK)
+      throw new GZIPException(ret+": "+msg);
+  }
+
   public Inflater(int w) throws GZIPException {
     this(w, false);
+  }
+
+  public Inflater(boolean nowrap) throws GZIPException {
+    this(DEF_WBITS, nowrap);
   }
 
   public Inflater(int w, boolean nowrap) throws GZIPException {
@@ -77,6 +92,26 @@ final public class Inflater extends ZStream{
 
   public int init(){
     return init(DEF_WBITS);
+  }
+
+  public int init(JZlib.WrapperType wrapperType){
+    return init(DEF_WBITS, wrapperType);
+  }
+
+  public int init(int w, JZlib.WrapperType wrapperType) {
+    boolean nowrap = false;
+    if(wrapperType == JZlib.W_NONE){
+      nowrap = true;
+    }
+    else if(wrapperType == JZlib.W_GZIP) {
+      w += 16;
+    }
+    else if(wrapperType == JZlib.W_ANY) {
+      w |= Inflate.INFLATE_ANY;
+    }
+    else if(wrapperType == JZlib.W_ZLIB) {
+    }
+    return init(w, nowrap);
   }
 
   public int init(boolean nowrap){
@@ -93,8 +128,7 @@ final public class Inflater extends ZStream{
     return istate.inflateInit(nowrap?-w:w);
   }
 
-  @Override
-public int inflate(int f){
+  public int inflate(int f){
     if(istate==null) return Z_STREAM_ERROR;
     int ret = istate.inflate(f);
     if(ret == Z_STREAM_END) 
@@ -102,8 +136,7 @@ public int inflate(int f){
     return ret;
   }
 
-  @Override
-public int end(){
+  public int end(){
     finished = true;
     if(istate==null) return Z_STREAM_ERROR;
     int ret=istate.inflateEnd();
@@ -129,8 +162,7 @@ public int end(){
     return istate.inflateSetDictionary(dictionary, dictLength);
   }
 
-  @Override
-public boolean finished(){
+  public boolean finished(){
     return istate.mode==12 /*DONE*/;
   }
 }

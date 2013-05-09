@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.book.umd;
+package com.reader.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

@@ -263,6 +263,8 @@ final class Deflate implements Cloneable {
 
   // number of codes at each bit length for an optimal tree
   short[] bl_count=new short[MAX_BITS+1];
+  // working area to be used in Tree#gen_codes()
+  short[] next_code=new short[MAX_BITS+1];
 
   // heap used to build the Huffman trees
   int[] heap=new int[2*L_CODES+1];
@@ -579,7 +581,7 @@ final class Deflate implements Cloneable {
 
   void send_bits(int value, int length){
     int len = length;
-    if (bi_valid > Buf_size - len) {
+    if (bi_valid > (int)Buf_size - len) {
       int val = value;
 //      bi_buf |= (val << bi_valid);
       bi_buf |= ((val << bi_valid)&0xffff);
@@ -650,7 +652,7 @@ final class Deflate implements Cloneable {
       int in_length = strstart - block_start;
       int dcode;
       for (dcode = 0; dcode < D_CODES; dcode++) {
-	out_length += dyn_dtree[dcode*2] *
+	out_length += (int)dyn_dtree[dcode*2] *
 	  (5L+Tree.extra_dbits[dcode]);
       }
       out_length >>>= 3;
@@ -813,8 +815,8 @@ final class Deflate implements Cloneable {
       max_start=block_start+max_block_size;
       if(strstart==0|| strstart>=max_start) {
 	// strstart == 0 is possible when wraparound on 16-bit machine
-	lookahead = strstart-max_start;
-	strstart = max_start;
+	lookahead = (int)(strstart-max_start);
+	strstart = (int)max_start;
       
 	flush_block_only(false);
 	if(strm.avail_out==0) return NeedMore;
@@ -1297,7 +1299,7 @@ final class Deflate implements Cloneable {
 	       window[++scan] == window[++match] &&
 	       scan < strend);
 
-      len = MAX_MATCH - (strend - scan);
+      len = MAX_MATCH - (int)(strend - scan);
       scan = strend - MAX_MATCH;
 
       if(len>best_len) {
@@ -1359,7 +1361,7 @@ final class Deflate implements Cloneable {
       return Z_STREAM_ERROR;
     }
 
-    strm.dstate = this;
+    strm.dstate = (Deflate)this;
 
     this.wrap = wrap;
     w_bits = windowBits;
@@ -1693,8 +1695,7 @@ final class Deflate implements Cloneable {
     return Z_OK;
   }
 
-  @Override
-public Object clone() throws CloneNotSupportedException {
+  public Object clone() throws CloneNotSupportedException {
     Deflate dest = (Deflate)super.clone();
 
     dest.pending_buf = dup(dest.pending_buf);
@@ -1707,6 +1708,7 @@ public Object clone() throws CloneNotSupportedException {
     dest.bl_tree = dup(dest.bl_tree);
 
     dest.bl_count = dup(dest.bl_count);
+    dest.next_code = dup(dest.next_code);
     dest.heap = dup(dest.heap);
     dest.depth = dup(dest.depth);
 

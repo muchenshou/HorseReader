@@ -80,14 +80,12 @@ public class DeflaterOutputStream extends FilterOutputStream {
     this.close_out = close_out;
   }
 
-  @Override
-public void write(int b) throws IOException {
+  public void write(int b) throws IOException {
     buf1[0] = (byte)(b & 0xff);
     write(buf1, 0, 1);
   }
 
-  @Override
-public void write(byte[] b, int off, int len) throws IOException {
+  public void write(byte[] b, int off, int len) throws IOException {
     if (deflater.finished()) {
       throw new IOException("finished");
     }
@@ -114,8 +112,7 @@ public void write(byte[] b, int off, int len) throws IOException {
     }
   }
 
-  @Override
-public void close() throws IOException {
+  public void close() throws IOException {
     if (!closed) {
       finish();
       if (mydeflater){
@@ -149,8 +146,7 @@ public void close() throws IOException {
     return err;
   }
 
-  @Override
-public void flush() throws IOException {
+  public void flush() throws IOException {
     if (syncFlush && !deflater.finished()) {
       while (true) {
         int err = deflate(JZlib.Z_SYNC_FLUSH);

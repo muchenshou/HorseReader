@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import com.reader.util.BytesTransfer;
+
 public class UmdParse extends RandomAccessFile {
 
 	public static int UMDFLAG = 0x899b9ade;
