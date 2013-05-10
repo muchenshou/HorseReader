@@ -23,9 +23,10 @@ public class SimpleAnimation extends BookViewAnimation {
 	GradientDrawable mShadowL;
 	int mWidth;
 	int[] mFrontShadowColors = new int[] { 0x80111111, 0x111111 };
+	int[] mShadowRColors = new int[] { 0x111111, 0x80111111 };
 	Context mContext;
 	View mAnimationView;
-	float mTouch = 0f;
+	float mBoundLine = 0f;
 	boolean isTurnToPre = false;
 
 	enum dir {
@@ -38,7 +39,7 @@ public class SimpleAnimation extends BookViewAnimation {
 		mContext = context;
 
 		mShadowR = new GradientDrawable(
-				GradientDrawable.Orientation.LEFT_RIGHT, mFrontShadowColors);
+				GradientDrawable.Orientation.LEFT_RIGHT, mShadowRColors);
 		mShadowR.setGradientType(GradientDrawable.LINEAR_GRADIENT);
 		mShadowL = new GradientDrawable(
 				GradientDrawable.Orientation.LEFT_RIGHT, mFrontShadowColors);
@@ -47,19 +48,11 @@ public class SimpleAnimation extends BookViewAnimation {
 
 	@Override
 	public void setFrontBitmap(Bitmap bitmap) {
-		if (isTurnToPre) {
-			mBackBitmap = bitmap;
-			return;
-		}
 		mFrontBitmap = bitmap;
 	}
 
 	@Override
 	public void setBackBitmap(Bitmap bitmap) {
-		if (isTurnToPre) {
-			mFrontBitmap = bitmap;
-			return;
-		}
 		mBackBitmap = bitmap;
 	}
 
@@ -80,10 +73,11 @@ public class SimpleAnimation extends BookViewAnimation {
 	public boolean onTouch(View v, MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			mState = STATE_TOUCH_START;
-			mTouch = mWidth;
+			mBoundLine = mWidth;
 			clickDown = event.getX();
 			isTurnToPre = false;
-			setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.NEXT));
+			setBackBitmap(PageDisplay.Instance
+					.tranlateBackBitmap(PageDisplay.NEXT));
 		}
 		boolean pre = false;
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -93,35 +87,35 @@ public class SimpleAnimation extends BookViewAnimation {
 				isTurnToPre = pre;
 				// Draw current page and Set
 				setFrontBitmap(PageDisplay.Instance.tranlateFrontBitmap());
-				
+
 				// Draw next or pre page and Set it
 				if (DragToRight()) {
-					setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.PRE));
-				}
-				else {
-					setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.NEXT));
+					setBackBitmap(PageDisplay.Instance
+							.tranlateBackBitmap(PageDisplay.PRE));
+				} else {
+					setBackBitmap(PageDisplay.Instance
+							.tranlateBackBitmap(PageDisplay.NEXT));
 				}
 			}
-			if (isTurnToPre){
-				mTouch = event.getX() - clickDown;
-			}else {
-				mTouch = mWidth + event.getX() - clickDown;
+			if (isTurnToPre) {
+				mBoundLine = event.getX() - clickDown;
+			} else {
+				mBoundLine = mWidth + event.getX() - clickDown;
 			}
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 			clickUp = event.getX();
-			if (isTurnToPre){
-				mTouch = clickUp - clickDown;
-				mEndX =  mWidth;
-			}else {
-				mTouch = mWidth + clickUp - clickDown;
-				mEndX =  0;
+			if (isTurnToPre) {
+				mBoundLine = clickUp - clickDown;
+				mEndX = mWidth;
+			} else {
+				mBoundLine = mWidth + clickUp - clickDown;
+				mEndX = 0;
 			}
-			mStartX = (int) mTouch;
+			mStartX = (int) mBoundLine;
 			mPagedir = (clickUp - clickDown <= 0) ? dir.GO : dir.BACK;
 			isTurnToPre = mPagedir == dir.GO ? false : true;
-			
-			
+
 			startAnimation(DELAY_TURN_RIGHT);
 		}
 		return true;
@@ -141,14 +135,21 @@ public class SimpleAnimation extends BookViewAnimation {
 	}
 
 	private void DrawShadow(Canvas canvas) {
-		mShadowL.setBounds((int) mTouch, 0, (int) mTouch + 20,
-				mAnimationView.getHeight());
-		mShadowL.draw(canvas);
+		if (isTurnToPre) {
+			mShadowR.setBounds((int) mBoundLine - 20, 0, (int) mBoundLine,
+					mAnimationView.getHeight());
+			mShadowR.draw(canvas);
+		} else {
+			mShadowL.setBounds((int) mBoundLine, 0, (int) mBoundLine + 20,
+					mAnimationView.getHeight());
+			mShadowL.draw(canvas);
+		}
 	}
 
 	private void DrawFront(Canvas canvas) {
 		canvas.save();
-		canvas.translate(-(mAnimationView.getWidth() - mTouch), 0);
+		canvas.translate(isTurnToPre ? mBoundLine
+				: -(mAnimationView.getWidth() - mBoundLine), 0);
 		canvas.drawBitmap(mFrontBitmap, 0, 0, new Paint());
 		canvas.restore();
 	}
@@ -156,8 +157,12 @@ public class SimpleAnimation extends BookViewAnimation {
 	private void DrawBack(Canvas canvas) {
 		Path path = new Path();
 		path.reset();
-		path.addRect(mTouch, 0, mAnimationView.getWidth(),
-				mAnimationView.getHeight(), Path.Direction.CCW);
+		if (isTurnToPre)
+			path.addRect(0, 0, mBoundLine, mAnimationView.getHeight(),
+					Path.Direction.CCW);
+		else
+			path.addRect(mBoundLine, 0, mAnimationView.getWidth(),
+					mAnimationView.getHeight(), Path.Direction.CCW);
 
 		canvas.save();
 		canvas.clipPath(path);
@@ -197,14 +202,14 @@ public class SimpleAnimation extends BookViewAnimation {
 			return;
 		long now = System.currentTimeMillis();
 		if (now < mEnd) {
-			mTouch = mStartX
+			mBoundLine = mStartX
 					+ mX
 					* sInterpolator.getInterpolation((float) (now - mStart)
 							/ (float) animationtime);
 			mAnimationView.postInvalidate();
 		} else {
 			mState = STATE_ANIMATION_END;
-			mTouch = mWidth;
+			mBoundLine = mWidth;
 			mAnimationView.postInvalidate();
 		}
 	}

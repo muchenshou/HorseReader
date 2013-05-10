@@ -49,9 +49,9 @@ public class BookView extends View implements View.OnTouchListener {
 		mBookContent = new BookContent(book, mPageConfig);
 
 		mBookPage = new PageDisplay(mBookContent);
-		 this.mAnimation = new SimulateTurnPage(getContext());
+		 //this.mAnimation = new SimulateTurnPage(getContext());
 		// this.mAnimation = new NoTurnAnimation(getContext());
-		//this.mAnimation = new SimpleAnimation(getContext());
+		this.mAnimation = new SimpleAnimation(getContext());
 		this.mAnimation.setBookView(this);
 		thread.setPriority(Thread.NORM_PRIORITY);
 		thread.start();
