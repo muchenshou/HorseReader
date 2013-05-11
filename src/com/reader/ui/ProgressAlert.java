@@ -7,8 +7,8 @@
  * */
 package com.reader.ui;
 
-import com.reader.main.R;
-import com.reader.main.ReadingActivity;
+import com.reader.app.ReadingActivity;
+import com.reader.app.R;
 
 import android.content.Context;
 import android.view.LayoutInflater;

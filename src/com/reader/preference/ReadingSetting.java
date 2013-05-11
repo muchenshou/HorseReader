@@ -1,7 +1,7 @@
 package com.reader.preference;
 
-import com.reader.main.R;
-import com.reader.main.ReadingActivity;
+import com.reader.app.ReadingActivity;
+import com.reader.app.R;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

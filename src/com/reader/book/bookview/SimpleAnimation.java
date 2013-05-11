@@ -1,9 +1,5 @@
 package com.reader.book.bookview;
 
-import java.util.List;
-
-import com.reader.record.BookDatabaseHelper;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

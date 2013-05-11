@@ -55,23 +55,27 @@ final public class CRC32 implements Checksum {
     }
   }
 
-  public void update (byte[] buf, int index, int len) {
+  @Override
+public void update (byte[] buf, int index, int len) {
     int c = ~v;
     while (--len >= 0)
       c = crc_table[(c^buf[index++])&0xff]^(c >>> 8);
     v = ~c;
   }
 
-  public void reset(){
+  @Override
+public void reset(){
     v = 0;
   }
 
-  public void reset(long vv){
+  @Override
+public void reset(long vv){
     v = (int)(vv&0xffffffffL);
   }
 
-  public long getValue(){
-    return (long)(v&0xffffffffL);
+  @Override
+public long getValue(){
+    return v&0xffffffffL;
   }
 
   // The following logic has come from zlib.1.2.
@@ -165,7 +169,8 @@ final public class CRC32 implements Checksum {
     return crc32.getValue();
   }
 */
-  public CRC32 copy(){
+  @Override
+public CRC32 copy(){
     CRC32 foo = new CRC32();
     foo.v = this.v;
     return foo;

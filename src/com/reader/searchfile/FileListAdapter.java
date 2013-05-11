@@ -61,11 +61,11 @@ public class FileListAdapter extends BaseAdapter {
 				.toLowerCase();
 		if (str.equals("umd")) {
 			b.mBookImage = mContext.getResources().getDrawable(
-					com.reader.main.R.drawable.umd);
+					com.reader.app.R.drawable.umd);
 		}
 		if (str.equals("txt")) {
 			b.mBookImage = mContext.getResources().getDrawable(
-					com.reader.main.R.drawable.txt);
+					com.reader.app.R.drawable.txt);
 		}
 		mBookInfoList.add(b);
 	}
@@ -80,16 +80,16 @@ public class FileListAdapter extends BaseAdapter {
 		ViewHolder holder = null;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			convertView = mInflater.inflate(com.reader.main.R.layout.listitem,
+			convertView = mInflater.inflate(com.reader.app.R.layout.listitem,
 					null);
 			holder.img = (ImageView) convertView
-					.findViewById(com.reader.main.R.id.img);
+					.findViewById(com.reader.app.R.id.img);
 			holder.title = (TextView) convertView
-					.findViewById(com.reader.main.R.id.title);
+					.findViewById(com.reader.app.R.id.title);
 			holder.process = (TextView) convertView
-					.findViewById(com.reader.main.R.id.process);
+					.findViewById(com.reader.app.R.id.process);
 			holder.size = (TextView) convertView
-					.findViewById(com.reader.main.R.id.filesize);
+					.findViewById(com.reader.app.R.id.filesize);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();

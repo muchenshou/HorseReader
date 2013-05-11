@@ -1,6 +1,6 @@
 package com.reader.fragment;
 
-import com.reader.main.R;
+import com.reader.app.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

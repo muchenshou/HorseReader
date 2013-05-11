@@ -22,12 +22,10 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TabWidget;
 import android.widget.TextView;
 
-import com.reader.main.R;
+import com.reader.app.R;
 
 public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchModeChangeListener {
 
@@ -149,6 +147,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void onTouchModeChanged(boolean isInTouchMode) {
 		if (!isInTouchMode) {
 			// leaving touch mode.. if nothing has focus, let's give it to
@@ -456,6 +455,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			mLabel = label;
 		}
 
+		@Override
 		public View createIndicatorView() {
 			final Context context = getContext();
 			LayoutInflater inflater = (LayoutInflater) context
@@ -495,6 +495,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			mIcon = icon;
 		}
 
+		@Override
 		public View createIndicatorView() {
 			final Context context = getContext();
 			LayoutInflater inflater = (LayoutInflater) context
@@ -544,6 +545,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			mView = view;
 		}
 
+		@Override
 		public View createIndicatorView() {
 			return mView;
 		}
@@ -567,11 +569,13 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			}
 		}
 
+		@Override
 		public View getContentView() {
 			mView.setVisibility(View.VISIBLE);
 			return mView;
 		}
 
+		@Override
 		public void tabClosed() {
 			mView.setVisibility(View.GONE);
 		}
@@ -591,6 +595,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			mFactory = factory;
 		}
 
+		@Override
 		public View getContentView() {
 			if (mTabContent == null) {
 				mTabContent = mFactory.createTabContent(mTag.toString());
@@ -599,6 +604,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			return mTabContent;
 		}
 
+		@Override
 		public void tabClosed() {
 			mTabContent.setVisibility(View.GONE);
 		}
@@ -620,6 +626,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			mIntent = intent;
 		}
 
+		@Override
 		public View getContentView() {
 			if (mLocalActivityManager == null) {
 				throw new IllegalStateException(
@@ -651,6 +658,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			return mLaunchedView;
 		}
 
+		@Override
 		public void tabClosed() {
 			if (mLaunchedView != null) {
 				mLaunchedView.setVisibility(View.GONE);

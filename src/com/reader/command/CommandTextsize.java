@@ -10,7 +10,7 @@ package com.reader.command;
 import android.view.Gravity;
 
 import com.reader.ui.ProgressAlert;
-import com.reader.main.ReadingActivity;
+import com.reader.app.ReadingActivity;
 
 public class CommandTextsize implements Command{
 	ReadingActivity activity;

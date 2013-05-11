@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.reader.record.BookHistory;
 import com.reader.ui.BookAdapter;
-import com.reader.main.ReadingActivity;
+import com.reader.app.ReadingActivity;
 
 import android.content.Intent;
 import android.os.Bundle;

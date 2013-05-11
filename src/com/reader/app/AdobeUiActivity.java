@@ -1,4 +1,4 @@
-package com.reader.main;
+package com.reader.app;
 
 import java.util.HashMap;
 
@@ -6,19 +6,15 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.widget.TabHost;
-import android.widget.TextView;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.reader.fragment.About;
 import com.reader.fragment.HistoryListFragment;
 import com.reader.fragment.LocalFileListFragment;
 import com.reader.fragment.NetWorkListFragment;
+import com.reader.app.R;
 
 public class AdobeUiActivity extends SherlockFragmentActivity {
 	ActionBar actionBar;
@@ -37,7 +33,7 @@ public class AdobeUiActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.rightview);
 
 		// set up action bar
-		actionBar = (ActionBar) this.getSupportActionBar();
+		actionBar = this.getSupportActionBar();
 		actionBar.setTitle(getResources().getString(TITLES[0]));
 		actionBar.setHomeButtonEnabled(true);
 		String[] strTitles = new String[4];

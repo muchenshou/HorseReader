@@ -144,7 +144,7 @@ final class InfBlocks{
 
     // copy input/output information to locals (UPDATE macro restores)
     {p=z.next_in_index;n=z.avail_in;b=bitb;k=bitk;}
-    {q=write;m=(int)(q<read?read-q-1:end-q);}
+    {q=write;m=q<read?read-q-1:end-q;}
 
     // process input based on current state
     while(true){
@@ -166,7 +166,7 @@ final class InfBlocks{
 	  b|=(z.next_in[p++]&0xff)<<k;
 	  k+=8;
 	}
-	t = (int)(b & 7);
+	t = b & 7;
 	last = t & 1;
 
 	switch (t >>> 1){
@@ -246,14 +246,14 @@ final class InfBlocks{
 
 	if(m==0){
 	  if(q==end&&read!=0){
-	    q=0; m=(int)(q<read?read-q-1:end-q);
+	    q=0; m=q<read?read-q-1:end-q;
 	  }
 	  if(m==0){
 	    write=q; 
 	    r=inflate_flush(r);
-	    q=write;m=(int)(q<read?read-q-1:end-q);
+	    q=write;m=q<read?read-q-1:end-q;
 	    if(q==end&&read!=0){
-	      q=0; m=(int)(q<read?read-q-1:end-q);
+	      q=0; m=q<read?read-q-1:end-q;
 	    }
 	    if(m==0){
 	      bitb=b; bitk=k; 
@@ -486,7 +486,7 @@ final class InfBlocks{
 	codes.free(z);
 
 	p=z.next_in_index; n=z.avail_in;b=bitb;k=bitk;
-	q=write;m=(int)(q<read?read-q-1:end-q);
+	q=write;m=q<read?read-q-1:end-q;
 
 	if (last==0){
 	  mode = TYPE;
@@ -496,7 +496,7 @@ final class InfBlocks{
       case DRY:
 	write=q; 
 	r=inflate_flush(r); 
-	q=write; m=(int)(q<read?read-q-1:end-q);
+	q=write; m=q<read?read-q-1:end-q;
 	if (read != write){
 	  bitb=b; bitk=k; 
 	  z.avail_in=n;z.total_in+=p-z.next_in_index;z.next_in_index=p;
@@ -559,7 +559,7 @@ final class InfBlocks{
     q = read;
 
     // compute number of bytes to copy as far as end of window
-    n = (int)((q <= write ? write : end) - q);
+    n = (q <= write ? write : end) - q;
     if(n > z.avail_out) n = z.avail_out;
     if(n!=0 && r == Z_BUF_ERROR) r = Z_OK;
 

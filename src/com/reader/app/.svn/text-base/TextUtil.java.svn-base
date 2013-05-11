@@ -1,0 +1,247 @@
+package com.song.Reader;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
+class StringUtils {
+
+	public static String replaceBlank(String str) {
+		String dest = "";
+		if (str!=null) {
+			Pattern p = Pattern.compile("\n");
+			Matcher m = p.matcher(str);
+			dest = m.replaceAll("");
+		}
+		return dest;
+	}
+}
+class TextUtil {
+
+	private float mTextPosx = 0;// x坐标
+	private float mTextPosy = 0;// y坐标
+	private float mTextWidth = 0;// 绘制宽度
+	private float mTextHeight = 0;// 绘制高度
+	private int mLineHeight = 0;// 绘制字体高度
+	private int mPageLineNum = 0;// 每一页显示的行数
+	private int mCanvasBGColor = 0;// 背景颜色
+	private int mFontColor = 0;// 字体颜色
+	private int mAlpha = 0;// Alpha值
+
+	private int mTextSize = 0;// 字体大小
+	private int mPadding = 5;
+
+	private Paint mPaint = null;
+	private BookManager bookmanager = null;
+
+	void setBookManager(BookManager b) {
+		bookmanager = b;
+	}
+
+	public TextUtil(float x, float y, float w, float h, int bgcolor,
+			int textcolor, int alpha, int textsize, int padding) {
+		mPaint = new Paint();
+		this.mTextPosx = x;
+		this.mTextPosy = y;
+		this.mTextWidth = w;
+		this.mTextHeight = h;
+		this.mCanvasBGColor = bgcolor;
+		this.mFontColor = textcolor;
+		this.mAlpha = alpha;
+		this.mTextSize = textsize;
+		this.mPadding = padding;
+	}
+
+
+	public void InitText() throws IOException {
+		// 对画笔属性的设置
+		//this.currentContent = new String(
+		//		"ggggggggh我说不清。我只知道，你有一种与众不同的内质吸引着我，叫我觉得很珍贵，使我觉得应该去珍惜有许多情感是无法用语言表达的，我对你也是如此。所以，我只能用千百年来无数人说烂了的俗语去表达了：我真的真的好喜欢你、想你...我想给你很多，但我又问自己：我要给予的，是你所需要的吗？你会接受吗？　　是啊，除了爱、思念、关心，除了体贴和祝福...我好象没什么好东西给你了，所以，我很惭愧！　　但是我想，你是全世界几十亿人之一，所以你对我来说，非常难得！我觉得，无论如何，无论如何，都应该好好珍惜你，珍惜你的一切！　　知道吗？你已经深深地吸引了我，叫我...怎么说呢？　　这样说吧：你让我激情满怀，让我重新回到了我们共同的故乡：情窦初开的时候！　　我曾经反复地问自己：你究竟有什么让我如此痴迷、如此狂热？我迄今无法找到非常满意的答案... …　　后来，我只好这样解释了：自己可能前辈子欠了你一笔很大的情债，现在要到期了，该归还给你了... … ");
+		//this.afterContent = new String(
+		//		"真的真的...好想你，你也...想我吗...？　　I MISS YOU，I LOVE YOU.....!");
+		this.currentContent = new String(bookmanager.getNextContent(), "unicode");
+		this.afterContent = new String(bookmanager.getNextContent(), "unicode");
+		mPaint.setARGB(this.mAlpha, Color.red(this.mFontColor),
+				Color.green(this.mFontColor), Color.blue(this.mFontColor));
+		mPaint.setTextSize(this.mTextSize);
+		mPaint.setColor(this.mFontColor);
+		mPaint.setAntiAlias(true);
+	}
+
+	public int getLineHeight() {
+		FontMetrics fm = mPaint.getFontMetrics();// 得到系统默认字体属性
+		return (int) (Math.ceil(fm.descent - fm.top) + mPadding);
+	}
+
+	public int getLineNum() {
+		return (int) (mTextHeight / getLineHeight());// 获得行高高度
+	}
+
+	public void setTextStr(String str) throws IOException {
+		return;
+		/*
+		 * this.preContent = null; this.currentContent = str; this.afterContent
+		 * = getNextString(); Log.d("word afterContent", afterContent);
+		 */
+	}
+
+	public int currentStrLocation = 0;
+	public String currentContent;
+	public String afterContent;
+	public String preContent;
+
+	public String getOneLineString(int start)
+			throws UnsupportedEncodingException, IOException {
+		String content = currentContent;
+		if(start > currentContent.length()){
+			start -= currentContent.length();
+			content = afterContent;
+		}
+		StringBuffer retString = new StringBuffer();
+		float charsWidth = 0;
+		float[] widths = new float[1];
+		Log.d("screen width", Float.toString(mTextWidth));
+		
+		String aftercon = afterContent;
+		String strChar;
+		while (true) {
+			if (start >= content.length() && afterContent != null){
+				start = 0;
+				content = aftercon;
+				aftercon = null;
+				continue;
+			}
+			if (start >= content.length() && afterContent == null){
+				break;
+			}
+			strChar = String.valueOf(content.charAt(start++)); 
+			
+			if (strChar.equals("\n")) {
+				retString.append(strChar);
+				break ;
+			}
+			mPaint.getTextWidths(strChar, widths);
+			charsWidth += widths[0];
+			if (charsWidth > this.mTextWidth) {
+				break;
+			}
+			retString.append(strChar);
+		}
+
+		return retString.toString();
+	}
+
+	private Vector<String> pageString = new Vector<String>();
+
+	void getOnePageString() throws UnsupportedEncodingException, IOException {
+		int offset = 0;
+		String str;
+		pageString.clear();
+		int location;
+		for (int i = 0; i < getLineNum(); i++) {
+			location = this.currentStrLocation + offset;
+			
+			str = getOneLineString(location);
+			if (str == null)
+				return;
+			pageString.add(StringUtils.replaceBlank(str));
+			offset += str.length();
+		}
+	}
+
+	private void getAfterContent(){
+		if (afterContent == null)
+			return;
+		preContent = currentContent;
+		currentContent = afterContent;
+		afterContent = null;
+		try {
+			afterContent = new
+			String(this.bookmanager.getNextContent(),"Unicode");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 绘制字符串
+	 * 
+	 * @param canvas
+	 * @throws IOException
+	 */
+	public void DrawText(Canvas canvas) throws IOException {
+
+		getOnePageString();
+		if (pageString == null)
+			return;
+		for (int j = 0; j < pageString.size(); j++) {
+			canvas.drawText(pageString.get(j), this.mTextPosx, this.mTextPosy
+					+ (this.getLineHeight() + mPadding) * j + 30, mPaint);
+
+		}
+	}
+
+	int getTextWidth(String str) {
+		int widthTotal = 0;
+		float widths[] = new float[str.length()];
+		mPaint.getTextWidths(str, widths);
+		for (int i = 0; i < widths.length; i++) {
+			widthTotal += Math.ceil(widths[i]);
+		}
+		return widthTotal;
+	}
+
+	public String getChar(int location) {
+		if (location < currentContent.length())
+			return (String.valueOf(currentContent.charAt(location)));
+		return null;
+	}
+
+	void nextLine()  {
+		float charsWidth = 0;
+		float[] widths = new float[1];
+		int location = currentStrLocation;
+		Log.d("screen width", Float.toString(mTextWidth));
+		String strChar;
+
+		while (true) {
+			strChar = getChar(location++);
+			if (strChar == null && afterContent == null) {
+				return;
+			} 
+			if(strChar == null && afterContent != null)
+			{
+				location = 0;
+				getAfterContent();
+				continue;
+			}
+			if (strChar.equals("\n")) {
+				currentStrLocation = location;
+				return;
+			}
+			mPaint.getTextWidths(strChar, widths);
+			charsWidth += widths[0];
+			if (charsWidth > this.mTextWidth) {
+				currentStrLocation = location - 1;
+				return;
+			}
+		}
+
+	}
+	void nextPage(){
+		for(int i=0; i< this.getLineNum();i++){
+			nextLine();
+		}
+	}
+
+}

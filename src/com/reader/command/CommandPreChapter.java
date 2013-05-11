@@ -7,10 +7,7 @@
  * */
 package com.reader.command;
 
-import com.reader.book.bookview.BookView;
-import com.reader.book.manager.BookManager;
-import com.reader.book.umd.UmdBook;
-import com.reader.main.ReadingActivity;
+import com.reader.app.ReadingActivity;
 
 public class CommandPreChapter implements Command {
 	ReadingActivity activity;

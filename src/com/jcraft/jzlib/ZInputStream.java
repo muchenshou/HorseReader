@@ -63,14 +63,16 @@ public class ZInputStream extends FilterInputStream {
   }
 
   private byte[] buf1 = new byte[1];
-  public int read() throws IOException {
+  @Override
+public int read() throws IOException {
     if(read(buf1, 0, 1)==-1) return -1;
     return(buf1[0]&0xFF);
   }
 
   private byte[] buf = new byte[512];
 
-  public int read(byte[] b, int off, int len) throws IOException {
+  @Override
+public int read(byte[] b, int off, int len) throws IOException {
     if(compress){
       deflater.setOutput(b, off, len);
       while(true){
@@ -93,12 +95,13 @@ public class ZInputStream extends FilterInputStream {
     }
   }
 
-  public long skip(long n) throws IOException {
+  @Override
+public long skip(long n) throws IOException {
     int len=512;
     if(n<len)
       len=(int)n;
     byte[] tmp=new byte[len];
-    return((long)read(tmp));
+    return(read(tmp));
   }
 
   public int getFlushMode() {
@@ -119,7 +122,8 @@ public class ZInputStream extends FilterInputStream {
     else return iis.getTotalOut();
   }
 
-  public void close() throws IOException{
+  @Override
+public void close() throws IOException{
     if(compress) deflater.end();
     else iis.close();
   }

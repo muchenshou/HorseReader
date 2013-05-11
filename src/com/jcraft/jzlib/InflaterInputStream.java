@@ -79,12 +79,14 @@ public class InflaterInputStream extends FilterInputStream {
 
   private byte[] byte1 = new byte[1];
 
-  public int read() throws IOException {
+  @Override
+public int read() throws IOException {
     if (closed) { throw new IOException("Stream closed"); }
     return read(byte1, 0, 1) == -1 ? -1 : byte1[0] & 0xff;
   }
 
-  public int read(byte[] b, int off, int len) throws IOException {
+  @Override
+public int read(byte[] b, int off, int len) throws IOException {
     if (closed) { throw new IOException("Stream closed"); }
     if (b == null) {
       throw new NullPointerException();
@@ -124,7 +126,8 @@ public class InflaterInputStream extends FilterInputStream {
     return n;
   }
 
-  public int available() throws IOException {
+  @Override
+public int available() throws IOException {
     if (closed) { throw new IOException("Stream closed"); }
     if (eof) {
       return 0;
@@ -136,7 +139,8 @@ public class InflaterInputStream extends FilterInputStream {
 
   private byte[] b = new byte[512];
 
-  public long skip(long n) throws IOException {
+  @Override
+public long skip(long n) throws IOException {
     if (n < 0) {
       throw new IllegalArgumentException("negative skip length");
     }
@@ -160,7 +164,8 @@ public class InflaterInputStream extends FilterInputStream {
     return total;
   }
 
-  public void close() throws IOException {
+  @Override
+public void close() throws IOException {
     if (!closed) {
       if (myinflater)
         inflater.end();
@@ -189,14 +194,17 @@ public class InflaterInputStream extends FilterInputStream {
     inflater.setInput(buf, 0, len, true);
   }
 
-  public boolean markSupported() {
+  @Override
+public boolean markSupported() {
     return false;
   }
 
-  public synchronized void mark(int readlimit) {
+  @Override
+public synchronized void mark(int readlimit) {
   }
 
-  public synchronized void reset() throws IOException {
+  @Override
+public synchronized void reset() throws IOException {
     throw new IOException("mark/reset not supported");
   }
 
