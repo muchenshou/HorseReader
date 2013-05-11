@@ -32,7 +32,7 @@ public class ReadingMenu implements OnItemClickListener {
 	PopupWindow menuDialog;// menu²Ëµ¥Dialog
 	GridView menuGrid;
 	View menuView;
-	
+
 	List<CommandMenuItem> mMenuItemList = new ArrayList<CommandMenuItem>();
 
 	class CommandMenuItem {

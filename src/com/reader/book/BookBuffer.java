@@ -167,7 +167,7 @@ public class BookBuffer implements Runnable {
 							this.mBufList.getNext().mBufBlock);
 					this.mBufList.getNext().mBlockNum = mBufList.getCur().mBlockNum + 1;
 				}
-				//this.notifyAll();
+				// this.notifyAll();
 			} finally {
 				mBufferlock.unlock();
 			}

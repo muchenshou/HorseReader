@@ -6,7 +6,7 @@ import com.reader.app.R;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-public class ReadingSetting extends PreferenceActivity{
+public class ReadingSetting extends PreferenceActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

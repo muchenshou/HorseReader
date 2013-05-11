@@ -13,19 +13,20 @@ public class NetWorkListFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		TextView tv = (TextView) inflater.inflate(R.layout.tmt,
-				container, false);
+		TextView tv = (TextView) inflater.inflate(R.layout.tmt, container,
+				false);
 		tv.setText("this is NetWorkListFragment fragment");
 		return tv;
 	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 	}
+
 	@Override
-	public void onSaveInstanceState(Bundle outState)
-	{
-	    super.onSaveInstanceState(outState);
-	    outState.putString("DO NOT CRASH", "OK");
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("DO NOT CRASH", "OK");
 	}
 }

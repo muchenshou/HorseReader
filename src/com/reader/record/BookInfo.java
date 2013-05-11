@@ -15,10 +15,12 @@ public class BookInfo {
 	public String mProcess;
 	public int mSize;
 	public Drawable mBookImage = null;
-	public Drawable getBookImage(){
+
+	public Drawable getBookImage() {
 		return mBookImage;
 	}
-	public void setBookImage(Drawable d){
+
+	public void setBookImage(Drawable d) {
 		this.mBookImage = d;
 	}
 }

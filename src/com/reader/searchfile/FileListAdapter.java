@@ -98,15 +98,16 @@ public class FileListAdapter extends BaseAdapter {
 				.getBookImage());
 		String bookfulldir = mBookInfoList.get(position).bookName;
 		Log.i("songlog", bookfulldir);
-		String name = bookfulldir.substring(bookfulldir.lastIndexOf('/') + 1,
-				bookfulldir.lastIndexOf('.')==-1?bookfulldir.length()-1:bookfulldir.lastIndexOf('.')).toLowerCase();
+		String name = bookfulldir.substring(
+				bookfulldir.lastIndexOf('/') + 1,
+				bookfulldir.lastIndexOf('.') == -1 ? bookfulldir.length() - 1
+						: bookfulldir.lastIndexOf('.')).toLowerCase();
 		holder.title.setText(name);
 		holder.size.setText(mBookInfoList.get(position).mSize / 1024 + "k");
 		holder.process.setText(mBookInfoList.get(position).mProcess);
 		return convertView;
 	}
 
-	
 	@Override
 	public Object getItem(int position) {
 		return mBookInfoList.get(position).bookName;

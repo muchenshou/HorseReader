@@ -15,13 +15,16 @@ public abstract class DrawableObj {
 	int mObjHeight = 0;
 	int mPosX = 0;
 	int mPosY = 0;
-	void setPosition(int x,int y){
+
+	void setPosition(int x, int y) {
 		this.mPosX = x;
 		this.mPosY = y;
 	}
-	void setWH(int w,int h){
+
+	void setWH(int w, int h) {
 		this.mObjWidth = w;
 		this.mObjHeight = h;
 	}
-	public abstract void Draw(Canvas canvas,Paint paint);
+
+	public abstract void Draw(Canvas canvas, Paint paint);
 }

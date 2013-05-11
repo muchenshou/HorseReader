@@ -129,13 +129,14 @@ public class SimulateTurnPage extends BookViewAnimation {
 			mState = STATE_TOUCH_START;
 			// Draw current page and Set
 			setFrontBitmap(PageDisplay.Instance.tranlateFrontBitmap());
-			
+
 			// Draw next or pre page and Set it
 			if (DragToRight()) {
-				setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.PRE));
-			}
-			else {
-				setBackBitmap(PageDisplay.Instance.tranlateBackBitmap(PageDisplay.NEXT));
+				setBackBitmap(PageDisplay.Instance
+						.tranlateBackBitmap(PageDisplay.PRE));
+			} else {
+				setBackBitmap(PageDisplay.Instance
+						.tranlateBackBitmap(PageDisplay.NEXT));
 			}
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -424,7 +425,7 @@ public class SimulateTurnPage extends BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 
+	 * Author : hmg25 Version: 1.0 Description :
 	 */
 	private void drawCurrentBackArea(Canvas canvas, Bitmap bitmap) {
 		int i = (int) (mBezierStart1.x + mBezierControl1.x) / 2;
@@ -478,7 +479,7 @@ public class SimulateTurnPage extends BookViewAnimation {
 		mFolderShadowDrawable.draw(canvas);
 		canvas.restore();
 	}
-	
+
 	public void animation() {
 		if (mState != STATE_ANIMATION)
 			return;

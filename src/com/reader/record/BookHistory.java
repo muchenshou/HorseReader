@@ -42,9 +42,9 @@ public class BookHistory {
 
 	private void addHistory(String book, int pos) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		db.execSQL(String.format(
-				"insert into bookhistory(fulldirname,position) values(\"%s\",%d);",
-				book, pos));
+		db.execSQL(String
+				.format("insert into bookhistory(fulldirname,position) values(\"%s\",%d);",
+						book, pos));
 
 		db.close();
 
@@ -81,11 +81,9 @@ public class BookHistory {
 
 	public int getPosition(String book) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		Cursor cur = db
-				.rawQuery(
-						String.format(
-								"select position from bookhistory where fulldirname=\"%s\"",
-								book), null);
+		Cursor cur = db.rawQuery(String.format(
+				"select position from bookhistory where fulldirname=\"%s\"",
+				book), null);
 		int rtn = 0;
 		if (cur.moveToNext()) {
 			rtn = cur.getInt(0);

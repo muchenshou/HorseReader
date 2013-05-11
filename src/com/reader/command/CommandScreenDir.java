@@ -7,12 +7,11 @@
  * */
 package com.reader.command;
 
-public class CommandScreenDir implements Command{
+public class CommandScreenDir implements Command {
 
-	
 	@Override
 	public void excute() {
-		
+
 	}
 
 }

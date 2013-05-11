@@ -31,12 +31,10 @@ public class BookContent {
 	// Page mPage = new Page();
 	PageBuffer mPageBuffer = new PageBuffer();
 	public Book mBook = null;
-	public PageConfig mPageConfig;
 
-	public BookContent(Book book, PageConfig pageConfig) {
+	public BookContent(Book book) {
 		mBook = book;
-		mPageConfig = pageConfig;
-		this.mPaint = mPageConfig.getPaint();
+		this.mPaint = PageConfig.pagePaintFromConfig(false);
 	}
 
 	public String getCurContent() {
@@ -82,7 +80,7 @@ public class BookContent {
 	}
 
 	public int getLineHeight() {
-		return BookView.getTextHeight(mPaint) + this.mPageConfig.mPadding;
+		return BookView.getTextHeight(mPaint) + PageConfig.getPadding();
 	}
 
 	public void update(int w, int h) {
@@ -128,7 +126,7 @@ public class BookContent {
 				return page.getStrings();
 			}
 		}
-		Log.i("hello","isempty");
+		Log.i("hello", "isempty");
 		final Page page = new Page();
 		page.clear();
 		for (; page.getLinesSize() < pageline;) {

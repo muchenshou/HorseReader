@@ -49,12 +49,10 @@ public class FileManagerAdapter extends BaseAdapter {
 		return items.size();
 	}
 
-
 	@Override
 	public Object getItem(int position) {
 		return items.get(position);
 	}
-
 
 	@Override
 	public long getItemId(int position) {

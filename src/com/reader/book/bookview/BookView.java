@@ -36,7 +36,6 @@ public class BookView extends View implements View.OnTouchListener {
 	public Bitmap m_book_bg = null;
 	Book mBook;
 	private boolean mInit = false;
-	private PageConfig mPageConfig;
 	PageDisplay mBookPage;
 	private Paint mPaint;
 
@@ -44,12 +43,11 @@ public class BookView extends View implements View.OnTouchListener {
 		super(context);
 		setOnTouchListener(this);
 		this.mBook = book;
-		mPageConfig = new PageConfig(context);
-		mPaint = mPageConfig.getPaint();
-		mBookContent = new BookContent(book, mPageConfig);
+		mPaint = PageConfig.pagePaintFromConfig(false);
+		mBookContent = new BookContent(book);
 
 		mBookPage = new PageDisplay(mBookContent);
-		 //this.mAnimation = new SimulateTurnPage(getContext());
+		// this.mAnimation = new SimulateTurnPage(getContext());
 		// this.mAnimation = new NoTurnAnimation(getContext());
 		this.mAnimation = new SimpleAnimation(getContext());
 		this.mAnimation.setBookView(this);
@@ -57,16 +55,8 @@ public class BookView extends View implements View.OnTouchListener {
 		thread.start();
 	}
 
-	public PageConfig getPageConfig() {
-		return this.mPageConfig;
-	}
-
 	public Paint getPaint() {
 		return this.mPaint;
-	}
-
-	public void setTextSize(int size) {
-		this.mPageConfig.setTextSize(size);
 	}
 
 	public static int getTextHeight(Paint paint) {
@@ -84,7 +74,7 @@ public class BookView extends View implements View.OnTouchListener {
 		this.mAnimation.onSizeChange(w, h, oldw, oldh);
 
 		mBookContent.update(w - 20,
-				h - BookView.getTextHeight(this.mPageConfig.getOthersPaint())
+				h - BookView.getTextHeight(PageConfig.getOthersPaint(false))
 						- 20);
 		//
 		mBookPage.init(getWidth(), getHeight());
@@ -117,7 +107,7 @@ public class BookView extends View implements View.OnTouchListener {
 			canvas.drawBitmap(
 					mBookPage.tranlateFrontBitmap(mBookContent.getCurPage()),
 					0, 0, mPaint);
-			
+
 			mAnimation.setState(BookViewAnimation.NONE);
 			lock.lock();
 			con.signal();
@@ -139,8 +129,9 @@ public class BookView extends View implements View.OnTouchListener {
 		this.mAnimation.update();
 		postInvalidate();
 	}
-	
+
 	long filterPoint = 0;
+
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		Rect rect = new Rect(0, 0, v.getWidth(), v.getHeight());
@@ -151,7 +142,8 @@ public class BookView extends View implements View.OnTouchListener {
 				&& event.getY() < rect.exactCenterY() + 20) { // gridview
 			return false;
 		}
-		if (event.getAction() == MotionEvent.ACTION_DOWN && mAnimation.state() != BookViewAnimation.NONE) {
+		if (event.getAction() == MotionEvent.ACTION_DOWN
+				&& mAnimation.state() != BookViewAnimation.NONE) {
 			filterPoint = event.getDownTime();
 		}
 		if (filterPoint == event.getDownTime()) {
@@ -159,7 +151,6 @@ public class BookView extends View implements View.OnTouchListener {
 		}
 		mAnimation.onTouch(v, event);
 		if (mAnimation.state() == BookViewAnimation.STATE_TOUCH_START) {
-			
 
 		}
 		postInvalidate();
@@ -171,20 +162,20 @@ public class BookView extends View implements View.OnTouchListener {
 		mAnimation.setBookView(this);
 		this.mAnimation.onSizeChange(getWidth(), getHeight(), 0, 0);
 	}
-	
+
 	Lock lock = new ReentrantLock();
 	Condition con = lock.newCondition();
-	Thread thread = new Thread(){
+	Thread thread = new Thread() {
 
 		@Override
 		public void run() {
-			while(true) {
+			while (true) {
 				lock.lock();
 				try {
 					con.await();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					//e.printStackTrace();
+					// e.printStackTrace();
 				}
 				Log.i("hello", "thread");
 				if (mAnimation.DragToRight()) {
@@ -194,8 +185,8 @@ public class BookView extends View implements View.OnTouchListener {
 				}
 				lock.unlock();
 			}
-			
+
 		}
-		
+
 	};
 }

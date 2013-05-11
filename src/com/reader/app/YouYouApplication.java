@@ -10,10 +10,12 @@ public class YouYouApplication extends Application {
 			.getPath() + "/YouYou/";;
 	public static String configPath = configDir + "config.xml";
 	public static String cachePath = configDir + ".cache/";
+	public static YouYouApplication Instance;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Instance = this;
 		File dir = new File(configDir);
 		if (!dir.exists()) {
 			dir.mkdir();

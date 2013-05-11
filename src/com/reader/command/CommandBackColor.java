@@ -7,7 +7,7 @@
  * */
 package com.reader.command;
 
-public class CommandBackColor implements Command{
+public class CommandBackColor implements Command {
 
 	@Override
 	public void excute() {

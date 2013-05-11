@@ -9,6 +9,7 @@ package com.reader.ui;
 
 import com.reader.app.ReadingActivity;
 import com.reader.app.R;
+import com.reader.config.PageConfig;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -33,7 +34,7 @@ public class ProgressAlert extends PopupWindow implements
 		mProgress = (SeekBar) view.findViewById(R.id.progress);
 		mProgress.setOnSeekBarChangeListener(this);
 		mProgress.setMax(MAXIMUM_BACKLIGHT - MINIMUM_BACKLIGHT);
-		mProgress.setProgress(mContext.bookView.getPageConfig().getTextSize());
+		mProgress.setProgress(PageConfig.getTextSize());
 		this.setContentView(view);
 		this.setWidth(LayoutParams.FILL_PARENT);
 		this.setHeight(LayoutParams.WRAP_CONTENT);
@@ -43,7 +44,7 @@ public class ProgressAlert extends PopupWindow implements
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-			
+
 	}
 
 	@Override
@@ -53,9 +54,5 @@ public class ProgressAlert extends PopupWindow implements
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		ReadingActivity ac = mContext;
-		mContext.bookView.getPageConfig().setTextSize(seekBar.getProgress());
-		mContext.bookView.getPageConfig().saveConfig();
-		// ac.bookmanager.getBookView().update();
 	}
 }

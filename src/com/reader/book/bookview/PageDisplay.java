@@ -13,7 +13,6 @@ import com.reader.config.PageConfig;
 public class PageDisplay {
 	public static PageDisplay Instance;
 	private BookContent mBookContent;
-	private PageConfig mPageConfig;
 	private Paint mPaint;
 	private Book mBook;
 	private Bitmap mfrontPageBitmap;
@@ -30,8 +29,7 @@ public class PageDisplay {
 
 	public PageDisplay(BookContent bookContent) {
 		mBookContent = bookContent;
-		mPageConfig = mBookContent.mPageConfig;
-		mPaint = mPageConfig.getPaint();
+		mPaint = PageConfig.pagePaintFromConfig(false);
 		mBook = mBookContent.mBook;
 
 		mPageObj = new PageObj(mBookContent, mBook);
@@ -50,20 +48,20 @@ public class PageDisplay {
 		else
 			canvas.drawBitmap(m_book_bg, 0, 0, null);
 		mPageObj.Draw(canvas, this.mPaint);
-		mTimeObj.Draw(canvas, this.mPageConfig.getOthersPaint());
+		mTimeObj.Draw(canvas, PageConfig.getOthersPaint(false));
 		mBookNameObj.Draw(canvas, this.mPaint);
-		mBookProgressObj.Draw(canvas, this.mPageConfig.getOthersPaint());
+		mBookProgressObj.Draw(canvas, PageConfig.getOthersPaint(false));
 	}
 
 	public void init(int w, int h) {
 		mfrontPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 		mBackPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		float len = mBookNameObj.getNameMeasure(mPageConfig.getOthersPaint());
+		float len = mBookNameObj.getNameMeasure(PageConfig.getOthersPaint(false));
 		this.mBookNameObj.setPosition((w - (int) len) / 2, h - 5);
 		//
 		this.mBookProgressObj.setPosition(5, h - 5);
 		//
-		len = mPageConfig.getOthersPaint().measureText("00:00");
+		len = PageConfig.getOthersPaint(false).measureText("00:00");
 		mTimeObj.setPosition(w - (int) len - 5, h - 5);
 	}
 
@@ -94,7 +92,8 @@ public class PageDisplay {
 	}
 
 	public Bitmap tranlateBackBitmap(int dir) {
-		List<String> page = dir == PRE ? mBookContent.getPrePage():mBookContent.getNextPage();
+		List<String> page = dir == PRE ? mBookContent.getPrePage()
+				: mBookContent.getNextPage();
 		Canvas c = new Canvas(mBackPageBitmap);
 		mPageObj.setPageString(page);
 		Draw(c);

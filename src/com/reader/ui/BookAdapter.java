@@ -74,16 +74,11 @@ public class BookAdapter extends BaseAdapter {
 		ViewHolder holder = null;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			convertView = mInflater.inflate(R.layout.listitem,
-					null);
-			holder.img = (ImageView) convertView
-					.findViewById(R.id.img);
-			holder.title = (TextView) convertView
-					.findViewById(R.id.title);
-			holder.process = (TextView) convertView
-					.findViewById(R.id.process);
-			holder.size = (TextView) convertView
-					.findViewById(R.id.filesize);
+			convertView = mInflater.inflate(R.layout.listitem, null);
+			holder.img = (ImageView) convertView.findViewById(R.id.img);
+			holder.title = (TextView) convertView.findViewById(R.id.title);
+			holder.process = (TextView) convertView.findViewById(R.id.process);
+			holder.size = (TextView) convertView.findViewById(R.id.filesize);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();

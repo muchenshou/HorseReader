@@ -30,7 +30,7 @@ public class HistoryListFragment extends Fragment implements
 		BookHistory history = new BookHistory(this.getActivity());
 		BookAdapter adapter = new BookAdapter(this.getActivity(),
 				history.getHistory());
-		Log.i("hello","history:"+history.getHistory().size());
+		Log.i("hello", "history:" + history.getHistory().size());
 		mListView.setAdapter(adapter);
 		return mListView;
 	}

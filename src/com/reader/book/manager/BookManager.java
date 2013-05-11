@@ -15,7 +15,7 @@ import android.content.Context;
 import com.reader.book.Book;
 import com.reader.book.BookFactory;
 
-public class BookManager{
+public class BookManager {
 
 	public static final int OPENBOOK = 7;
 	public static final int BUFSIZE = 512;
@@ -29,7 +29,7 @@ public class BookManager{
 	public BookManager(Context con, File file) throws IOException {
 		book = BookFactory.createBook(file);
 	}
-	
+
 	public Book openBook(int position) throws IOException {
 		book.openBook();
 		book.openOffset = position;

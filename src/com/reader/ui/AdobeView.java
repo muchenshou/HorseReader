@@ -27,7 +27,8 @@ import android.widget.TextView;
 
 import com.reader.app.R;
 
-public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchModeChangeListener {
+public class AdobeView extends FrameLayout implements
+		ViewTreeObserver.OnTouchModeChangeListener {
 
 	private static final String TAG = "AdobeView";
 	private static final boolean DEBUG = true;
@@ -73,12 +74,14 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 	private List<TabSpec> mTabSpecs = new ArrayList<TabSpec>(2);
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
+	 * 
 	 * }
 	 */
 	protected int mCurrentTab = -1;
 	private View mCurrentView = null;
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
+	 * 
 	 * }
 	 */
 	protected LocalActivityManager mLocalActivityManager = null;
@@ -152,7 +155,7 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 		if (!isInTouchMode) {
 			// leaving touch mode.. if nothing has focus, let's give it to
 			// the indicator of the current tab
-			
+
 		}
 	}
 
@@ -213,7 +216,6 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 		return null;
 	}
 
-
 	public View getCurrentView() {
 		return mCurrentView;
 	}
@@ -234,7 +236,6 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 	public FrameLayout getTabContentView() {
 		return mTabContent;
 	}
-	
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
@@ -244,13 +245,12 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 		// activities when there is nothing that will take focus from default
 		// focus searching
 		if (!handled && (event.getAction() == KeyEvent.ACTION_DOWN)
-				&& (mCurrentView != null) && /*(mCurrentView.isRootNamespace())*/
-				 (mCurrentView.hasFocus())) {
+				&& (mCurrentView != null) && /* (mCurrentView.isRootNamespace()) */
+				(mCurrentView.hasFocus())) {
 			int keyCodeShouldChangeFocus = KeyEvent.KEYCODE_DPAD_UP;
 			int directionShouldChangeFocus = View.FOCUS_UP;
 			int soundEffect = SoundEffectConstants.NAVIGATION_UP;
 
-			
 		}
 		return handled;
 	}
@@ -474,8 +474,8 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 			if (context.getApplicationInfo().targetSdkVersion <= Build.VERSION_CODES.DONUT) {
 				// Donut apps get old color scheme
 				// tabIndicator.setBackgroundResource(R.drawable.tab_indicator_v4);
-				//tv.setTextColor(context.getResources().getColorStateList(
-					//	R.color.tab_indicator_text_v4));
+				// tv.setTextColor(context.getResources().getColorStateList(
+				// R.color.tab_indicator_text_v4));
 			}
 
 			return tabIndicator;
@@ -525,9 +525,9 @@ public class AdobeView extends FrameLayout implements ViewTreeObserver.OnTouchMo
 
 			if (context.getApplicationInfo().targetSdkVersion <= Build.VERSION_CODES.DONUT) {
 				// Donut apps get old color scheme
-				//tabIndicator.setBackgroundResource(R.drawable.tab_indicator_v4);
-				//tv.setTextColor(context.getResources().getColorStateList(
-				//		R.color.tab_indicator_text_v4));
+				// tabIndicator.setBackgroundResource(R.drawable.tab_indicator_v4);
+				// tv.setTextColor(context.getResources().getColorStateList(
+				// R.color.tab_indicator_text_v4));
 			}
 
 			return tabIndicator;

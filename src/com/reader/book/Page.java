@@ -3,7 +3,7 @@ package com.reader.book;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Page implements Comparable<Page>{
+public class Page implements Comparable<Page> {
 	LinkedList<Line> mLines = new LinkedList<Line>();
 
 	public List<String> getStrings() {
@@ -27,15 +27,15 @@ public class Page implements Comparable<Page>{
 		}
 		return mLines.get(mLines.size() - 1).getEnd();
 	}
-	
+
 	public int getLinesSize() {
 		return mLines.size();
 	}
-	
+
 	public void clear() {
 		mLines.clear();
 	}
-	
+
 	public void addLine(Line line) {
 		mLines.add(line);
 	}
@@ -50,11 +50,11 @@ public class Page implements Comparable<Page>{
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer str = new StringBuffer();
-		for (Line l:mLines) {
+		for (Line l : mLines) {
 			str.append(l.strLine);
 		}
 		return str.toString();

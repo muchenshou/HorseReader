@@ -15,12 +15,12 @@ import com.reader.book.umd.UmdBook;
 
 public class BookFactory {
 	public static Book createBook(File file) throws IOException {
-		String str = file.toString().substring(
-				file.toString().lastIndexOf('.') + 1).toLowerCase();
+		String str = file.toString()
+				.substring(file.toString().lastIndexOf('.') + 1).toLowerCase();
 		if (str.equals("umd")) {
-			return  new UmdBook(file);
+			return new UmdBook(file);
 		}
-		if (str.equals("txt")){
+		if (str.equals("txt")) {
 			return new TextBook(file);
 		}
 		return null;

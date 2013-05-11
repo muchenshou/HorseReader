@@ -23,10 +23,10 @@ public class About extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 	}
+
 	@Override
-	public void onSaveInstanceState(Bundle outState)
-	{
-	    super.onSaveInstanceState(outState);
-	    outState.putString("DO NOT CRASH", "OK");
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("DO NOT CRASH", "OK");
 	}
 }

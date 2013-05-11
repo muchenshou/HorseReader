@@ -120,15 +120,15 @@ public class UmdInfo {
 
 				partition = umdStream.readByte();
 				if (partition == (byte) '#') {
-					//System.out.println("block here");
+					// System.out.println("block here");
 					short flag = umdStream.getShort();
 					if (flag == (short) 0x0A) {
 						umdStream.skipBytes(6);
-						//System.out.println("block here 0x0a");
+						// System.out.println("block here 0x0a");
 					}
 					if (flag == (short) 0xF1) {
 						umdStream.skipBytes(18);
-						//System.out.println("block here 0xf1");
+						// System.out.println("block here 0xf1");
 					}
 					partition = umdStream.readByte();
 				}

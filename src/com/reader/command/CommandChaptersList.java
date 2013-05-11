@@ -7,12 +7,12 @@
  * */
 package com.reader.command;
 
-public class CommandChaptersList implements Command{
+public class CommandChaptersList implements Command {
 
 	@Override
 	public void excute() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

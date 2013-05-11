@@ -3,9 +3,10 @@ package com.reader.searchfile;
 import java.io.File;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class SearchFileSingleThread extends SearchFile{
+public class SearchFileSingleThread extends SearchFile {
 	private String mSearchFile;
 	LinkedBlockingQueue<String> mDirs = new LinkedBlockingQueue<String>();
+
 	public SearchFileSingleThread(FindOneBehavior findone, String rootdir) {
 		super(findone, rootdir);
 		mSearchFile = rootdir;
@@ -29,7 +30,7 @@ public class SearchFileSingleThread extends SearchFile{
 							mFindOne.accept(f);
 						}
 					}
-				} 
+				}
 			} else {
 				// 搜索完毕
 				// 判断其他线程是否也完毕

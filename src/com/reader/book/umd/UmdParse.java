@@ -50,7 +50,7 @@ public class UmdParse extends RandomAccessFile {
 		return BytesTransfer.toShort(buf);
 	}
 
-	public int getSeperator() throws IOException {//#ºÅ
+	public int getSeperator() throws IOException {// #ºÅ
 		return this.readByte();
 	}
 
