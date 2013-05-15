@@ -11,8 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.graphics.Paint;
-import android.util.Log;
-
 import com.reader.book.Book;
 import com.reader.book.CharInfo;
 import com.reader.book.Line;
