@@ -177,7 +177,6 @@ public class BookView extends View implements View.OnTouchListener {
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
 				}
-				Log.i("hello", "thread");
 				if (mAnimation.DragToRight()) {
 					mBookContent.getPrePage();
 				} else {

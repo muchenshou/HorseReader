@@ -9,8 +9,10 @@ package com.reader.book.umd;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
+
+import android.util.Log;
+import android.util.SparseArray;
 
 import com.reader.util.BytesTransfer;
 
@@ -22,7 +24,7 @@ public class UmdInfo {
 	protected int bookNumChapters;
 	protected LinkedList<Block> blockList;
 	protected LinkedList<Chapter> chapterList;
-	protected HashMap<Integer, String> bookInfo;
+	protected SparseArray<String> bookInfo;
 
 	public UmdInfo(File umd) {
 
@@ -30,7 +32,7 @@ public class UmdInfo {
 		blockList = new LinkedList<Block>();
 
 		chapterList = new LinkedList<Chapter>();
-		bookInfo = new HashMap<Integer, String>();
+		bookInfo = new SparseArray<String>();
 	}
 
 	public File getFile() {
@@ -38,35 +40,35 @@ public class UmdInfo {
 	}
 
 	public String getName() {
-		return bookInfo.get(new Integer(UmdParse.NAME));
+		return bookInfo.get(UmdParse.NAME);
 	}
 
 	public String getAuthor() {
-		return bookInfo.get(new Integer(UmdParse.AUTHOR));
+		return bookInfo.get(UmdParse.AUTHOR);
 	}
 
 	public String getYear() {
-		return bookInfo.get(new Integer(UmdParse.YEAR));
+		return bookInfo.get(UmdParse.YEAR);
 	}
 
 	public String getMonth() {
-		return bookInfo.get(new Integer(UmdParse.MONTH));
+		return bookInfo.get(UmdParse.MONTH);
 	}
 
 	public String getDay() {
-		return bookInfo.get(new Integer(UmdParse.DAY));
+		return bookInfo.get(UmdParse.DAY);
 	}
 
 	public String getGendor() {
-		return bookInfo.get(new Integer(UmdParse.GENDOR));
+		return bookInfo.get(UmdParse.GENDOR);
 	}
 
 	public String getPublisher() {
-		return bookInfo.get(new Integer(UmdParse.PUBLISHER));
+		return bookInfo.get(UmdParse.PUBLISHER);
 	}
 
 	public String getVendor() {
-		return bookInfo.get(new Integer(UmdParse.VENDOR));
+		return bookInfo.get(UmdParse.VENDOR);
 	}
 
 	public int getSize() {
@@ -77,7 +79,7 @@ public class UmdInfo {
 		return bookNumChapters;
 	}
 
-	public boolean parseChapters() {
+	private boolean parseChapters() {
 		try {
 			int num;
 			byte partition = umdStream.readByte();
@@ -111,28 +113,28 @@ public class UmdInfo {
 			while (partition == (byte) '$') {
 				umdStream.skipBytes(4);
 				num = umdStream.getInt();
-				// System.out.println("parseing: the number of the book block:"
-				// + i++);
 				this.blockList.add(new Block(umdStream.getFilePointer(),
 						num - 9));
 
 				umdStream.skipBytes(num - 9);
 
 				partition = umdStream.readByte();
-				if (partition == (byte) '#') {
+				while (partition == (byte) '#') {
 					// System.out.println("block here");
 					short flag = umdStream.getShort();
 					if (flag == (short) 0x0A) {
 						umdStream.skipBytes(6);
+						
 						// System.out.println("block here 0x0a");
 					}
 					if (flag == (short) 0xF1) {
+						Log.i("hello", "0xF1");
 						umdStream.skipBytes(18);
+
 						// System.out.println("block here 0xf1");
 					}
 					partition = umdStream.readByte();
 				}
-
 			}
 		} catch (IOException io) {
 			System.out.println(io);
@@ -204,8 +206,7 @@ public class UmdInfo {
 				case UmdParse.PUBLISHER:
 				case UmdParse.VENDOR: {
 					BytesTransfer.byteAlign(tmp);
-					bookInfo.put(new Integer(dataType), new String(tmp,
-							"Unicode"));
+					bookInfo.put(dataType, new String(tmp, "Unicode"));
 					break;
 				}
 				case UmdParse.SIZE: {
@@ -257,7 +258,9 @@ public class UmdInfo {
 	}
 
 	public Block getBlock(int index) {
-		return blockList.get(index);
+		if (index < blockList.size())
+			return blockList.get(index);
+		return null;
 	}
 
 	public byte[] getBlockData(int index) throws IOException {
@@ -280,6 +283,14 @@ public class UmdInfo {
 
 	public long getBlockPointer(int i) {
 		return this.blockList.get(i).getPointer();
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("blocksize:" + this.blockList.size());
+		buffer.append('\n');
+		return buffer.toString();
 	}
 
 	public class Block {

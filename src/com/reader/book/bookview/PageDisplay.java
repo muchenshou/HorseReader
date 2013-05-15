@@ -95,7 +95,7 @@ public class PageDisplay {
 		List<String> page = dir == PRE ? mBookContent.getPrePage()
 				: mBookContent.getNextPage();
 		Canvas c = new Canvas(mBackPageBitmap);
-		mPageObj.setPageString(page);
+		mPageObj.setPageString(page == null? mBookContent.getCurPage():page);
 		Draw(c);
 		return mBackPageBitmap;
 	}

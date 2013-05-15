@@ -153,14 +153,14 @@ public class BookBuffer implements Runnable {
 				} catch (InterruptedException e) {
 					// e.printStackTrace();
 				}
-				if (mBufList.getPre().mBlockNum == -1) {
+				if (mBufList.getPre().mBlockNum == -1 && mBufList.getCur().mBlockNum != 0) {
 					this.mBufList.getPre().mBufBlock.clear();
 					mBook.getContent((mBufList.getCur().mBlockNum - 1)
 							* this.mBufferSize,
 							this.mBufList.getPre().mBufBlock);
 					this.mBufList.getPre().mBlockNum = mBufList.getCur().mBlockNum - 1;
 				}
-				if (mBufList.getNext().mBlockNum == -1) {
+				if (mBufList.getNext().mBlockNum == -1 && mBufList.getCur().mBlockNum != mBook.size()/mBufferSize) {
 					this.mBufList.getNext().mBufBlock.clear();
 					mBook.getContent((mBufList.getCur().mBlockNum + 1)
 							* this.mBufferSize,
