@@ -38,9 +38,10 @@ public class BookView extends View implements View.OnTouchListener {
 	private boolean mInit = false;
 	PageDisplay mBookPage;
 	private Paint mPaint;
-
+	public static BookView Instance;
 	public BookView(Context context, Book book) {
 		super(context);
+		Instance = this;
 		setOnTouchListener(this);
 		this.mBook = book;
 		mPaint = PageConfig.pagePaintFromConfig(false);

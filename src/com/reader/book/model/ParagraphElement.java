@@ -1,32 +1,77 @@
 package com.reader.book.model;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import android.graphics.Paint;
 
 import com.reader.book.Book;
 import com.reader.book.CharInfo;
+import com.reader.book.Line;
+import com.reader.book.bookview.BookView;
+import com.reader.config.PageConfig;
 
 public class ParagraphElement extends Element {
-	Cursor mStart;
-	Cursor mLast;
 	ArrayList<Character> content = new ArrayList<Character>();
-	Book mBook;
+
 	public ParagraphElement(Book book) {
 		mBook = book;
 	}
-	public void fill() {
-		Cursor c = new Cursor(mStart);
-		CharInfo ch;
-		while (c.mPosition<mLast.mPosition) {
-			ch = mBook.getChar(c.mPosition);
-			c.mPosition += ch.length;
-			content.add(ch.character);
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for (Character ch : content) {
+			sb.append(ch);
 		}
-		
+		return sb.toString();
 	}
-	public Element next() {
-		return null;
+
+	public void fill() {
+		Cursor c = new Cursor(mRealFileStart);
+		CharInfo ch = mBook.getChar(c.mPosition);
+		while (ch.character != '\n') {
+			content.add(ch.character);
+			ch = mBook.getChar(ch.position + ch.length);
+		}
+		content.add(ch.character);
+		mRealFileLast.setPos(ch.position + ch.length - 1);
+
 	}
-	
+
+	List<Line> toLines() {
+		final int width = BookView.Instance.getHeight();
+		final Paint paint = PageConfig.pagePaintFromConfig(false);
+		List<Line> mLines = new ArrayList<Line>();
+		char[] linechar = new char[content.size()];
+		float[] widths = new float[content.size()];
+		paint.getTextWidths(new String(linechar), widths);
+		for (int i = 0; i < linechar.length; i++) {
+			linechar[i] = content.get(i);
+		}
+		mLines.clear();
+		float linewidth = 0;
+		Line line = null;
+		for (int i = 0; i < content.size(); i++) {
+			if (linewidth == 0f) {
+				line = new Line();
+				linewidth += widths[i];
+				line.strLine.append(linechar[i]);
+				continue;
+			}
+			
+			if (linewidth + widths[i]>width) {
+				linewidth += widths[i];
+				line.strLine.append(linechar[i]);
+			} else {
+				linewidth = 0f;
+				mLines.add(line);
+			}
+		}
+		mLines.add(line);
+		return mLines;
+	}
+
 	public static Element findByCursor(Book book, Cursor c) {
 		Cursor paraStart;
 		Cursor paraLast;
@@ -38,22 +83,22 @@ public class ParagraphElement extends Element {
 		}
 		cursor.mPosition += ch.length;
 		paraStart = cursor;
-		
+
 		cursor.mPosition = c.mPosition;
-		
+
 		ch = book.getChar(cursor.mPosition);
-		while (!(cursor.mPosition == book.size()-1 || ch.character == '\n')) {
+		while (!(cursor.mPosition == book.size() - 1 || ch.character == '\n')) {
 			cursor.mPosition += ch.length;
 			ch = book.getChar(cursor.mPosition);
 		}
 		cursor.mPosition -= ch.length;
 		paraLast = cursor;
-		
+
 		// judge which type of element
 		// now is text element and may be type image in the future
 		ParagraphElement element = new ParagraphElement(book);
-		element.mStart = paraStart;
-		element.mLast = paraLast;
+		element.mRealFileStart = paraStart;
+		element.mRealFileLast = paraLast;
 		element.fill();
 		return element;
 	}
