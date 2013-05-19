@@ -10,9 +10,11 @@ package com.reader.book;
 import java.io.File;
 import java.nio.ByteBuffer;
 
+import com.reader.book.manager.BookPosition;
+
 public abstract class Book {
 	protected boolean EOFBOOK = false;
-	public int openOffset = 0;
+	public BookPosition openOffset = new BookPosition(0,0,0);
 	protected File bookFile;
 
 	public abstract void openBook();

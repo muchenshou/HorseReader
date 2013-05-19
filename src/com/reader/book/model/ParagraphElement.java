@@ -38,7 +38,7 @@ public class ParagraphElement extends Element {
 
 	}
 
-	List<Line> toLines() {
+	public List<Line> toLines() {
 		final int width = BookView.Instance.getHeight();
 		final Paint paint = PageConfig.pagePaintFromConfig(false);
 		List<Line> mLines = new ArrayList<Line>();

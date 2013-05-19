@@ -72,13 +72,13 @@ public class ReadingActivity extends Activity {
 	@Override
 	protected void onStop() {
 		BookHistory history = new BookHistory(this);
-		history.updateHistory(this.mBookName,
-				this.bookView.mBookContent.getCurPosition());
-		float fPercent = (float) this.bookView.mBookContent.getCurPosition()
-				/ (float) bookmanager.getBookSize();
-		DecimalFormat df = new DecimalFormat("#0.0");
-		String strPercent = df.format(fPercent * 100) + "%";
-		history.updateHistoryPro(this.mBookName, strPercent);// bookmanager.getReadingContent()
+		//history.updateHistory(this.mBookName,
+		//		this.bookView.mBookContent.getCurPosition());
+		//float fPercent = (float) this.bookView.mBookContent.getCurPosition()
+		//		/ (float) bookmanager.getBookSize();
+		//DecimalFormat df = new DecimalFormat("#0.0");
+		//String strPercent = df.format(fPercent * 100) + "%";
+		//history.updateHistoryPro(this.mBookName, strPercent);// bookmanager.getReadingContent()
 		super.onStop();
 	}
 
@@ -89,13 +89,13 @@ public class ReadingActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// 按下键盘上返回按钮
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			Intent intent = new Intent();
-			intent.putExtra("BookReading",
-					this.bookView.mBookContent.getCurPosition());
-			setResult(RESULT_OK, intent);
-			finish();
-		}
+//		if (keyCode == KeyEvent.KEYCODE_BACK) {
+//			Intent intent = new Intent();
+//			intent.putExtra("BookReading",
+//					this.bookView.mBookContent.getCurPosition());
+//			setResult(RESULT_OK, intent);
+//			finish();
+//		}
 		return super.onKeyDown(keyCode, event);
 	}
 

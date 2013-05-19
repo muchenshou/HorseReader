@@ -1,11 +1,10 @@
 package com.reader.book;
 
-public class Line {
-	public int mStart = 0;
-	public int mLength = 0;// the length of the bytes
-	public StringBuffer strLine = new StringBuffer();
 
-	public int getEnd() {
-		return mStart + mLength - 1;
-	}
+import com.reader.book.model.Element;
+
+public class Line {
+	public Element element;
+	int offset;
+	public StringBuffer strLine;
 }

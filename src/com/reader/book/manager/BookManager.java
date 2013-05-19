@@ -32,7 +32,7 @@ public class BookManager {
 
 	public Book openBook(int position) throws IOException {
 		book.openBook();
-		book.openOffset = position;
+		// book.openOffset = position;
 		return book;
 	}
 
