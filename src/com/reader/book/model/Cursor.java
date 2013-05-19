@@ -1,19 +1,41 @@
 package com.reader.book.model;
 
 class Cursor {
+	int mRealFileStart = 0;
+	int mRealFileLast = 0;
+	int index;
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public int getRealFileStart() {
+		return mRealFileStart;
+	}
+
+	public void setRealFileStart(int mRealFileStart) {
+		this.mRealFileStart = mRealFileStart;
+	}
+
+	public int getRealFileLast() {
+		return mRealFileLast;
+	}
+
+	public void setRealFileLast(int mRealFileLast) {
+		this.mRealFileLast = mRealFileLast;
+	}
+
 	public Cursor(Cursor c) {
-		mPosition = c.mPosition;
+		this.mRealFileStart = c.mRealFileStart;
+		this.mRealFileLast = c.mRealFileLast;
 	}
 
 	public Cursor() {
-		mPosition = -1;
+		this.mRealFileStart = -1;
+		this.mRealFileLast = -1;
 	}
 
-	public void setPos(int pos) {
-		mPosition = pos;
-	}
-	public int getPos() {
-		return mPosition;
-	}
-	int mPosition;
 }

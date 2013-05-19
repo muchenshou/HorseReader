@@ -10,8 +10,7 @@ public abstract class Element {
 	enum STATUS {
 		
 	}
-	Cursor mRealFileStart = new Cursor();
-	Cursor mRealFileLast = new Cursor();;
+	Cursor mElementCursor = new Cursor();
 	int index;
 	Book mBook;
 	public abstract void fill();

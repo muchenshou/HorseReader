@@ -28,14 +28,13 @@ public class ParagraphElement extends Element {
 	}
 
 	public void fill() {
-		Cursor c = new Cursor(mRealFileStart);
-		CharInfo ch = mBook.getChar(c.mPosition);
+		CharInfo ch = mBook.getChar(mElementCursor.getRealFileStart());
 		while (ch.character != '\n') {
 			content.add(ch.character);
 			ch = mBook.getChar(ch.position + ch.length);
 		}
 		content.add(ch.character);
-		mRealFileLast.setPos(ch.position + ch.length - 1);
+		mElementCursor.setRealFileLast(ch.position + ch.length - 1);
 
 	}
 
@@ -59,8 +58,8 @@ public class ParagraphElement extends Element {
 				line.strLine.append(linechar[i]);
 				continue;
 			}
-			
-			if (linewidth + widths[i]>width) {
+
+			if (linewidth + widths[i] > width) {
 				linewidth += widths[i];
 				line.strLine.append(linechar[i]);
 			} else {
@@ -72,34 +71,34 @@ public class ParagraphElement extends Element {
 		return mLines;
 	}
 
-	public static Element findByCursor(Book book, Cursor c) {
-		Cursor paraStart;
-		Cursor paraLast;
-		Cursor cursor = new Cursor(c);
-		CharInfo ch = book.getChar(--cursor.mPosition);
-		while (!(cursor.mPosition == 0 || ch.character == '\n')) {
-			cursor.mPosition--;
-			ch = book.getChar(cursor.mPosition);
-		}
-		cursor.mPosition += ch.length;
-		paraStart = cursor;
-
-		cursor.mPosition = c.mPosition;
-
-		ch = book.getChar(cursor.mPosition);
-		while (!(cursor.mPosition == book.size() - 1 || ch.character == '\n')) {
-			cursor.mPosition += ch.length;
-			ch = book.getChar(cursor.mPosition);
-		}
-		cursor.mPosition -= ch.length;
-		paraLast = cursor;
-
-		// judge which type of element
-		// now is text element and may be type image in the future
-		ParagraphElement element = new ParagraphElement(book);
-		element.mRealFileStart = paraStart;
-		element.mRealFileLast = paraLast;
-		element.fill();
-		return element;
-	}
+	// public static Element findByCursor(Book book, Cursor c) {
+	// Cursor paraStart;
+	// Cursor paraLast;
+	// Cursor cursor = new Cursor(c);
+	// CharInfo ch = book.getChar(--cursor.mPosition);
+	// while (!(cursor.mPosition == 0 || ch.character == '\n')) {
+	// cursor.mPosition--;
+	// ch = book.getChar(cursor.mPosition);
+	// }
+	// cursor.mPosition += ch.length;
+	// paraStart = cursor;
+	//
+	// cursor.mPosition = c.mPosition;
+	//
+	// ch = book.getChar(cursor.mPosition);
+	// while (!(cursor.mPosition == book.size() - 1 || ch.character == '\n')) {
+	// cursor.mPosition += ch.length;
+	// ch = book.getChar(cursor.mPosition);
+	// }
+	// cursor.mPosition -= ch.length;
+	// paraLast = cursor;
+	//
+	// // judge which type of element
+	// // now is text element and may be type image in the future
+	// ParagraphElement element = new ParagraphElement(book);
+	// element.mRealFileStart = paraStart;
+	// element.mRealFileLast = paraLast;
+	// element.fill();
+	// return element;
+	// }
 }
