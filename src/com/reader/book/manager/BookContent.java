@@ -37,7 +37,7 @@ public class BookContent {
 	public String getCurContent() {
 		if (mPageBuffer.isEmpty())
 			return null;
-		return mPageBuffer.existPage(mCurPosition).getStrings().get(0);
+		return mPageBuffer.existPage(mCurPosition.mPostion).getStrings().get(0);
 	}
 
 	Line getLine(int start) {
@@ -73,7 +73,7 @@ public class BookContent {
 	}
 
 	public int getCurPosition() {
-		return mCurPosition;
+		return mCurPosition.mPostion;
 	}
 
 	public int getLineHeight() {
@@ -89,10 +89,10 @@ public class BookContent {
 		pageline = (int) (pageHeight / getLineHeight());
 	}
 
-	private int mCurPosition = 0;
+	private BookPosition mCurPosition = new BookPosition();
 
 	public void setCurPosition(int cur) {
-		mCurPosition = cur;
+		mCurPosition.mPostion = cur;
 		getPageStr(mCurPosition);
 	}
 
@@ -102,12 +102,12 @@ public class BookContent {
 
 	public List<String> getNextPage() {
 		int pos = getNextPagePosition();
-		return pos != -1 ? getPageStr(pos) : null;
+		return pos != -1 ? getPageStr(new BookPosition(pos)) : null;
 	}
 
 	public List<String> getPrePage() {
 		int pos = getprePagePosition();
-		return pos != -1 ? getPageStr(pos) : null;
+		return pos != -1 ? getPageStr(new BookPosition(pos)) : null;
 	}
 
 	public void turnToPre() {
@@ -118,11 +118,11 @@ public class BookContent {
 		setCurPosition(getNextPagePosition());
 	}
 
-	private synchronized List<String> getPageStr(int start) {
-		
+	private synchronized List<String> getPageStr(BookPosition position) {
+
 		if (!mPageBuffer.isEmpty()) {
 			Page page;
-			if ((page = mPageBuffer.existPage(start)) != null) {
+			if ((page = mPageBuffer.existPage(position.mPostion)) != null) {
 				return page.getStrings();
 			}
 		}
@@ -132,10 +132,10 @@ public class BookContent {
 		for (; page.getLinesSize() < pageline;) {
 			if (page.getLinesSize() == 0) {
 
-				if (this.getLine(start) == null) {
+				if (this.getLine(position.mPostion) == null) {
 					break;
 				}
-				page.addLine(this.getLine(start));
+				page.addLine(this.getLine(position.mPostion));
 			} else {
 				if (this.getLine(page.getPageEndPosition() + 1) == null) {
 					break;
@@ -149,8 +149,10 @@ public class BookContent {
 	}
 
 	public int getNextPagePosition() {
-		if (!mPageBuffer.isEmpty() && mPageBuffer.existPage(mCurPosition) != null) {
-			return mPageBuffer.existPage(mCurPosition).getPageEndPosition() + 1;
+		if (!mPageBuffer.isEmpty()
+				&& mPageBuffer.existPage(mCurPosition.mPostion) != null) {
+			return mPageBuffer.existPage(mCurPosition.mPostion)
+					.getPageEndPosition() + 1;
 		}
 		return -1;
 	}
@@ -196,13 +198,13 @@ public class BookContent {
 	public boolean isBookEnd() {
 		if (mPageBuffer.isEmpty())
 			return true;
-		Page page = mPageBuffer.existPage(mCurPosition);
+		Page page = mPageBuffer.existPage(mCurPosition.mPostion);
 		if (page == null) {
 			return true;
 		}
 		if (page.getLinesSize() == 0)
 			return true;
-		if (page.getPageEndPosition() == mBook.size()-1)
+		if (page.getPageEndPosition() == mBook.size() - 1)
 			return true;
 		return false;
 	}
@@ -210,7 +212,7 @@ public class BookContent {
 	public boolean isBookStart() {
 		if (mPageBuffer.isEmpty())
 			return true;
-		Page page = mPageBuffer.existPage(mCurPosition);
+		Page page = mPageBuffer.existPage(mCurPosition.mPostion);
 		if (page == null)
 			return true;
 		if (page.getLinesSize() == 0)
@@ -221,7 +223,7 @@ public class BookContent {
 	}
 
 	private int getprePagePosition() {
-		int curPosition = mCurPosition;
+		int curPosition = mCurPosition.mPostion;
 		Page page;
 		if ((page = mPageBuffer.existPrePage(curPosition)) != null) {
 			return page.getPageStartPosition();
