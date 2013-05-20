@@ -11,8 +11,12 @@ public abstract class Element {
 		
 	}
 	Cursor mElementCursor = new Cursor();
-	int index;
+	public int index;
 	Book mBook;
+	public Cursor getElementCursor() {
+		return mElementCursor;
+	}
+	public abstract int getLength();
 	public abstract void fill();
 	public interface Iterator{
 		public boolean hasNext();

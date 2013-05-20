@@ -13,9 +13,9 @@ public class BookPosition implements Comparable<BookPosition> {
 		mRealBookPos = pos.mRealBookPos;
 	}
 
-	int mElementIndex;
-	int mOffset;
-	int mRealBookPos;
+	public int mElementIndex;
+	public int mOffset;
+	public int mRealBookPos;
 
 	@Override
 	public int compareTo(BookPosition another) {

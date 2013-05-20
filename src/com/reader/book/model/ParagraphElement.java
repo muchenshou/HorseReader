@@ -71,6 +71,11 @@ public class ParagraphElement extends Element {
 		return mLines;
 	}
 
+	@Override
+	public int getLength() {
+		return content.size();
+	}
+
 	// public static Element findByCursor(Book book, Cursor c) {
 	// Cursor paraStart;
 	// Cursor paraLast;

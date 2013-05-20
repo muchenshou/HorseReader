@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.reader.book.manager.BookPosition;
+import com.reader.book.model.Cursor;
+import com.reader.book.model.Element;
 
 public class Page implements Comparable<Page> {
 	LinkedList<Line> mLines = new LinkedList<Line>();
@@ -40,5 +42,15 @@ public class Page implements Comparable<Page> {
 	@Override
 	public String toString() {
 		return super.toString();
+	}
+	public BookPosition getLastPos() {
+		BookPosition pos = new BookPosition(0, 0, 0);
+		final Line lastLine = mLines.getLast();
+		final Element element = lastLine.element;
+		final Cursor cursor = element.getElementCursor();
+		pos.mElementIndex = element.index;
+		pos.mOffset = lastLine.offset+lastLine.strLine.length();
+		pos.mRealBookPos = cursor.getRealFileStart();
+		return pos;
 	}
 }

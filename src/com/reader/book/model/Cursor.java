@@ -1,6 +1,6 @@
 package com.reader.book.model;
 
-class Cursor {
+public class Cursor {
 	int mRealFileStart = 0;
 	int mRealFileLast = 0;
 	int index;
