@@ -7,11 +7,10 @@
  * */
 package com.reader.book.manager;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.reader.book.Book;
 import com.reader.book.Line;
@@ -86,8 +85,8 @@ public class BookContent {
 	private synchronized Page getPageStr(BookPosition position) {
 		final Page page = new Page();
 		page.clear();
-		Element.Iterator iter = mBookModel.iterator(position.mElementIndex, position.mRealBookPos);
-		Element element = iter.next();
+		Element.Iterator elementIter = mBookModel.iterator(position.mElementIndex, position.mRealBookPos);
+		Element element = elementIter.next();
 		if (element instanceof ParagraphElement) {
 			List<Line> lines = ((ParagraphElement)element).toLines();
 			java.util.Iterator<Line> lineIter = lines.iterator();
@@ -95,8 +94,8 @@ public class BookContent {
 				if (lineIter.hasNext()) {
 					page.addLine(lineIter.next());
 				} else {
-					if (iter.hasNext()) {
-						element = iter.next();
+					if (elementIter.hasNext()) {
+						element = elementIter.next();
 						lines = ((ParagraphElement) element).toLines();
 						lineIter = lines.iterator();
 					}

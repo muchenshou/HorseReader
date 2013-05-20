@@ -88,7 +88,7 @@ public class BookView extends View implements View.OnTouchListener {
 		m.postScale((float) w / (float) bitmap_w, (float) h / (float) bitmap_h);
 		mBookPage.setBg(Bitmap.createBitmap(BG, 0, 0, bitmap_w, bitmap_h, m,
 				true));
-		this.update();
+		this.reset();
 	}
 
 	@Override
@@ -119,8 +119,9 @@ public class BookView extends View implements View.OnTouchListener {
 		this.mAnimation.onDraw(canvas);
 	}
 
-	private void update() {
+	private void reset() {
 		mBookContent.update();
+		Log.i("hello","bookview:reset");
 		if (this.mInit == false) {
 			mBookContent.setCurPosition(mBook.openOffset);
 			mInit = true;
