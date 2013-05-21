@@ -36,7 +36,7 @@ public class BookView extends View implements View.OnTouchListener {
 	public Bitmap m_book_bg = null;
 	Book mBook;
 	private boolean mInit = false;
-	PageDisplay mBookPage;
+	BookScreenDisplay mBookScreenDisplay;
 	private Paint mPaint;
 	public static BookView Instance;
 	public BookView(Context context, Book book) {
@@ -47,7 +47,7 @@ public class BookView extends View implements View.OnTouchListener {
 		mPaint = PageConfig.pagePaintFromConfig(false);
 		mBookContent = new BookContent(book);
 
-		mBookPage = new PageDisplay(mBookContent);
+		mBookScreenDisplay = new BookScreenDisplay(mBookContent);
 		// this.mAnimation = new SimulateTurnPage(getContext());
 		// this.mAnimation = new NoTurnAnimation(getContext());
 		this.mAnimation = new SimpleAnimation(getContext());
@@ -78,7 +78,7 @@ public class BookView extends View implements View.OnTouchListener {
 				h - BookView.getTextHeight(PageConfig.getOthersPaint(false))
 						- 20);
 		//
-		mBookPage.init(getWidth(), getHeight());
+		mBookScreenDisplay.init(getWidth(), getHeight());
 
 		Bitmap BG = this.m_book_bg;
 		int bitmap_w = BG.getWidth();
@@ -86,7 +86,7 @@ public class BookView extends View implements View.OnTouchListener {
 		Log.i("[BookView]", "" + bitmap_w + " " + bitmap_h);
 		Matrix m = new Matrix();
 		m.postScale((float) w / (float) bitmap_w, (float) h / (float) bitmap_h);
-		mBookPage.setBg(Bitmap.createBitmap(BG, 0, 0, bitmap_w, bitmap_h, m,
+		mBookScreenDisplay.setBg(Bitmap.createBitmap(BG, 0, 0, bitmap_w, bitmap_h, m,
 				true));
 		this.reset();
 	}
@@ -95,7 +95,7 @@ public class BookView extends View implements View.OnTouchListener {
 	protected void onDraw(Canvas canvas) {
 		if (mAnimation.state() == BookViewAnimation.NONE) {
 			canvas.drawBitmap(
-					mBookPage.tranlateFrontBitmap(mBookContent.getCurPage()),
+					mBookScreenDisplay.tranlateFrontBitmap(mBookContent.getCurPage()),
 					0, 0, mPaint);
 			return;
 		}
@@ -106,7 +106,7 @@ public class BookView extends View implements View.OnTouchListener {
 				mBookContent.turnToNext();
 
 			canvas.drawBitmap(
-					mBookPage.tranlateFrontBitmap(mBookContent.getCurPage()),
+					mBookScreenDisplay.tranlateFrontBitmap(mBookContent.getCurPage()),
 					0, 0, mPaint);
 
 			mAnimation.setState(BookViewAnimation.NONE);
@@ -126,7 +126,7 @@ public class BookView extends View implements View.OnTouchListener {
 			mBookContent.setCurPosition(mBook.openOffset);
 			mInit = true;
 		}
-		mAnimation.setFrontBitmap(mBookPage.tranlateFrontBitmap(mBookContent
+		mAnimation.setFrontBitmap(mBookScreenDisplay.tranlateFrontBitmap(mBookContent
 				.getCurPage()));
 		this.mAnimation.update();
 		postInvalidate();

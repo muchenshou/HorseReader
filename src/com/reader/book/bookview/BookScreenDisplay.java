@@ -7,11 +7,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.reader.book.Book;
+import com.reader.book.Page;
 import com.reader.book.manager.BookContent;
 import com.reader.config.PageConfig;
 
-public class PageDisplay {
-	public static PageDisplay Instance;
+public class BookScreenDisplay {
+	public static BookScreenDisplay Instance;
 	private BookContent mBookContent;
 	private Paint mPaint;
 	private Book mBook;
@@ -27,7 +28,7 @@ public class PageDisplay {
 	public static int PRE = 1;
 	public static int NEXT = 2;
 
-	public PageDisplay(BookContent bookContent) {
+	public BookScreenDisplay(BookContent bookContent) {
 		mBookContent = bookContent;
 		mPaint = PageConfig.pagePaintFromConfig(false);
 		mBook = mBookContent.mBook;
@@ -69,33 +70,33 @@ public class PageDisplay {
 		this.m_book_bg = bg;
 	}
 
-	public Bitmap tranlateFrontBitmap(List<String> page) {
+	public Bitmap tranlateFrontBitmap(Page page) {
 		Canvas c = new Canvas(mfrontPageBitmap);
-		mPageObj.setPageString(page);
+		mPageObj.setPage(page);
 		Draw(c);
 		return mfrontPageBitmap;
 	}
 
-	public Bitmap tranlateBackBitmap(List<String> page) {
+	public Bitmap tranlateBackBitmap(Page page) {
 		Canvas c = new Canvas(mBackPageBitmap);
-		mPageObj.setPageString(page);
+		mPageObj.setPage(page);
 		Draw(c);
 		return mBackPageBitmap;
 	}
 
 	public Bitmap tranlateFrontBitmap() {
-		List<String> page = mBookContent.getCurPage();
+		Page page = mBookContent.getCurPage();
 		Canvas c = new Canvas(mfrontPageBitmap);
-		mPageObj.setPageString(page);
+		mPageObj.setPage(page);
 		Draw(c);
 		return mfrontPageBitmap;
 	}
 
 	public Bitmap tranlateBackBitmap(int dir) {
-		List<String> page = dir == PRE ? mBookContent.getPrePage()
+		Page page = dir == PRE ? mBookContent.getPrePage()
 				: mBookContent.getNextPage();
 		Canvas c = new Canvas(mBackPageBitmap);
-		mPageObj.setPageString(page == null? mBookContent.getCurPage():page);
+		mPageObj.setPage(page == null? mBookContent.getCurPage():page);
 		Draw(c);
 		return mBackPageBitmap;
 	}

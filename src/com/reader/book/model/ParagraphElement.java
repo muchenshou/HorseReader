@@ -13,8 +13,7 @@ import com.reader.book.bookview.BookView;
 import com.reader.config.PageConfig;
 
 public class ParagraphElement extends Element {
-	ArrayList<Character> content = new ArrayList<Character>();
-
+	char content[];
 	public ParagraphElement(Book book) {
 		mBook = book;
 	}
@@ -33,65 +32,24 @@ public class ParagraphElement extends Element {
 		if (ch.character == '\n') {
 			type = TYPE.NEWLINE;
 		}
+		StringBuffer buf = new StringBuffer();
 		while (ch.character != '\n') {
-			content.add(ch.character);
+			buf.append(ch.character);
 			ch = mBook.getChar(ch.position + ch.length);
 		}
-		content.add(ch.character);
+		buf.append(ch.character);
+		content = new char[buf.length()];
+		buf.getChars(0, buf.length(), content, 0);
 		mElementCursor.setRealFileLast(ch.position + ch.length - 1);
 
 	}
 
-	public List<Line> toLines(int offset) {
-		final int width = BookView.Instance.getWidth();
-		final Paint paint = PageConfig.pagePaintFromConfig(false);
-		List<Line> mLines = new ArrayList<Line>();
-		float linewidth = 0;
-		Line line = null;
-		// if the element only had a char '\n',should return 
-		if (content.size() == 1 && content.get(0) == '\n') {
-			line = new Line();
-			line.element = this;
-			line.offset = 0;
-			line.strLine.append(' ');
-			mLines.add(line);
-			return mLines;
-		} 
-		char[] linechar = new char[content.size()];
-		float[] widths = new float[content.size()];
-		for (int i = 0; i < linechar.length; i++) {
-			linechar[i] = content.get(i);
-		}
-		paint.getTextWidths(new String(linechar), widths);
-		mLines.clear();
-		
-		for (int i = offset; i < content.size(); i++) {
-			if (linewidth == 0f) {
-				line = new Line();
-				line.element = this;
-				linewidth += widths[i];
-				line.offset = i;
-				line.strLine.append(linechar[i]);
-				continue;
-			}
-
-			if (linewidth + widths[i] < width && linechar[i] != '\n') {
-				linewidth += widths[i];
-				line.strLine.append(linechar[i]);
-			} else {
-				linewidth = 0f;
-				mLines.add(line);
-				i-=1;
-			}
-		}
-//		for (Line l:mLines) {
-//			Log.i("hello",l.strLine.toString());
-//		}
-		return mLines;
+	public char charAt(int index) {
+		return content[index];
 	}
 
 	@Override
 	public int getLength() {
-		return content.size();
+		return content.length;
 	}
 }

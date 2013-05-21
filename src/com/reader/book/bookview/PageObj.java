@@ -7,16 +7,16 @@
  * */
 package com.reader.book.bookview;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.reader.book.Book;
-import com.reader.book.manager.BookContent;
-
 import android.graphics.Canvas;
 import android.graphics.Paint;
+
+import com.reader.book.AreaDraw;
+import com.reader.book.Book;
+import com.reader.book.Page;
+import com.reader.book.manager.BookContent;
 
 class StringUtils {
 
@@ -39,18 +39,18 @@ public class PageObj extends DrawableObj {
 		mBookContent = bookContent;
 	}
 
-	private List<String> pageString = new ArrayList<String>();
+	private Page pageString;
 
-	public void setPageString(List<String> str) {
+	public void setPage(Page str) {
 		this.pageString = str;
 	}
 
 	@Override
 	public void Draw(Canvas canvas, Paint paint) {
 		int y = 0;
-		for (String strLine : pageString) {
-			y += mBookContent.getLineHeight();
-			canvas.drawText(strLine, 10, y, paint);
+		for (AreaDraw strLine : pageString.getAreasDraw()) {
+			strLine.draw(canvas, 10, y,paint);
+			y += strLine.getHeight();
 		}
 	}
 

@@ -72,8 +72,8 @@ public class SimpleAnimation extends BookViewAnimation {
 			mBoundLine = mWidth;
 			clickDown = event.getX();
 			isTurnToPre = false;
-			setBackBitmap(PageDisplay.Instance
-					.tranlateBackBitmap(PageDisplay.NEXT));
+			setBackBitmap(BookScreenDisplay.Instance
+					.tranlateBackBitmap(BookScreenDisplay.NEXT));
 		}
 		boolean pre = false;
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -82,15 +82,15 @@ public class SimpleAnimation extends BookViewAnimation {
 			if (pre != isTurnToPre) {
 				isTurnToPre = pre;
 				// Draw current page and Set
-				setFrontBitmap(PageDisplay.Instance.tranlateFrontBitmap());
+				setFrontBitmap(BookScreenDisplay.Instance.tranlateFrontBitmap());
 
 				// Draw next or pre page and Set it
 				if (DragToRight()) {
-					setBackBitmap(PageDisplay.Instance
-							.tranlateBackBitmap(PageDisplay.PRE));
+					setBackBitmap(BookScreenDisplay.Instance
+							.tranlateBackBitmap(BookScreenDisplay.PRE));
 				} else {
-					setBackBitmap(PageDisplay.Instance
-							.tranlateBackBitmap(PageDisplay.NEXT));
+					setBackBitmap(BookScreenDisplay.Instance
+							.tranlateBackBitmap(BookScreenDisplay.NEXT));
 				}
 			}
 			if (isTurnToPre) {

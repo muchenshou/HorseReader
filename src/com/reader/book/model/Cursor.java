@@ -34,7 +34,7 @@ public class Cursor {
 	}
 
 	public Cursor() {
-		this.mRealFileStart = -1;
+		this.mRealFileStart = 0;
 		this.mRealFileLast = -1;
 	}
 

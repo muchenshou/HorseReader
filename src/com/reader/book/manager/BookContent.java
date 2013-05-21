@@ -60,15 +60,15 @@ public class BookContent {
 	public Page mCurPage;
 	public Element mCurElement;
 	public void setCurPosition(BookPosition cur) {
-		mCurPage = getPageStr(cur);
+		mCurPage = getPage(cur);
 	}
 
-	public List<String> getNextPage() {
-		final Page page = getPageStr(getNextPagePosition());
-		return page.getStrings();
+	public Page getNextPage() {
+		final Page page = getPage(getNextPagePosition());
+		return page;
 	}
 
-	public List<String> getPrePage() {
+	public Page getPrePage() {
 //		int pos = getprePagePosition();
 //		return pos != -1 ? getPageStr(new BookPosition(pos)) : null;
 		return null;
@@ -82,8 +82,8 @@ public class BookContent {
 		setCurPosition(getNextPagePosition());
 	}
 
-	private synchronized Page getPageStr(BookPosition position) {
-		final Page page = new Page();
+	private synchronized Page getPage(BookPosition position) {
+		final Page page = new Page(mBookModel,position);
 		page.clear();
 		Element.Iterator elementIter = mBookModel.iterator(position.mElementIndex, position.mRealBookPos);
 		Element element = elementIter.next();
@@ -157,8 +157,8 @@ public class BookContent {
 //		return page.getPageStartPosition();
 //	}
 
-	public List<String> getCurPage() {
-		return mCurPage.getStrings();
+	public Page getCurPage() {
+		return mCurPage;
 	}
 
 }

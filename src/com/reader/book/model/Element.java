@@ -19,6 +19,9 @@ public abstract class Element {
 		return mElementCursor;
 	}
 	public abstract int getLength();
+	public int size() {
+		return mElementCursor.mRealFileLast - mElementCursor.mRealFileStart + 1;
+	}
 	public abstract void fill();
 	public interface Iterator{
 		public boolean hasNext();
