@@ -23,4 +23,11 @@ public class BookPosition implements Comparable<BookPosition> {
 				&& mOffset == another.mOffset && mRealBookPos == another.mRealBookPos) ? 0
 				: -1;
 	}
+
+	@Override
+	public String toString() {
+		return "bookposition:" + "index:" + mElementIndex + "realpos:"
+				+ mRealBookPos + "mOffset:" + mOffset;
+	}
+
 }

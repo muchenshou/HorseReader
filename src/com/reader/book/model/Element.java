@@ -5,13 +5,15 @@ import com.reader.book.Book;
 public abstract class Element {
 	enum TYPE {
 		TEXT,
-		IMAGE
+		IMAGE,
+		NEWLINE
 	}
 	enum STATUS {
 		
 	}
 	Cursor mElementCursor = new Cursor();
 	public int index;
+	TYPE type = TYPE.TEXT;
 	Book mBook;
 	public Cursor getElementCursor() {
 		return mElementCursor;

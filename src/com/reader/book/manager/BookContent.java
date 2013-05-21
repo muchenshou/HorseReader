@@ -88,7 +88,7 @@ public class BookContent {
 		Element.Iterator elementIter = mBookModel.iterator(position.mElementIndex, position.mRealBookPos);
 		Element element = elementIter.next();
 		if (element instanceof ParagraphElement) {
-			List<Line> lines = ((ParagraphElement)element).toLines();
+			List<Line> lines = ((ParagraphElement)element).toLines(position.mOffset);
 			java.util.Iterator<Line> lineIter = lines.iterator();
 			for (; page.getLinesSize() < pageline ;) {
 				if (lineIter.hasNext()) {
@@ -96,7 +96,7 @@ public class BookContent {
 				} else {
 					if (elementIter.hasNext()) {
 						element = elementIter.next();
-						lines = ((ParagraphElement) element).toLines();
+						lines = ((ParagraphElement) element).toLines(0);
 						lineIter = lines.iterator();
 					}
 					else
@@ -117,6 +117,8 @@ public class BookContent {
 			pos.mOffset=0;
 			element = iter.next();
 			pos.mRealBookPos = element.getElementCursor().getRealFileStart();
+		} else {
+			pos.mOffset += 1;
 		}
 		return pos;
 	}

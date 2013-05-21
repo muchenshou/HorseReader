@@ -30,6 +30,9 @@ public class ParagraphElement extends Element {
 
 	public void fill() {
 		CharInfo ch = mBook.getChar(mElementCursor.getRealFileStart());
+		if (ch.character == '\n') {
+			type = TYPE.NEWLINE;
+		}
 		while (ch.character != '\n') {
 			content.add(ch.character);
 			ch = mBook.getChar(ch.position + ch.length);
@@ -39,7 +42,7 @@ public class ParagraphElement extends Element {
 
 	}
 
-	public List<Line> toLines() {
+	public List<Line> toLines(int offset) {
 		final int width = BookView.Instance.getWidth();
 		final Paint paint = PageConfig.pagePaintFromConfig(false);
 		List<Line> mLines = new ArrayList<Line>();
@@ -49,6 +52,8 @@ public class ParagraphElement extends Element {
 		if (content.size() == 1 && content.get(0) == '\n') {
 			line = new Line();
 			line.element = this;
+			line.offset = 0;
+			line.strLine.append(' ');
 			mLines.add(line);
 			return mLines;
 		} 
@@ -60,11 +65,12 @@ public class ParagraphElement extends Element {
 		paint.getTextWidths(new String(linechar), widths);
 		mLines.clear();
 		
-		for (int i = 0; i < content.size(); i++) {
+		for (int i = offset; i < content.size(); i++) {
 			if (linewidth == 0f) {
 				line = new Line();
 				line.element = this;
 				linewidth += widths[i];
+				line.offset = i;
 				line.strLine.append(linechar[i]);
 				continue;
 			}
@@ -75,8 +81,12 @@ public class ParagraphElement extends Element {
 			} else {
 				linewidth = 0f;
 				mLines.add(line);
+				i-=1;
 			}
 		}
+//		for (Line l:mLines) {
+//			Log.i("hello",l.strLine.toString());
+//		}
 		return mLines;
 	}
 

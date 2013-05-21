@@ -5,6 +5,6 @@ import com.reader.book.model.Element;
 
 public class Line {
 	public Element element;
-	int offset;
+	public int offset;
 	public StringBuffer strLine = new StringBuffer();
 }
