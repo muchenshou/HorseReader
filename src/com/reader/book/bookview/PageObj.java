@@ -7,11 +7,13 @@
  * */
 package com.reader.book.bookview;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
@@ -48,7 +50,10 @@ public class PageObj extends DrawableObj {
 	@Override
 	public void Draw(Canvas canvas, Paint paint) {
 		int y = 0;
-		for (AreaDraw strLine : pageString.getAreasDraw()) {
+		List<AreaDraw> list = pageString.getAreasDraw();
+		Log.i("hello", "pageobj:");
+		for (AreaDraw strLine : list) {
+			Log.i("hello", "pageobj:");
 			strLine.draw(canvas, 10, y,paint);
 			y += strLine.getHeight();
 		}

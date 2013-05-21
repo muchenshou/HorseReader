@@ -1,16 +1,7 @@
 package com.reader.book.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.graphics.Paint;
-import android.util.Log;
-
 import com.reader.book.Book;
 import com.reader.book.CharInfo;
-import com.reader.book.Line;
-import com.reader.book.bookview.BookView;
-import com.reader.config.PageConfig;
 
 public class ParagraphElement extends Element {
 	char content[];
@@ -27,6 +18,10 @@ public class ParagraphElement extends Element {
 		return sb.toString();
 	}
 
+	public void copy(char dest[], int off, int len) {
+		System.arraycopy(content, off, dest, 0, len);
+	}
+	@Override
 	public void fill() {
 		CharInfo ch = mBook.getChar(mElementCursor.getRealFileStart());
 		if (ch.character == '\n') {
@@ -37,7 +32,7 @@ public class ParagraphElement extends Element {
 			buf.append(ch.character);
 			ch = mBook.getChar(ch.position + ch.length);
 		}
-		buf.append(ch.character);
+		// buf.append(ch.character);
 		content = new char[buf.length()];
 		buf.getChars(0, buf.length(), content, 0);
 		mElementCursor.setRealFileLast(ch.position + ch.length - 1);

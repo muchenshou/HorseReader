@@ -7,19 +7,13 @@
  * */
 package com.reader.book.manager;
 
-import java.util.List;
-
 import android.graphics.Paint;
-import android.util.Log;
-
 import com.reader.book.Book;
-import com.reader.book.Line;
 import com.reader.book.Page;
 import com.reader.book.PageBuffer;
 import com.reader.book.bookview.BookView;
 import com.reader.book.model.BookModel;
 import com.reader.book.model.Element;
-import com.reader.book.model.ParagraphElement;
 import com.reader.config.PageConfig;
 
 public class BookContent {
@@ -85,25 +79,7 @@ public class BookContent {
 	private synchronized Page getPage(BookPosition position) {
 		final Page page = new Page(mBookModel,position);
 		page.clear();
-		Element.Iterator elementIter = mBookModel.iterator(position.mElementIndex, position.mRealBookPos);
-		Element element = elementIter.next();
-		if (element instanceof ParagraphElement) {
-			List<Line> lines = ((ParagraphElement)element).toLines(position.mOffset);
-			java.util.Iterator<Line> lineIter = lines.iterator();
-			for (; page.getLinesSize() < pageline ;) {
-				if (lineIter.hasNext()) {
-					page.addLine(lineIter.next());
-				} else {
-					if (elementIter.hasNext()) {
-						element = elementIter.next();
-						lines = ((ParagraphElement) element).toLines(0);
-						lineIter = lines.iterator();
-					}
-					else
-						break;
-				}
-			}
-		}
+		page.fill();
 		return page;
 	}
 

@@ -9,8 +9,6 @@ package com.reader.app;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-
 import com.reader.book.bookview.BookView;
 import com.reader.book.bookview.NoTurnAnimation;
 import com.reader.book.bookview.SimulateTurnPage;
