@@ -14,7 +14,7 @@ import com.reader.book.manager.BookPosition;
 
 public abstract class Book {
 	protected boolean EOFBOOK = false;
-	public BookPosition openOffset = new BookPosition(0,0,0);
+	public BookPosition openOffset;
 	protected File bookFile;
 
 	public abstract void openBook();

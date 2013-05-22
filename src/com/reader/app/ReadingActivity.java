@@ -9,13 +9,8 @@ package com.reader.app;
 
 import java.io.File;
 import java.io.IOException;
-import com.reader.book.bookview.BookView;
-import com.reader.book.bookview.NoTurnAnimation;
-import com.reader.book.bookview.SimulateTurnPage;
-import com.reader.book.manager.BookManager;
-import com.reader.app.R;
-import com.reader.preference.ReadingSetting;
-import com.reader.record.BookHistory;
+import java.text.DecimalFormat;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +22,14 @@ import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.reader.book.bookview.BookView;
+import com.reader.book.bookview.NoTurnAnimation;
+import com.reader.book.bookview.SimulateTurnPage;
+import com.reader.book.manager.BookManager;
+import com.reader.book.manager.BookPosition;
+import com.reader.preference.ReadingSetting;
+import com.reader.record.BookHistory;
 
 public class ReadingActivity extends Activity {
 	public BookView bookView;
@@ -41,12 +44,12 @@ public class ReadingActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		String bookName = getIntent().getStringExtra("bookname");
 		this.mBookName = bookName;
-		int position = 0;
+		BookPosition position = new BookPosition(0, 0, 0);
 		BookHistory history = new BookHistory(this);
 		if (history.exist(bookName)) {
 			position = history.getPosition(bookName);
 		} else {
-			history.updateHistory(bookName, 0);
+			history.storePosition(bookName, null);
 		}
 
 		try {
@@ -70,13 +73,8 @@ public class ReadingActivity extends Activity {
 	@Override
 	protected void onStop() {
 		BookHistory history = new BookHistory(this);
-		//history.updateHistory(this.mBookName,
-		//		this.bookView.mBookContent.getCurPosition());
-		//float fPercent = (float) this.bookView.mBookContent.getCurPosition()
-		//		/ (float) bookmanager.getBookSize();
-		//DecimalFormat df = new DecimalFormat("#0.0");
-		//String strPercent = df.format(fPercent * 100) + "%";
-		//history.updateHistoryPro(this.mBookName, strPercent);// bookmanager.getReadingContent()
+		history.storePosition(this.mBookName,
+				this.bookView.mBookContent.getCurPosition());
 		super.onStop();
 	}
 
@@ -87,13 +85,13 @@ public class ReadingActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// 按下键盘上返回按钮
-//		if (keyCode == KeyEvent.KEYCODE_BACK) {
-//			Intent intent = new Intent();
-//			intent.putExtra("BookReading",
-//					this.bookView.mBookContent.getCurPosition());
-//			setResult(RESULT_OK, intent);
-//			finish();
-//		}
+		// if (keyCode == KeyEvent.KEYCODE_BACK) {
+		// Intent intent = new Intent();
+		// intent.putExtra("BookReading",
+		// this.bookView.mBookContent.getCurPosition());
+		// setResult(RESULT_OK, intent);
+		// finish();
+		// }
 		return super.onKeyDown(keyCode, event);
 	}
 

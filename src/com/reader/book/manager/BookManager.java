@@ -30,9 +30,9 @@ public class BookManager {
 		book = BookFactory.createBook(file);
 	}
 
-	public Book openBook(int position) throws IOException {
+	public Book openBook(BookPosition position) throws IOException {
 		book.openBook();
-		// book.openOffset = position;
+		book.openOffset = position;
 		return book;
 	}
 

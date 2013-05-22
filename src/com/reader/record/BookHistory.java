@@ -13,6 +13,9 @@ import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+
+import com.reader.book.manager.BookPosition;
 
 public class BookHistory {
 	BookDatabaseHelper bookHelper;
@@ -40,14 +43,31 @@ public class BookHistory {
 		return list;
 	}
 
-	private void addHistory(String book, int pos) {
+	private SQLiteStatement myStorePositionStatement;
+
+	public void storePosition(String book, BookPosition position) {
+		if (position == null)
+			position = new BookPosition(0, 0, 0);
+		
+		if (exist(book)) {
+			SQLiteDatabase db = this.bookHelper.getReadableDatabase();
+			db.execSQL(String
+					.format("update bookhistory set time=datetime('now','localtime'),paragraph=%d,char=%d,realpos=%d where fulldirname=\"%s\";",
+							position.mElementIndex, position.mOffset,
+							position.mRealBookPos, book));
+			db.close();
+			return;
+		}
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		db.execSQL(String
-				.format("insert into bookhistory(fulldirname,position) values(\"%s\",%d);",
-						book, pos));
-
-		db.close();
-
+		if (myStorePositionStatement == null) {
+			myStorePositionStatement = db
+					.compileStatement("INSERT OR REPLACE INTO bookhistory (fulldirname,paragraph,char,realpos) VALUES (?,?,?,?)");
+		}
+		myStorePositionStatement.bindString(1, book);
+		myStorePositionStatement.bindLong(2, position.mElementIndex);
+		myStorePositionStatement.bindLong(3, position.mOffset);
+		myStorePositionStatement.bindLong(4, position.mRealBookPos);
+		myStorePositionStatement.execute();
 	}
 
 	public boolean exist(String book) {
@@ -61,62 +81,46 @@ public class BookHistory {
 		return exist;
 	}
 
-	public void updateHistory(String bookname, int pos) {
-		// TODO Auto-generated method stub
-		if (this.exist(bookname)) {
-			updatePos(bookname, pos);
-		} else {
-			this.addHistory(bookname, 0);
-		}
-	}
-
-	public void updateHistoryPro(String bookname, String pos) {
-		// TODO Auto-generated method stub
-		if (this.exist(bookname)) {
-			updateProcess(bookname, pos);
-		} else {
-			this.addHistory(bookname, 0);
-		}
-	}
-
-	public int getPosition(String book) {
+	public BookPosition getPosition(String book) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		Cursor cur = db.rawQuery(String.format(
-				"select position from bookhistory where fulldirname=\"%s\"",
-				book), null);
-		int rtn = 0;
+		BookPosition position = new BookPosition(0, 0, 0);
+		Cursor cur = db.query(BookDatabaseHelper.TB_HISTORY,
+				BookDatabaseHelper.HISTORY_POSITION, "fulldirname=?",
+				new String[] { book }, null, null, null);
 		if (cur.moveToNext()) {
-			rtn = cur.getInt(0);
+			position.mElementIndex = cur.getInt(0);
+			position.mOffset = cur.getInt(1);
+			position.mRealBookPos = cur.getInt(2);
 		}
 		cur.close();
 		db.close();
-		return rtn;
+		return position;
 	}
 
-	private void updatePos(String bookname, int pos) {
-		SQLiteDatabase db = this.bookHelper.getWritableDatabase();
-		if (pos != -1)
-			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime'),position=%d where fulldirname=\"%s\";",
-							pos, bookname));
-		else
-			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime') where fulldirname=\"%s\";",
-							bookname));
-		db.close();
-	}
+	// private void updatePos(String bookname, BookPosition pos) {
+	// SQLiteDatabase db = this.bookHelper.getWritableDatabase();
+	// if (pos != null)
+	// db.execSQL(String
+	// .format("update bookhistory set time=datetime('now','localtime'),position=%d where fulldirname=\"%s\";",
+	// pos, bookname));
+	// else
+	// db.execSQL(String
+	// .format("update bookhistory set time=datetime('now','localtime') where fulldirname=\"%s\";",
+	// bookname));
+	// db.close();
+	// }
 
-	private void updateProcess(String bookname, String pos) {
-		SQLiteDatabase db = this.bookHelper.getWritableDatabase();
-		if (pos != null) {
-			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime'),process=\"%s\" where fulldirname=\"%s\";",
-							pos, bookname));
-		} else
-			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime') where fulldirname=\"%s\";",
-							bookname));
-		db.close();
-	}
+	// private void updateProcess(String bookname, String pos) {
+	// SQLiteDatabase db = this.bookHelper.getWritableDatabase();
+	// if (pos != null) {
+	// db.execSQL(String
+	// .format("update bookhistory set time=datetime('now','localtime'),process=\"%s\" where fulldirname=\"%s\";",
+	// pos, bookname));
+	// } else
+	// db.execSQL(String
+	// .format("update bookhistory set time=datetime('now','localtime') where fulldirname=\"%s\";",
+	// bookname));
+	// db.close();
+	// }
 
 }

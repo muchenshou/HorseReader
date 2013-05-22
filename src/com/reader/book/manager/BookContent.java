@@ -108,33 +108,15 @@ public class BookContent {
 	}
 
 //	private int getprePagePosition() {
-//		int curPosition = mCurPosition.mPostion;
-//		Page page;
-//		if ((page = mPageBuffer.existPrePage(curPosition)) != null) {
-//			return page.getPageStartPosition();
-//		}
-//		LinkedList<Line> prepage = new LinkedList<Line>();
-//		if (this.isBookStart()) {
-//			return 0;
-//		}
-//		this.preLinePosition(curPosition);
-//		prepage.addAll(0, this.mBufLine);
-//		for (; prepage.size() < this.pageline && !isBookEnd();) {
-//			preLinePosition(prepage.get(0).mStart);
-//			prepage.addAll(0, this.mBufLine);
-//		}
-//		page = new Page();
-//		page.clear();
-//		for (Line l : prepage) {
-//			page.addLine(l);
-//		}
-//
-//		mPageBuffer.addPage(page);
-//		return page.getPageStartPosition();
+//		
 //	}
 
 	public Page getCurPage() {
 		return mCurPage;
+	}
+
+	public BookPosition getCurPosition() {
+		return mCurPage.mBookPosition;
 	}
 
 }

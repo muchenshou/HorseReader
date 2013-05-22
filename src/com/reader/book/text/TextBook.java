@@ -121,6 +121,7 @@ public class TextBook extends Book {
 		if (pos >= this.size())
 			return null;
 		CharInfo charinfo = new CharInfo();
+		charinfo.position = pos;
 		byte bytes[] = new byte[2];
 		if (this.bookBuffer.getByte(pos) >= 0) {
 			charinfo.character = (char) this.bookBuffer.getByte(pos);
@@ -150,6 +151,7 @@ public class TextBook extends Book {
 		if (pos >= this.size())
 			return null;
 		CharInfo charinfo = new CharInfo();
+		charinfo.position = pos;
 		byte bytes[] = new byte[3];
 		if (this.bookBuffer.getByte(pos) >= 0) {
 			charinfo.character = (char) this.bookBuffer.getByte(pos);
