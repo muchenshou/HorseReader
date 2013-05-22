@@ -45,7 +45,7 @@ public class Page implements Comparable<Page> {
 	}
 
 	public void fill() {
-		final int pageheight = BookView.Instance.getHeight();
+		final int pageheight = BookView.Instance.getHeight() - 30;
 		int height = 0;
 		AreaDraw next;
 
@@ -56,14 +56,14 @@ public class Page implements Comparable<Page> {
 		do {
 			next = new Line(pos,element);
 			next.fill();
-			if ((next.offset + next.lenght) >= element.getLength()) {
+			if ((next.offset + next.length) >= element.getLength()) {
 				pos = new BookPosition(pos);
 				pos.mElementIndex += 1;
 				pos.mOffset = 0;
 				element = iter.next();
 			} else {
 				pos = new BookPosition(pos);
-				pos.mOffset = next.offset + next.lenght;
+				pos.mOffset = next.offset + next.length;
 			}
 			height += next.getHeight();
 			if (height < pageheight) {
@@ -81,7 +81,7 @@ public class Page implements Comparable<Page> {
 		final Element element = lastLine.element;
 		final Cursor cursor = element.getElementCursor();
 		pos.mElementIndex = element.index;
-		pos.mOffset = lastLine.offset + lastLine.lenght;
+		pos.mOffset = lastLine.offset + lastLine.length;
 		pos.mRealBookPos = cursor.getRealFileStart();
 		return pos;
 	}

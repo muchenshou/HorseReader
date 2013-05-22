@@ -36,8 +36,6 @@ public class Line extends AreaDraw {
 
 	@Override
 	public void fill() {
-		// TODO Auto-generated method stub
-		Log.i("hello", "line file");
 		final int width = BookView.Instance.getWidth();
 		final Paint paint = PageConfig.pagePaintFromConfig(false);
 		char chars[] = new char[1];
@@ -46,17 +44,18 @@ public class Line extends AreaDraw {
 		if (element instanceof ParagraphElement) {
 
 			final ParagraphElement para = (ParagraphElement) element;
-			Log.i("hello", "line file1:" + para.toString());
-			while (linewidth < width && (offset + lenght) < element.getLength()) {
-				chars[0] = para.charAt(offset + lenght);
+			while ((offset + length) < element.getLength()) {
+				chars[0] = para.charAt(offset + length);
 				paint.getTextWidths(chars, 0, 1, widths);
-				linewidth += widths[0];
-				Log.i("hello", "width:" + linewidth + "offset:" + offset
-						+ "lenght" + lenght);
-				lenght++;
+				if ((linewidth + widths[0]) < width) {
+					linewidth += widths[0];
+					length++;
+				} else {
+					break;
+				}
 			}
-			str = new char[lenght];
-			para.copy(str, offset, lenght);
+			str = new char[length];
+			para.copy(str, offset, length);
 		}
 
 		// if the element only had a char '\n',should return

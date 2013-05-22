@@ -13,12 +13,13 @@ import java.util.regex.Pattern;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
+import android.graphics.Paint.FontMetrics;
 
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
 import com.reader.book.Page;
 import com.reader.book.manager.BookContent;
+import com.reader.config.PageConfig;
 
 class StringUtils {
 
@@ -34,11 +35,16 @@ class StringUtils {
 }
 
 public class PageObj extends DrawableObj {
-
+	float baseLineHeight;
+	float fontHeight;
 	private BookContent mBookContent;
 
 	public PageObj(BookContent bookContent, Book book) {
 		mBookContent = bookContent;
+		Paint paint = PageConfig.pagePaintFromConfig(false);
+		FontMetrics metrics = paint.getFontMetrics();
+		baseLineHeight = -metrics.top;
+		fontHeight = metrics.bottom - metrics.top;
 	}
 
 	private Page pageString;
@@ -51,10 +57,8 @@ public class PageObj extends DrawableObj {
 	public void Draw(Canvas canvas, Paint paint) {
 		int y = 0;
 		List<AreaDraw> list = pageString.getAreasDraw();
-		Log.i("hello", "pageobj:");
 		for (AreaDraw strLine : list) {
-			Log.i("hello", "pageobj:");
-			strLine.draw(canvas, 10, y,paint);
+			strLine.draw(canvas, 0, y + baseLineHeight, paint);
 			y += strLine.getHeight();
 		}
 	}

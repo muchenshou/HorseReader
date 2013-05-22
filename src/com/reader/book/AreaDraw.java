@@ -12,7 +12,7 @@ public abstract class AreaDraw {
 	}
 	public Element element;
 	public int offset;
-	public int lenght;
+	public int length;
 	public abstract float getWidth();
 	public abstract float getHeight();
 	public abstract void draw(Canvas canvas, float left, float top,Paint paint);
