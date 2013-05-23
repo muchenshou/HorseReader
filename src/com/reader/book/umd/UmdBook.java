@@ -7,7 +7,8 @@
  * */
 package com.reader.book.umd;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -18,15 +19,17 @@ import com.reader.book.BookBuffer;
 import com.reader.book.CharInfo;
 
 public class UmdBook extends Book {
-	protected UmdParse umdStream;
 	public UmdInfo umdInfo = null;
 	UmdInflate umdinflate;
 	private BookBuffer bookBuffer = new BookBuffer(this);
 
 	public UmdBook(File umd) throws IOException {
 		bookFile = umd;
-		umdInfo = new UmdInfo(umd);
-		umdInfo.parseBook();
+		umdInfo = new UmdInfo();
+
+		UmdParse umdStream = new UmdParse(bookFile, "r");
+		umdInfo = umdStream.parseBook();
+		umdStream.close();
 		umdinflate = new UmdInflate();
 	}
 
@@ -120,20 +123,7 @@ public class UmdBook extends Book {
 		if (index == blockIndex) {
 			return blockDataBuffer;
 		}
-		byte bytes[] = null;
-		try {
-			umdStream = new UmdParse(this.bookFile, "r");
-			UmdInfo.Block b = this.umdInfo.getBlock(index);
-			this.umdStream.seek(b.filePointer);
-			bytes = new byte[b.blockSize];
-			umdStream.read(bytes);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			umdStream.close();
-			umdStream = null;
-		}
+		byte bytes[] = umdInfo.getBlockData(bookFile, index);
 		blockDataBuffer = bytes;
 		blockIndex = index;
 		return bytes;
@@ -161,22 +151,22 @@ public class UmdBook extends Book {
 	@Override
 	public void openBook() {
 
-		try {
-			this.umdStream = new UmdParse(this.bookFile, "r");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// this.umdStream = new UmdParse(this.bookFile, "r");
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 	}
 
 	@Override
 	public void closeBook() {
-		if (umdStream != null) {
-			try {
-				umdStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		// if (umdStream != null) {
+		// try {
+		// umdStream.close();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+		// }
 	}
 
 	@Override
