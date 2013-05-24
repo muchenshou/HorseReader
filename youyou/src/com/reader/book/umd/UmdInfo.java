@@ -10,7 +10,9 @@ package com.reader.book.umd;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Locale;
 
 import android.util.SparseArray;
 
@@ -108,6 +110,14 @@ public class UmdInfo {
 		return buffer.toString();
 	}
 
+	public Iterator<Chapter> chapterIter() {
+		return chapterList.iterator();
+	}
+
+	public Iterator<Block> blockIter() {
+		return blockList.iterator();
+	}
+
 	public class Block {
 		protected int blockNo;
 		protected long filePointer;
@@ -163,5 +173,17 @@ public class UmdInfo {
 		public void setChapterStartLocal(long startLocalOfChapter) {
 			chapterStartLocal = startLocalOfChapter;
 		}
+
+		@Override
+		public int hashCode() {
+			return chapterNo;
+		}
+
+		@Override
+		public String toString() {
+			return String.format("NO.:%d %s:size:%d,location:%d", chapterNo,
+					chapterName, chapterSize, chapterStartLocal);
+		}
+
 	}
 }
