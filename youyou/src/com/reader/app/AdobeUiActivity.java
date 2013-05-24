@@ -14,7 +14,6 @@ import com.reader.fragment.About;
 import com.reader.fragment.HistoryListFragment;
 import com.reader.fragment.LocalFileListFragment;
 import com.reader.fragment.NetWorkListFragment;
-import com.reader.app.R;
 
 public class AdobeUiActivity extends SherlockFragmentActivity {
 	ActionBar actionBar;

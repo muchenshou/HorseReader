@@ -9,8 +9,6 @@ package com.reader.app;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;

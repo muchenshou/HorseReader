@@ -2,8 +2,6 @@ package com.reader.book;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
-
 import com.reader.book.bookview.BookView;
 import com.reader.book.manager.BookPosition;
 import com.reader.book.model.Element;

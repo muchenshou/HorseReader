@@ -40,6 +40,7 @@ public class UmdParse {
 	protected int bookNumChapters;
 	private UmdInfo umdinfo;
 	private RandomAccessFile mReadFile;
+
 	public UmdParse(File file, String per) throws FileNotFoundException {
 		mReadFile = new RandomAccessFile(file, per);
 	}
@@ -103,8 +104,8 @@ public class UmdParse {
 			while (partition == (byte) '$') {
 				mReadFile.skipBytes(4);
 				num = getInt();
-				umdinfo.blockList.add(umdinfo.new Block(mReadFile.getFilePointer(),
-						num - 9));
+				umdinfo.blockList.add(umdinfo.new Block(mReadFile
+						.getFilePointer(), num - 9));
 
 				mReadFile.skipBytes(num - 9);
 
@@ -230,6 +231,104 @@ public class UmdParse {
 		for (int i = 0; i < size; i++) {
 			Chapter cha = umdinfo.chapterList.get(i);
 			cha.setChapterNo(i);
+		}
+		return umdinfo;
+	}
+
+	public UmdInfo parseBookBetter() throws Exception {
+		UmdInfo umdinfo = new UmdInfo();
+		int dataType = 0;
+
+		if (mReadFile.readInt() != UmdParse.UMDFLAG) {
+			System.out.println("the book is not umd format!");
+		} else {
+			System.out.println("the book is umd format!");
+		}
+		int pound = getSeperator();
+		while (pound == '#' || pound == '$') {
+			if (pound == '#') {
+
+				System.out.println("entrance!");
+				dataType = getShort();
+
+				System.out.println("this is " + dataType);
+
+				byte[] tmp = getInfo();
+
+				switch (dataType) {
+				case UmdParse.TEXT_OR_IMAGE: {
+					if (UmdParse.ISTEXT == tmp[0]) {
+						System.out.println("this is text!");
+					}
+					break;
+				}
+				case UmdParse.NAME:
+				case UmdParse.AUTHOR:
+				case UmdParse.YEAR:
+				case UmdParse.MONTH:
+				case UmdParse.DAY:
+				case UmdParse.GENDOR:
+				case UmdParse.PUBLISHER:
+				case UmdParse.VENDOR: {
+					BytesTransfer.byteAlign(tmp);
+					umdinfo.bookInfo.put(dataType, new String(tmp, "Unicode"));
+					break;
+				}
+				case UmdParse.SIZE: {
+					umdinfo.bookSize = BytesTransfer.toInt(tmp);
+					break;
+				}
+				case UmdParse.CHAPTERS: {
+					parseChapters();
+					break;
+				}
+				case UmdParse.CHAPTERTITLES: {
+					parseChaptersTitle();
+					break;
+				}
+				}
+				pound = mReadFile.readByte();
+
+			} else if (pound == '$') {
+				if (dataType == CHAPTERS) {
+					int num;
+					mReadFile.skipBytes(4);
+					num = getInt();
+					bookNumChapters = (num - 9) / 4;
+					System.out.println("parseing: the number of the book "
+							+ bookNumChapters);
+					int chapters;
+					for (int i = 0; i < bookNumChapters; i++) {
+						chapters = getInt();
+						// System.out.println("the offset is " + i + "chapter"
+						// + chapters);
+						Chapter cha = umdinfo.new Chapter();
+						cha.setChapterStartLocal(chapters);
+						umdinfo.chapterList.add(cha);
+					}
+				} else if (dataType == CHAPTERTITLES) {
+					mReadFile.skipBytes(4);
+					getInt();
+					// System.out.println("parseing: the length of the title " +
+					// (num));
+					for (int i = 0; i < bookNumChapters; i++) {
+						byte count = mReadFile.readByte();
+						byte[] title = new byte[count];
+						mReadFile.read(title);
+						BytesTransfer.byteAlign(title);
+
+						String str = new String(title, "Unicode");
+						Chapter cha = umdinfo.chapterList.get(i);
+						cha.setChapterName(str);
+						// System.out.println("the " + i + " chapter title is "
+						// +
+						// str);
+					}
+					parseChapterContent();
+				}
+			} else {
+				throw new RuntimeException("failed to parse umd");
+			}
 		}
 		return umdinfo;
 	}

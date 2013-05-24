@@ -24,9 +24,9 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.reader.app.R;
 import com.reader.app.ReadingActivity;
 import com.reader.command.CommandFactory;
-import com.reader.app.R;
 
 public class ReadingMenu implements OnItemClickListener {
 	PopupWindow menuDialog;// menu²Ëµ¥Dialog

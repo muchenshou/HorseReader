@@ -1,10 +1,10 @@
 package com.reader.preference;
 
-import com.reader.app.ReadingActivity;
-import com.reader.app.R;
-
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+
+import com.reader.app.R;
+import com.reader.app.ReadingActivity;
 
 public class ReadingSetting extends PreferenceActivity {
 

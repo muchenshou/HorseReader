@@ -1,7 +1,5 @@
 package com.reader.book.model;
 
-import android.util.Log;
-
 import com.reader.book.Book;
 import com.reader.book.CharInfo;
 

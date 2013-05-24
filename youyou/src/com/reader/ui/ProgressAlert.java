@@ -7,16 +7,16 @@
  * */
 package com.reader.ui;
 
-import com.reader.app.ReadingActivity;
-import com.reader.app.R;
-import com.reader.config.PageConfig;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
-import android.view.ViewGroup.LayoutParams;
+
+import com.reader.app.R;
+import com.reader.app.ReadingActivity;
+import com.reader.config.PageConfig;
 
 public class ProgressAlert extends PopupWindow implements
 		SeekBar.OnSeekBarChangeListener {

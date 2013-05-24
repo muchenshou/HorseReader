@@ -9,7 +9,6 @@ package com.reader.app;
 
 import java.io.File;
 import java.util.List;
-import com.reader.app.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
