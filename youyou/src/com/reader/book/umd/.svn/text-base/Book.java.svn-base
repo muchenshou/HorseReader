@@ -1,0 +1,10 @@
+package com.song.umd;
+
+import java.io.IOException;
+
+public interface Book {
+	public void openBook();
+	public void closeBook();
+	public void excuteCmd(int cmd);
+	public byte[] getContent(int filePointer, int l) throws IOException;
+}
