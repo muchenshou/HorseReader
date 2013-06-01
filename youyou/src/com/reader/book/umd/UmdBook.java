@@ -11,12 +11,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.concurrent.BlockingQueue;
 
 import com.jcraft.jzlib.Inflater;
 import com.jcraft.jzlib.JZlib;
 import com.reader.book.Book;
 import com.reader.book.BookBuffer;
 import com.reader.book.CharInfo;
+import com.reader.book.model.Element;
 
 public class UmdBook extends Book {
 	public UmdInfo umdInfo = null;
@@ -277,5 +279,11 @@ public class UmdBook extends Book {
 				System.exit(1);
 			}
 		}
+	}
+
+	@Override
+	public void pushIntoList(BlockingQueue<Element> elements) {
+		// TODO Auto-generated method stub
+		
 	}
 }

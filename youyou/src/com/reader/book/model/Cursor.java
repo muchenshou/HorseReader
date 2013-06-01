@@ -38,4 +38,7 @@ public class Cursor {
 		this.mRealFileLast = -1;
 	}
 
+	public int getLength() {
+		return mRealFileLast - mRealFileStart + 1;
+	}
 }

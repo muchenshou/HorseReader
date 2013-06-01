@@ -1,12 +1,15 @@
 package com.reader.book.model;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import android.util.SparseArray;
 
 import com.reader.book.Book;
 
 public class BookModel {
 	Book mBook;
-	SparseArray<Element> mElements = new SparseArray<Element>();
+	BlockingQueue<Element> mElements = new LinkedBlockingQueue<Element>();
 
 	public BookModel(Book book) {
 		mBook = book;

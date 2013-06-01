@@ -19,10 +19,15 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+
+import android.util.Log;
 
 import com.reader.book.Book;
 import com.reader.book.BookBuffer;
 import com.reader.book.CharInfo;
+import com.reader.book.model.Element;
+import com.reader.book.model.ParagraphElement;
 
 public class TextBook extends Book {
 	private RandomAccessFile mFile;
@@ -192,6 +197,47 @@ public class TextBook extends Book {
 		if (this.bookBuffer.getByte(start - 1) >= 0)
 			return getChar(start - 1);
 		return getChar(start - 3);
+	}
+	
+	public void pushIntoList(BlockingQueue<Element> elements) {
+		try {
+			InputStream input = new BufferedInputStream(new FileInputStream(this.bookFile));
+//			Charset charset = Charset.forName("gbk");
+			Element element = new ParagraphElement(this);
+			int read = 0;
+			long size = bookFile.length();
+			int ch = 0;
+			
+			element.getElementCursor().setRealFileStart(read);
+			while ((ch = input.read()) !=-1) {
+				read++;
+				if (ch != 13 ) {
+					if (element == null) {
+						element = new ParagraphElement(this);
+						element.getElementCursor().setRealFileStart(read - 1);
+					}
+					continue;
+				}
+				if (element != null) {
+					element.getElementCursor().setRealFileLast(read - 2);
+					elements.add(element);
+				}
+				element = null;
+				ch = input.read(); // ch should be equal to 10 here
+				read++;
+				
+			}
+			if (element != null) {
+				element.getElementCursor().setRealFileLast((int)size - 1);
+				elements.add(element);
+			}
+			input.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public Map<Integer,CharInfo> loadContent() {

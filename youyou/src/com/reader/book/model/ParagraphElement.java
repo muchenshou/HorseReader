@@ -1,7 +1,18 @@
 package com.reader.book.model;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.util.Log;
+
 import com.reader.book.Book;
-import com.reader.book.CharInfo;
 
 public class ParagraphElement extends Element {
 	char content[];
@@ -23,20 +34,37 @@ public class ParagraphElement extends Element {
 	}
 	@Override
 	public void fill() {
-		CharInfo ch = mBook.getChar(mElementCursor.getRealFileStart());
-		if (ch.character == '\n') {
-			type = TYPE.NEWLINE;
+		try {
+			BufferedInputStream input = new BufferedInputStream(new FileInputStream(mBook.bookFile));
+			Charset charset = Charset.forName("gbk");
+			byte bytes[] = new byte[this.getElementCursor().getLength()];
+			List<Character> chars = new ArrayList<Character>();
+			byte word[] = new byte[2];
+			input.skip(this.getElementCursor().mRealFileStart);
+			input.read(bytes);
+			int ch;
+			for(int i=0; i<bytes.length; i++) {
+				ch = bytes[i];
+				if (ch >= 0) {
+					chars.add((char) ch);
+					continue;
+				}
+				word[0] = (byte)ch;
+				word[1] = (byte)bytes[++i];
+				chars.add(charset.decode(ByteBuffer.wrap(word)).charAt(0));
+			}
+				
+			
+			this.content = new char[chars.size()];
+			for (int i=0; i<chars.size(); i++) {
+				content[i] = chars.get(i);
+			}
+			input.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		StringBuffer buf = new StringBuffer();
-		while (ch.character != '\n') {
-			buf.append(ch.character);
-			ch = mBook.getChar(ch.position + ch.length);
-		}
-		// buf.append(ch.character);
-		content = new char[buf.length()];
-		buf.getChars(0, buf.length(), content, 0);
-		mElementCursor.setRealFileLast(ch.position + ch.length - 1);
-
 	}
 
 	public char charAt(int index) {

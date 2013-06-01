@@ -9,13 +9,15 @@ package com.reader.book;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.concurrent.BlockingQueue;
 
 import com.reader.book.manager.BookPosition;
+import com.reader.book.model.Element;
 
 public abstract class Book {
 	protected boolean EOFBOOK = false;
 	public BookPosition openOffset;
-	protected File bookFile;
+	public File bookFile;
 
 	public abstract void openBook();
 
@@ -24,6 +26,8 @@ public abstract class Book {
 	public abstract void excuteCmd(int cmd);
 
 	public abstract int getContent(int start, ByteBuffer buffer);
+	
+	public abstract void pushIntoList(BlockingQueue<Element> elements);
 
 	public abstract int size();
 
