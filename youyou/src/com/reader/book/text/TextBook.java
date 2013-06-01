@@ -7,12 +7,18 @@
  * */
 package com.reader.book.text;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.reader.book.Book;
 import com.reader.book.BookBuffer;
@@ -31,27 +37,6 @@ public class TextBook extends Book {
 	}
 
 	private int getTextCode() {
-		ByteBuffer bb = ByteBuffer.allocate(400);
-		bb.clear();
-		this.getContent(0, bb);
-		bb.flip();
-		int utf = 0;
-		for (int i = 0; i < bb.limit() && i < 400; i++) {
-			byte b = bb.get(i);
-			if ((b & 0xff) >= 0xe4 && (b & 0xff) <= 0xe8) {
-				b = bb.get(i + 1);
-				if ((b & 0xff) >= 0x80 && (b & 0xff) <= 0xbf) {
-					b = bb.get(i + 2);
-					if ((b & 0xff) >= 0x80 && (b & 0xff) <= 0xbf) {
-						utf++;
-						if (utf > 3)
-							return UTF8;
-					} else {
-						utf = 0;
-					}
-				}
-			}
-		}
 		return GBK;
 	}
 
@@ -208,7 +193,45 @@ public class TextBook extends Book {
 			return getChar(start - 1);
 		return getChar(start - 3);
 	}
-
+	
+	public Map<Integer,CharInfo> loadContent() {
+		try {
+			InputStream input = new BufferedInputStream(new FileInputStream(this.bookFile));
+			Map<Integer, CharInfo> elements = new HashMap<Integer, CharInfo>();
+			final long size = bookFile.length();
+			long read = 0;
+			byte bytes[] = new byte[2];
+			Charset charset = Charset.forName("gbk");
+			
+			while (read < size) {
+				CharInfo charinfo = new CharInfo();
+				int ch = input.read();
+				read++;
+				if (ch <= 127) {
+					charinfo.length = 1;
+					charinfo.character = (char) ch;
+					charinfo.position = (int) read - 1;
+					elements.put(charinfo.position, charinfo);
+					continue;
+				}
+				bytes[0] = (byte)ch;
+				bytes[1] = (byte)input.read();
+				read++;
+				charinfo.length = 2;
+				charinfo.character = charset.decode(ByteBuffer.wrap(bytes)).charAt(0);
+				charinfo.position = (int) read - 1;
+				elements.put(charinfo.position, charinfo);
+			}
+			input.close();
+			return elements;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	@Override
 	public boolean isEof() {
 		return EOFBOOK;

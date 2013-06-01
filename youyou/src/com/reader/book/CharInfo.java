@@ -11,4 +11,9 @@ public class CharInfo {
 	public char character;
 	public int position;
 	public int length;
+	@Override
+	public int hashCode() {
+		return position;
+	}
+	
 }
