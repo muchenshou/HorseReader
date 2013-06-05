@@ -9,6 +9,7 @@ package com.reader.book.umd;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,6 +22,7 @@ import com.reader.book.Book;
 import com.reader.book.BookBuffer;
 import com.reader.book.CharInfo;
 import com.reader.book.model.Element;
+import com.reader.book.umd.UmdInfo.Block;
 
 public class UmdBook extends Book {
 	public UmdInfo umdInfo = null;
@@ -126,29 +128,25 @@ public class UmdBook extends Book {
 		if (index == blockIndex) {
 			return blockDataBuffer;
 		}
-		byte bytes[] = umdInfo.getBlockData(bookFile, index);
+		byte bytes[] = getBlockData(bookFile, index);
 		blockDataBuffer = bytes;
 		blockIndex = index;
 		return bytes;
 	}
-
-	public class Block {
-		protected int blockNo;
-		protected long filePointer;
-		protected int blockSize;
-
-		public Block(long filepointer, int size) {
-			filePointer = filepointer;
-			blockSize = size;
+	public byte[] getBlockData(File umdFile, int index) throws IOException {
+		byte bytes[] = null;
+		FileInputStream umdStream = new FileInputStream(umdFile);
+		try {
+			Block b = umdInfo.getBlock(index);
+			umdStream.skip(b.filePointer);
+			bytes = new byte[b.blockSize];
+			umdStream.read(bytes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			umdStream.close();
 		}
-
-		public void setBlockNo(int num) {
-			blockNo = num;
-		}
-
-		public long getPointer() {
-			return filePointer;
-		}
+		return bytes;
 	}
 
 	@Override

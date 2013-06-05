@@ -82,22 +82,6 @@ public class UmdInfo {
 		return null;
 	}
 
-	public byte[] getBlockData(File umdFile, int index) throws IOException {
-		byte bytes[] = null;
-		FileInputStream umdStream = new FileInputStream(umdFile);
-		try {
-			Block b = blockList.get(index);
-			umdStream.skip(b.filePointer);
-			bytes = new byte[b.blockSize];
-			umdStream.read(bytes);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			umdStream.close();
-		}
-		return bytes;
-	}
-
 	public long getBlockPointer(int i) {
 		return this.blockList.get(i).getPointer();
 	}
