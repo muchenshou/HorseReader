@@ -42,11 +42,12 @@ public class UmdParseTest extends AndroidTestCase {
 					.getExternalStorageDirectory().getPath()
 					+ "/newmbook/微信 简单之美.umd"));
 			 ByteBuffer buf =
-			ByteBuffer.wrap(umd.umdinflate.getContentBlock_depracation(0, 0, 1000));
+			ByteBuffer.wrap(umd.umdinflate.getContentBlock(0, 10000, 500));
 
 			//ByteBuffer buf = ByteBuffer.allocate(65520);
-			umd.getContent(0, buf);
-			buf.flip();
+			//umd.getContent(0, buf);
+			//buf.flip();
+			 buf.order(ByteOrder.LITTLE_ENDIAN);
 			StringBuffer sb = new StringBuffer();
 			while (buf.position() < buf.limit()-1) {
 				sb.append(buf.getChar());

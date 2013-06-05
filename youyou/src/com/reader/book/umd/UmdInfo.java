@@ -119,6 +119,13 @@ public class UmdInfo {
 		public long getPointer() {
 			return filePointer;
 		}
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return String.format("blocknum:%d,blocksize:%d,filepointer:%d", blockNo, blockSize,filePointer);
+		}
+		
 	}
 
 	public class Chapter {

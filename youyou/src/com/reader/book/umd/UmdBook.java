@@ -7,14 +7,17 @@
  * */
 package com.reader.book.umd;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.BlockingQueue;
+import java.util.zip.DataFormatException;
 import java.util.zip.InflaterInputStream;
+
+import android.util.Log;
 
 import com.jcraft.jzlib.Inflater;
 import com.jcraft.jzlib.JZlib;
@@ -133,6 +136,7 @@ public class UmdBook extends Book {
 		blockIndex = index;
 		return bytes;
 	}
+
 	public byte[] getBlockData(File umdFile, int index) throws IOException {
 		byte bytes[] = null;
 		FileInputStream umdStream = new FileInputStream(umdFile);
@@ -140,6 +144,7 @@ public class UmdBook extends Book {
 			Block b = umdInfo.getBlock(index);
 			umdStream.skip(b.filePointer);
 			bytes = new byte[b.blockSize];
+			Log.i("hello", b.toString());
 			umdStream.read(bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -203,16 +208,23 @@ public class UmdBook extends Book {
 	public class UmdInflate {
 		public byte[] getContentBlock(int index, int start, int length)
 				throws IOException {
-			byte[] content = new byte[length];
 			byte[] in = getBlockData(index);
+			ByteArrayOutputStream arrayinput = new ByteArrayOutputStream(65535);
+			final byte[] buf = new byte[1024];
+			int count;
+			java.util.zip.Inflater inflater = new java.util.zip.Inflater();
 
-			ByteArrayInputStream arrayinput = new ByteArrayInputStream(in);
-			InflaterInputStream inflater_in = new InflaterInputStream(
-					arrayinput);
-
-			inflater_in.skip(start);
-			inflater_in.read(content);
-			return content;
+			inflater.setInput(in);
+			while (!inflater.finished()) {
+				try {
+					count = inflater.inflate(buf);
+					arrayinput.write(buf, 0, count);
+				} catch (DataFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return arrayinput.toByteArray();
 		}
 
 		@SuppressWarnings("deprecation")
