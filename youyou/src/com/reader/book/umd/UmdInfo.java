@@ -135,7 +135,7 @@ public class UmdInfo {
 					e.printStackTrace();
 				}
 			}
-			return bytes;
+			return content.get();
 		}
 
 		private byte[] getBlockData(File umdFile) throws IOException {
@@ -144,7 +144,6 @@ public class UmdInfo {
 			try {
 				umdStream.skip(filePointer);
 				bytes = new byte[blockSize];
-				Log.i("hello", toString());
 				umdStream.read(bytes);
 			} catch (IOException e) {
 				e.printStackTrace();

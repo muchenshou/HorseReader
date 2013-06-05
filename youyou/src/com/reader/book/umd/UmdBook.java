@@ -7,38 +7,32 @@
  * */
 package com.reader.book.umd;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.BlockingQueue;
-import java.util.zip.DataFormatException;
-import java.util.zip.InflaterInputStream;
 
 import android.util.Log;
 
-import com.jcraft.jzlib.Inflater;
-import com.jcraft.jzlib.JZlib;
 import com.reader.book.Book;
 import com.reader.book.BookBuffer;
 import com.reader.book.CharInfo;
 import com.reader.book.model.Element;
-import com.reader.book.umd.UmdInfo.Block;
+import com.reader.book.model.ParagraphElement;
+import com.reader.book.model.UmdParagraphElement;
 
 public class UmdBook extends Book {
 	public UmdInfo umdInfo = null;
-	//public UmdInflate umdinflate;
 	private BookBuffer bookBuffer = new BookBuffer(this);
 
 	public UmdBook(File umd) throws IOException {
 		bookFile = umd;
-		umdInfo = new UmdInfo(this);
-
-		UmdParse umdStream = new UmdParse(bookFile, "r");
+		UmdParse umdStream = new UmdParse(this, "r");
 		umdInfo = umdStream.parseBook();
-		//umdinflate = new UmdInflate();
 	}
 
 	public File getFile() {
@@ -58,13 +52,11 @@ public class UmdBook extends Book {
 			if (this.getPointerInWhichBlock(start) == this
 					.getPointerInWhichBlock(start + length - 1)) {
 
-				content = getContentBlock(
-						this.getPointerInWhichBlock(start),
+				content = getContentBlock(this.getPointerInWhichBlock(start),
 						this.getPointerInBlockLocal(start), length);
 				contentBuffer.put(content);
 			} else {
-				content = getContentBlock(
-						this.getPointerInWhichBlock(start),
+				content = getContentBlock(this.getPointerInWhichBlock(start),
 						this.getPointerInBlockLocal(start), UmdParse.BLOCKSIZE
 								- this.getPointerInBlockLocal(start));
 				if (content == null) {
@@ -100,50 +92,24 @@ public class UmdBook extends Book {
 		return contentBuffer.limit();
 	}
 
-	private byte[] getContentBlock(int index, int start, int length) throws IOException{
-		byte []content = umdInfo.getBlock(index).content();
-		byte []data = new byte[length];
+	public byte[] getContentBlock(int index, int start, int length)
+			throws IOException {
+		byte[] content = umdInfo.getBlock(index).content();
+		ByteBuffer buf = ByteBuffer.wrap(content);
+		byte[] data = new byte[length];
+
+		buf.order(ByteOrder.LITTLE_ENDIAN);
 		System.arraycopy(content, start, data, 0, length);
 		return data;
 	}
 
-	public int getPointerInWhichBlock(int pointer) {
+	private int getPointerInWhichBlock(int pointer) {
 		return pointer / (UmdParse.BLOCKSIZE);
 	}
 
-	public int getPointerInBlockLocal(int pointer) {
+	private int getPointerInBlockLocal(int pointer) {
 		return pointer % (UmdParse.BLOCKSIZE);
 	}
-
-	public int getChapterLocal(int num) {
-		if (num < 0)
-			return -1;
-		return (int) this.umdInfo.chapterList.get(num).chapterStartLocal;
-	}
-
-	public int localIsInWhichChapter(int local) {
-		int chapterNum = 0;
-		for (; chapterNum < umdInfo.chapterList.size(); chapterNum++) {
-			if (local < umdInfo.chapterList.get(chapterNum).chapterStartLocal) {
-				return chapterNum--;
-			}
-		}
-		return -1;
-	}
-
-	public int blockIndex = -1;
-	public byte[] blockDataBuffer = null;
-
-	public byte[] getBlockData(int index) throws IOException {
-		if (index == blockIndex) {
-			return blockDataBuffer;
-		}
-		byte bytes[] = umdInfo.getBlock(index).content();
-		blockDataBuffer = bytes;
-		blockIndex = index;
-		return bytes;
-	}
-
 
 	@Override
 	public void openBook() {
@@ -191,84 +157,64 @@ public class UmdBook extends Book {
 		return charinfo;
 	}
 
-	@Override
 	public CharInfo getPreChar(int start) {
 		return getChar(start - 2);
 	}
 
-	public class UmdInflate {
-		public byte[] getContentBlock(int index, int start, int length)
-				throws IOException {
-			byte[] in = getBlockData(index);
-			ByteArrayOutputStream arrayinput = new ByteArrayOutputStream(65535);
-			final byte[] buf = new byte[1024];
-			int count;
-			java.util.zip.Inflater inflater = new java.util.zip.Inflater();
+	@Override
+	public void pushIntoList(BlockingQueue<Element> elements) {
 
-			inflater.setInput(in);
-			while (!inflater.finished()) {
-				try {
-					count = inflater.inflate(buf);
-					arrayinput.write(buf, 0, count);
-				} catch (DataFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		try {
+			InputStream input = new BufferedInputStream(new UmdInputStream());
+//			Charset charset = Charset.forName("gbk");
+			Element element = new UmdParagraphElement(this);
+			int read = 0;
+			long size = bookFile.length();
+			int ch = 0;
+			
+			element.getElementCursor().setRealFileStart(read);
+			while ((ch = input.read()) !=-1) {
+				read++;
+				if (ch != 0x29 ) {
+					if (element == null) {
+						element = new UmdParagraphElement(this);
+						element.getElementCursor().setRealFileStart(read - 1);
+					}
+					continue;
 				}
-			}
-			return arrayinput.toByteArray();
-		}
-
-		@SuppressWarnings("deprecation")
-		public byte[] getContentBlock_depracation(int index, int start,
-				int length) throws IOException {
-			byte[] content = null;
-
-			int err;
-			content = new byte[length];
-			byte[] in = getBlockData(index);
-			Inflater inflater = new Inflater();
-
-			inflater.setInput(in);
-			inflater.setOutput(content);
-
-			while (inflater.total_in < in.length) {
-				inflater.avail_in = inflater.avail_out = 1; /*
-															 * force small
-															 * buffers
-															 */
-				if (inflater.total_out <= start) {
-					inflater.next_out_index = 0;
+				if (element != null) {
+					element.getElementCursor().setRealFileLast(read - 2);
+					elements.add(element);
 				}
-				if (inflater.total_out > start + length - 1)
-					break;
-				err = inflater.inflate(JZlib.Z_NO_FLUSH);
-				if (err == JZlib.Z_STREAM_END) {
-					System.out.println("z-stream-end");
-					break;
-				}
-				CHECK_ERR(inflater, err, "inflate2");
+				element = null;
+				ch = input.read(); // ch should be equal to 0x29 here
+				read++;
+				
 			}
-
-			err = inflater.end();
-			CHECK_ERR(inflater, err, "inflateEnd");
-
-			return content;
-		}
-
-		void CHECK_ERR(Inflater z, int err, String msg) {
-			if (err != JZlib.Z_OK) {
-				if (z.msg != null)
-					System.out.print(z.msg + " ");
-				System.out.println(msg + " error: " + err);
-
-				System.exit(1);
+			if (element != null) {
+				element.getElementCursor().setRealFileLast((int)size - 1);
+				elements.add(element);
 			}
+			input.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public void pushIntoList(BlockingQueue<Element> elements) {
-		// TODO Auto-generated method stub
+	public class UmdInputStream extends InputStream {
+		int mCursor = 0;
+
+		@Override
+		public int read() throws IOException {
+			int index = mCursor / UmdParse.BLOCKSIZE;
+			if (index >= umdInfo.blockList.size())
+				return -1;
+			byte[] content = umdInfo.getBlock(index).content();
+			return content[mCursor++ % UmdParse.BLOCKSIZE] & 0x000000ff;
+		}
 
 	}
 }

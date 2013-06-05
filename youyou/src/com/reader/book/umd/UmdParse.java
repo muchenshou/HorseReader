@@ -7,7 +7,6 @@
  * */
 package com.reader.book.umd;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -42,9 +41,10 @@ public class UmdParse {
 	protected int bookNumChapters;
 	private UmdInfo umdinfo;
 	private RandomAccessFile mReadFile;
-
-	public UmdParse(File file, String per) throws FileNotFoundException {
-		mReadFile = new RandomAccessFile(file, per);
+	private UmdBook book;
+	public UmdParse(UmdBook book, String per) throws FileNotFoundException {
+		this.book = book;
+		mReadFile = new RandomAccessFile(book.bookFile, per);
 	}
 
 	private int getInt() throws IOException {
@@ -167,7 +167,7 @@ public class UmdParse {
 	}
 
 	public UmdInfo parseBook() throws IOException {
-		umdinfo = new UmdInfo();
+		umdinfo = new UmdInfo(book);
 		int parsingType = 0;
 		if (mReadFile.readInt() != UmdParse.UMDFLAG) {
 			System.out.println("the book is not umd format!");
