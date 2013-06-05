@@ -7,13 +7,17 @@
  * */
 package com.reader.book.umd;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.zip.DataFormatException;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 public class UmdInfo {
@@ -23,9 +27,9 @@ public class UmdInfo {
 	protected LinkedList<Block> blockList;
 	protected LinkedList<Chapter> chapterList;
 	protected SparseArray<String> bookInfo;
-
-	public UmdInfo() {
-
+	protected UmdBook book;
+	public UmdInfo(UmdBook book) {
+		this.book = book;
 		blockList = new LinkedList<Block>();
 
 		chapterList = new LinkedList<Chapter>();
@@ -106,6 +110,7 @@ public class UmdInfo {
 		protected int blockNo;
 		protected long filePointer;
 		protected int blockSize;
+		private WeakReference<byte[]> content;
 
 		public Block(long filepointer, int size) {
 			filePointer = filepointer;
@@ -120,12 +125,60 @@ public class UmdInfo {
 			return filePointer;
 		}
 
+		public byte[] content() {
+			byte []bytes = null;
+			if (content == null || content.get() == null) {
+				try {
+					bytes = getBlockData(book.getFile());
+					content = new WeakReference<byte[]>(getContentBlock(bytes));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			return bytes;
+		}
+
+		private byte[] getBlockData(File umdFile) throws IOException {
+			byte bytes[] = null;
+			FileInputStream umdStream = new FileInputStream(umdFile);
+			try {
+				umdStream.skip(filePointer);
+				bytes = new byte[blockSize];
+				Log.i("hello", toString());
+				umdStream.read(bytes);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				umdStream.close();
+			}
+			return bytes;
+		}
+		// decompress
+		public byte[] getContentBlock(byte[] in)
+				throws IOException {
+			ByteArrayOutputStream arrayinput = new ByteArrayOutputStream(65535);
+			final byte[] buf = new byte[1024];
+			int count;
+			java.util.zip.Inflater inflater = new java.util.zip.Inflater();
+
+			inflater.setInput(in);
+			while (!inflater.finished()) {
+				try {
+					count = inflater.inflate(buf);
+					arrayinput.write(buf, 0, count);
+				} catch (DataFormatException e) {
+					e.printStackTrace();
+				}
+			}
+			return arrayinput.toByteArray();
+		}
 		@Override
 		public String toString() {
 			// TODO Auto-generated method stub
-			return String.format("blocknum:%d,blocksize:%d,filepointer:%d", blockNo, blockSize,filePointer);
+			return String.format("blocknum:%d,blocksize:%d,filepointer:%d",
+					blockNo, blockSize, filePointer);
 		}
-		
+
 	}
 
 	public class Chapter {

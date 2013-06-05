@@ -29,16 +29,16 @@ import com.reader.book.umd.UmdInfo.Block;
 
 public class UmdBook extends Book {
 	public UmdInfo umdInfo = null;
-	public UmdInflate umdinflate;
+	//public UmdInflate umdinflate;
 	private BookBuffer bookBuffer = new BookBuffer(this);
 
 	public UmdBook(File umd) throws IOException {
 		bookFile = umd;
-		umdInfo = new UmdInfo();
+		umdInfo = new UmdInfo(this);
 
 		UmdParse umdStream = new UmdParse(bookFile, "r");
 		umdInfo = umdStream.parseBook();
-		umdinflate = new UmdInflate();
+		//umdinflate = new UmdInflate();
 	}
 
 	public File getFile() {
@@ -58,12 +58,12 @@ public class UmdBook extends Book {
 			if (this.getPointerInWhichBlock(start) == this
 					.getPointerInWhichBlock(start + length - 1)) {
 
-				content = umdinflate.getContentBlock(
+				content = getContentBlock(
 						this.getPointerInWhichBlock(start),
 						this.getPointerInBlockLocal(start), length);
 				contentBuffer.put(content);
 			} else {
-				content = umdinflate.getContentBlock(
+				content = getContentBlock(
 						this.getPointerInWhichBlock(start),
 						this.getPointerInBlockLocal(start), UmdParse.BLOCKSIZE
 								- this.getPointerInBlockLocal(start));
@@ -76,12 +76,12 @@ public class UmdBook extends Book {
 				contentBuffer.put(content);
 				for (int i = this.getPointerInWhichBlock(start) + 1; i < this
 						.getPointerInWhichBlock(start + length - 1); i++) {
-					content = umdinflate.getContentBlock(
+					content = getContentBlock(
 							this.getPointerInWhichBlock(start), 0,
 							UmdParse.BLOCKSIZE);
 					contentBuffer.put(content);
 				}
-				content = umdinflate.getContentBlock(
+				content = getContentBlock(
 						this.getPointerInWhichBlock(start + length - 1),
 						0,
 						UmdParse.BLOCKSIZE
@@ -98,6 +98,13 @@ public class UmdBook extends Book {
 		ByteOrder order = ByteOrder.LITTLE_ENDIAN;
 		contentBuffer.order(order);
 		return contentBuffer.limit();
+	}
+
+	private byte[] getContentBlock(int index, int start, int length) throws IOException{
+		byte []content = umdInfo.getBlock(index).content();
+		byte []data = new byte[length];
+		System.arraycopy(content, start, data, 0, length);
+		return data;
 	}
 
 	public int getPointerInWhichBlock(int pointer) {
@@ -131,28 +138,12 @@ public class UmdBook extends Book {
 		if (index == blockIndex) {
 			return blockDataBuffer;
 		}
-		byte bytes[] = getBlockData(bookFile, index);
+		byte bytes[] = umdInfo.getBlock(index).content();
 		blockDataBuffer = bytes;
 		blockIndex = index;
 		return bytes;
 	}
 
-	public byte[] getBlockData(File umdFile, int index) throws IOException {
-		byte bytes[] = null;
-		FileInputStream umdStream = new FileInputStream(umdFile);
-		try {
-			Block b = umdInfo.getBlock(index);
-			umdStream.skip(b.filePointer);
-			bytes = new byte[b.blockSize];
-			Log.i("hello", b.toString());
-			umdStream.read(bytes);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			umdStream.close();
-		}
-		return bytes;
-	}
 
 	@Override
 	public void openBook() {
