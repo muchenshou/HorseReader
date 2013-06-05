@@ -7,11 +7,13 @@
  * */
 package com.reader.book.umd;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.BlockingQueue;
+import java.util.zip.InflaterInputStream;
 
 import com.jcraft.jzlib.Inflater;
 import com.jcraft.jzlib.JZlib;
@@ -22,7 +24,7 @@ import com.reader.book.model.Element;
 
 public class UmdBook extends Book {
 	public UmdInfo umdInfo = null;
-	UmdInflate umdinflate;
+	public UmdInflate umdinflate;
 	private BookBuffer bookBuffer = new BookBuffer(this);
 
 	public UmdBook(File umd) throws IOException {
@@ -200,42 +202,24 @@ public class UmdBook extends Book {
 		return getChar(start - 2);
 	}
 
-	@SuppressWarnings("deprecation")
-	class UmdInflate {
-		public byte[] Inflate(byte[] content) {
-			int err;
-			int uncomprLen = 40000;
-			byte[] uncompr;
-			int comprLen = content.length;
-			uncompr = new byte[uncomprLen];
-
-			Inflater inflater = new Inflater();
-
-			inflater.setInput(content);
-			inflater.setOutput(uncompr);
-
-			err = inflater.init();
-			CHECK_ERR(inflater, err, "inflateInit");
-
-			while (inflater.total_out < uncomprLen
-					&& inflater.total_in < comprLen) {
-				inflater.avail_in = inflater.avail_out = 1; /*
-															 * force small
-															 * buffers
-															 */
-				err = inflater.inflate(JZlib.Z_NO_FLUSH);
-				if (err == JZlib.Z_STREAM_END)
-					break;
-				CHECK_ERR(inflater, err, "inflate");
-			}
-
-			err = inflater.end();
-			CHECK_ERR(inflater, err, "inflateEnd");
-			return uncompr;
-		}
-
+	public class UmdInflate {
 		public byte[] getContentBlock(int index, int start, int length)
 				throws IOException {
+			byte[] content = new byte[length];
+			byte[] in = getBlockData(index);
+
+			ByteArrayInputStream arrayinput = new ByteArrayInputStream(in);
+			InflaterInputStream inflater_in = new InflaterInputStream(
+					arrayinput);
+
+			inflater_in.skip(start);
+			inflater_in.read(content);
+			return content;
+		}
+
+		@SuppressWarnings("deprecation")
+		public byte[] getContentBlock_depracation(int index, int start,
+				int length) throws IOException {
 			byte[] content = null;
 
 			int err;
@@ -284,6 +268,6 @@ public class UmdBook extends Book {
 	@Override
 	public void pushIntoList(BlockingQueue<Element> elements) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
