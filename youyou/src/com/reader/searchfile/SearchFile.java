@@ -12,6 +12,10 @@ public abstract class SearchFile {
 	FindOneBehavior mFindOne;
 	FileFilter mFilter = null;
 
+	public SearchFile() {
+
+	}
+
 	public SearchFile(FindOneBehavior findone, String rootdir) {
 		RootDir = rootdir;
 		mFindOne = findone;

@@ -28,7 +28,7 @@ import com.reader.app.ReadingActivity;
 import com.reader.searchfile.FileListAdapter;
 import com.reader.searchfile.SearchFile;
 import com.reader.searchfile.SearchFile.FindOneBehavior;
-import com.reader.searchfile.SearchFileMultiThread;
+import com.reader.searchfile.SearchFileWithMultiThread;
 import com.reader.util.FilenameExtFilter;
 
 public class LocalFileListFragment extends SherlockFragment implements
@@ -107,7 +107,7 @@ public class LocalFileListFragment extends SherlockFragment implements
 			String exts[] = { "txt", "umd" };
 			FileFilter fef = new FilenameExtFilter(exts);
 			mContext = context;
-			mSearchFile = new SearchFileMultiThread(mSearchFileCallBack,
+			mSearchFile = new SearchFileWithMultiThread(mSearchFileCallBack,
 					Environment.getExternalStorageDirectory().getPath());
 			mSearchFile.setFilter(fef);
 		}
