@@ -15,6 +15,8 @@ import android.content.Context;
 import com.reader.book.Book;
 import com.reader.code.text.TextBook;
 import com.reader.code.umd.UmdBook;
+import com.reader.view.BookView;
+import com.reader.view.GLView;
 
 public class BookManager {
 
@@ -26,6 +28,7 @@ public class BookManager {
 	int BUFLEN = 4 * 1024;
 
 	int position = 0;
+	public static GLView Instance;
 
 	public BookManager(Context con, File file) throws IOException {
 		book = BookManager.createBook(file);

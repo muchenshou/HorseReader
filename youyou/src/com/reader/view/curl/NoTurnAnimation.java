@@ -1,4 +1,4 @@
-package com.reader.bookview;
+package com.reader.view.curl;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -65,7 +65,7 @@ public class NoTurnAnimation extends BookViewAnimation {
 	}
 
 	@Override
-	public void setBookView(BookView bookview) {
+	public void setBookView(View bookview) {
 	}
 
 	@Override

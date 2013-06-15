@@ -23,9 +23,9 @@ public class CommandTextsize implements Command {
 	@Override
 	public void excute() {
 		// TODO Auto-generated method stub
-		mTextSizeProress = new ProgressAlert(activity);
-		mTextSizeProress
-				.showAtLocation(activity.bookView, Gravity.CENTER, 0, 0);
+//		mTextSizeProress = new ProgressAlert(activity);
+//		mTextSizeProress
+//				.showAtLocation(activity.bookView, Gravity.CENTER, 0, 0);
 	}
 
 }

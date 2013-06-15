@@ -1,4 +1,6 @@
-package com.reader.bookview;
+package com.reader.view.curl;
+
+import com.reader.view.BookScreenDisplay;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -58,7 +60,7 @@ public class SimpleAnimation extends BookViewAnimation {
 	}
 
 	@Override
-	public void setBookView(BookView bookview) {
+	public void setBookView(View bookview) {
 		mAnimationView = bookview;
 	}
 

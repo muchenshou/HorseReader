@@ -10,7 +10,7 @@ public abstract class MarkupElement {
 	enum TYPE {
 		TEXT, IMAGE, NEWLINE
 	}
-
+	
 	enum STATUS {
 
 	}

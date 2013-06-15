@@ -9,6 +9,7 @@ package com.reader.app;
 
 import java.io.File;
 import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,14 +24,15 @@ import android.widget.Toast;
 
 import com.reader.book.manager.BookManager;
 import com.reader.book.manager.BookPosition;
-import com.reader.bookview.BookView;
-import com.reader.bookview.NoTurnAnimation;
-import com.reader.bookview.SimulateTurnPage;
 import com.reader.preference.ReadingSetting;
 import com.reader.record.BookHistory;
+import com.reader.view.BookView;
+import com.reader.view.GLView;
+import com.reader.view.curl.NoTurnAnimation;
+import com.reader.view.curl.SimulateTurnPage;
 
 public class ReadingActivity extends Activity {
-	public BookView bookView;
+	public GLView bookView;
 	public BookManager bookmanager;
 	private String mBookName;
 
@@ -57,7 +59,7 @@ public class ReadingActivity extends Activity {
 			}
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
-			bookView = new BookView(this, bookmanager.openBook(position));
+			bookView = new GLView(this, bookmanager.openBook(position));
 			bookView.setFocusable(true);
 			this.bookView.setBgBitmap(BitmapFactory.decodeResource(
 					getResources(), R.drawable.bg));

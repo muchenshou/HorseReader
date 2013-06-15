@@ -1,4 +1,4 @@
-package com.reader.bookview;
+package com.reader.view;
 
 import com.reader.book.manager.BookContent;
 

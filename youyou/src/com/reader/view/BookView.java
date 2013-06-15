@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.bookview;
+package com.reader.view;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -16,7 +16,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Paint.FontMetrics;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -24,7 +23,10 @@ import android.view.View;
 
 import com.reader.book.Book;
 import com.reader.book.manager.BookContent;
+import com.reader.book.manager.BookManager;
 import com.reader.config.PageConfig;
+import com.reader.view.curl.BookViewAnimation;
+import com.reader.view.curl.SimpleAnimation;
 
 public class BookView extends View implements View.OnTouchListener {
 	protected int bookSize;
@@ -38,10 +40,9 @@ public class BookView extends View implements View.OnTouchListener {
 	private boolean mInit = false;
 	BookScreenDisplay mBookScreenDisplay;
 	private Paint mPaint;
-	public static BookView Instance;
 	public BookView(Context context, Book book) {
 		super(context);
-		Instance = this;
+		//BookManager.Instance = this;
 		setOnTouchListener(this);
 		this.mBook = book;
 		mPaint = PageConfig.pagePaintFromConfig(false);
@@ -60,11 +61,6 @@ public class BookView extends View implements View.OnTouchListener {
 		return this.mPaint;
 	}
 
-	public static int getTextHeight(Paint paint) {
-		FontMetrics fm = paint.getFontMetrics();//
-		return (int) (Math.ceil(fm.descent - fm.top) + 1);
-	}
-
 	public void setBgBitmap(Bitmap BG) {
 		m_book_bg = BG;
 	}
@@ -75,7 +71,7 @@ public class BookView extends View implements View.OnTouchListener {
 		this.mAnimation.onSizeChange(w, h, oldw, oldh);
 
 		mBookContent.update(w - 20,
-				h - BookView.getTextHeight(PageConfig.getOthersPaint(false))
+				h - PageConfig.getTextHeight(PageConfig.getOthersPaint(false))
 						- 20);
 		//
 		mBookScreenDisplay.init(getWidth(), getHeight());

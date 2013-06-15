@@ -1,4 +1,5 @@
-package com.reader.bookview;
+package com.reader.view.curl;
+
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -13,7 +14,7 @@ public abstract class BookViewAnimation {
 
 	public abstract boolean DragToRight();
 
-	public abstract void setBookView(BookView bookview);
+	public abstract void setBookView(View bookview);
 
 	public abstract boolean onTouch(View v, MotionEvent event);
 

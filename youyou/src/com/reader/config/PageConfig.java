@@ -9,6 +9,7 @@ package com.reader.config;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 
@@ -74,5 +75,10 @@ public class PageConfig {
 
 	public static int getPadding() {
 		return Configs.getInt("padding", 0);
+	}
+
+	public static int getTextHeight(Paint paint) {
+		FontMetrics fm = paint.getFontMetrics();//
+		return (int) (Math.ceil(fm.descent - fm.top) + 1);
 	}
 }

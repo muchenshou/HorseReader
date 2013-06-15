@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.bookview;
+package com.reader.view;
 
 import java.util.List;
 import java.util.regex.Matcher;

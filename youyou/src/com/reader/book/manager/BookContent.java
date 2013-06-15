@@ -16,7 +16,6 @@ import android.util.Log;
 import com.reader.book.Book;
 import com.reader.book.Page;
 import com.reader.book.model.BookModel;
-import com.reader.bookview.BookView;
 import com.reader.config.PageConfig;
 
 public class BookContent {
@@ -36,10 +35,6 @@ public class BookContent {
 		this.mPaint = PageConfig.pagePaintFromConfig(false);
 	}
 
-	public int getLineHeight() {
-		return BookView.getTextHeight(mPaint) + PageConfig.getPadding();
-	}
-
 	public void update(int w, int h) {
 		pageHeight = h;
 		pageWidth = w;
@@ -47,7 +42,8 @@ public class BookContent {
 	}
 
 	public void update() {
-		pageline = (int) (pageHeight / getLineHeight());
+		int lineHeight = PageConfig.getTextHeight(mPaint) + PageConfig.getPadding();
+		pageline = (int) (pageHeight / lineHeight);
 	}
 
 	public Page mCurPage;

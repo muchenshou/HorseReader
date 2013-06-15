@@ -3,7 +3,7 @@
  * 
  * */
 
-package com.reader.bookview;
+package com.reader.view.curl;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,6 +18,8 @@ import android.graphics.Region;
 import android.graphics.drawable.GradientDrawable;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.reader.view.BookScreenDisplay;
 
 public class SimulateTurnPage extends BookViewAnimation {
 
@@ -278,7 +280,8 @@ public class SimulateTurnPage extends BookViewAnimation {
 	}
 
 	/**
-	 * Author : hmg25 Version: 1.0 Description : 锟斤拷锟斤拷锟斤拷影锟斤拷GradientDrawable
+	 * Author : hmg25 Version: 1.0 Description :
+	 * 锟斤拷锟斤拷锟斤拷影锟斤拷GradientDrawable
 	 */
 	private void createDrawable() {
 		int[] color = { 0x333333, 0xb0333333 };
@@ -543,10 +546,10 @@ public class SimulateTurnPage extends BookViewAnimation {
 		return doTouchEvent(event);
 	}
 
-	private BookView mBookView;
+	private View mBookView;
 
 	@Override
-	public void setBookView(BookView bookview) {
+	public void setBookView(View bookview) {
 		mBookView = bookview;
 	}
 
