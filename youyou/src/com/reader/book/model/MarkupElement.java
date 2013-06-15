@@ -2,7 +2,7 @@ package com.reader.book.model;
 
 import com.reader.book.Book;
 
-public abstract class Element {
+public abstract class MarkupElement {
 	enum TYPE {
 		TEXT,
 		IMAGE,
@@ -25,6 +25,6 @@ public abstract class Element {
 	public abstract void fill();
 	public interface Iterator{
 		public boolean hasNext();
-		public Element next();
+		public MarkupElement next();
 	}
 }

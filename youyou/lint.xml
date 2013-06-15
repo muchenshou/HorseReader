@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
     <issue id="SdCardPath">
-        <ignore path="src\com\reader\searchfile\SearchFileWithMultiThread.java" />
+        <ignore path="src/com/reader/searchfile/SearchFileWithMultiThread.java" />
     </issue>
+    <issue id="UseSparseArrays" severity="ignore" />
     <issue id="WrongCall" severity="ignore" />
 </lint>

@@ -7,7 +7,7 @@ import com.reader.book.bookview.BookView;
 import com.reader.book.manager.BookPosition;
 import com.reader.book.model.BookModel;
 import com.reader.book.model.Cursor;
-import com.reader.book.model.Element;
+import com.reader.book.model.MarkupElement;
 
 public class Page implements Comparable<Page> {
 	LinkedList<AreaDraw> mLines = new LinkedList<AreaDraw>();
@@ -49,9 +49,9 @@ public class Page implements Comparable<Page> {
 		int height = 0;
 		AreaDraw next;
 
-		Element.Iterator iter = mBookModel.iterator(
+		MarkupElement.Iterator iter = mBookModel.iterator(
 				mBookPosition.mElementIndex, mBookPosition.mRealBookPos);
-		Element element = iter.next();
+		MarkupElement element = iter.next();
 		BookPosition pos = mBookPosition;
 		do {
 			next = new Line(pos,element);
@@ -78,7 +78,7 @@ public class Page implements Comparable<Page> {
 	public BookPosition getLastPos() {
 		BookPosition pos = new BookPosition(0, 0, 0);
 		final AreaDraw lastLine = mLines.getLast();
-		final Element element = lastLine.element;
+		final MarkupElement element = lastLine.element;
 		final Cursor cursor = element.getElementCursor();
 		pos.mElementIndex = element.index;
 		pos.mOffset = lastLine.offset + lastLine.length;

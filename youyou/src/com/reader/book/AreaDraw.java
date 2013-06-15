@@ -1,6 +1,6 @@
 package com.reader.book;
 
-import com.reader.book.model.Element;
+import com.reader.book.model.MarkupElement;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -10,7 +10,7 @@ public abstract class AreaDraw {
 		TEXT,
 		IMAGE,
 	}
-	public Element element;
+	public MarkupElement element;
 	public int offset;
 	public int length;
 	public abstract float getWidth();

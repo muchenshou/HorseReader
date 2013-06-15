@@ -5,19 +5,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 import com.reader.book.Book;
 
-public class ParagraphElement extends Element {
+public class ParagraphElement extends MarkupElement {
 	char content[];
 	public ParagraphElement(Book book) {
 		mBook = book;
+		
 	}
 
 	@Override

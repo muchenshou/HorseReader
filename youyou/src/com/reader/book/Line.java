@@ -4,14 +4,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import com.reader.book.bookview.BookView;
 import com.reader.book.manager.BookPosition;
-import com.reader.book.model.Element;
+import com.reader.book.model.MarkupElement;
 import com.reader.book.model.ParagraphElement;
 import com.reader.config.PageConfig;
 
 public class Line extends AreaDraw {
 	private char str[];
 
-	public Line(BookPosition pos, Element element) {
+	public Line(BookPosition pos, MarkupElement element) {
 		this.offset = pos.mOffset;
 		this.element = element;
 	}

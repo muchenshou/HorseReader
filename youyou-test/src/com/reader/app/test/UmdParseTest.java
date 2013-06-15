@@ -14,7 +14,7 @@ import android.os.Environment;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import com.reader.book.model.Element;
+import com.reader.book.model.MarkupElement;
 import com.reader.book.umd.UmdBook;
 import com.reader.book.umd.UmdBook.UmdInputStream;
 import com.reader.book.umd.UmdInfo;
@@ -29,7 +29,7 @@ public class UmdParseTest extends AndroidTestCase {
 			UmdBook book = new UmdBook(new File(Environment
 					.getExternalStorageDirectory().getPath()
 					+ "/newmbook/微信 简单之美.umd"));
-			BlockingQueue<Element> elements = new LinkedBlockingQueue<Element>();
+			BlockingQueue<MarkupElement> elements = new LinkedBlockingQueue<MarkupElement>();
 			book.pushIntoList(elements);
 			try {
 				File o = new File("/sdcard/Books/da.txt");
@@ -37,7 +37,7 @@ public class UmdParseTest extends AndroidTestCase {
 				o.createNewFile();
 				BufferedOutputStream out = new BufferedOutputStream(
 						new FileOutputStream(o));
-				for (Element e : elements) {
+				for (MarkupElement e : elements) {
 					e.fill();
 					Log.i("hello", "start:"
 							+ e.getElementCursor().getRealFileStart() + "end:"

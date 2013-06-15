@@ -1,23 +1,18 @@
 package com.reader.book.model;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.util.Log;
 
 import com.reader.book.Book;
 import com.reader.book.umd.UmdBook;
 import com.reader.book.umd.UmdBook.UmdInputStream;
 
-public class UmdParagraphElement extends Element {
+public class UmdParagraphElement extends MarkupElement {
 	char content[];
 	public UmdParagraphElement(Book book) {
 		mBook = book;

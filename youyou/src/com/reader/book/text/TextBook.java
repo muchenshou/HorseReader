@@ -14,24 +14,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-import android.util.Log;
-
 import com.reader.book.Book;
-import com.reader.book.BookBuffer;
 import com.reader.book.CharInfo;
-import com.reader.book.model.Element;
+import com.reader.book.model.MarkupElement;
 import com.reader.book.model.ParagraphElement;
 
 public class TextBook extends Book {
 	private RandomAccessFile mFile;
-	private BookBuffer bookBuffer = new BookBuffer(this);
 	private static final int GBK = 0;
 	private static final int UTF8 = 1;
 	private int mTextCode = 1;
@@ -96,122 +91,20 @@ public class TextBook extends Book {
 		return (int) bookFile.length();
 	}
 
-	@Override
-	public CharInfo getChar(int pos) {
-		if (mTextCode == GBK) {
-			return getCharGbk(pos);
-		}
-		if (mTextCode == UTF8) {
-			return getCharUtf(pos);
-		}
-		return null;
-	}
-
-	public CharInfo getCharGbk(int pos) {
-		if (pos >= this.size())
-			return null;
-		CharInfo charinfo = new CharInfo();
-		charinfo.position = pos;
-		byte bytes[] = new byte[2];
-		if (this.bookBuffer.getByte(pos) >= 0) {
-			charinfo.character = (char) this.bookBuffer.getByte(pos);
-			charinfo.length = 1;
-		}
-		if (this.bookBuffer.getByte(pos) == 13
-				&& this.bookBuffer.getByte(pos + 1) == 10) {
-			charinfo.character = '\n';
-			charinfo.length = 2;
-		}
-
-		if (this.bookBuffer.getByte(pos) < 0) {
-			bytes[0] = this.bookBuffer.getByte(pos);
-			bytes[1] = this.bookBuffer.getByte(pos + 1);
-			try {
-				String str = new String(bytes, "gbk");
-				charinfo.character = str.charAt(0);
-				charinfo.length = 2;
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-		}
-		return charinfo;
-	}
-
-	public CharInfo getCharUtf(int pos) {
-		if (pos >= this.size())
-			return null;
-		CharInfo charinfo = new CharInfo();
-		charinfo.position = pos;
-		byte bytes[] = new byte[3];
-		if (this.bookBuffer.getByte(pos) >= 0) {
-			charinfo.character = (char) this.bookBuffer.getByte(pos);
-			charinfo.length = 1;
-		}
-		if (this.bookBuffer.getByte(pos) == 13
-				&& this.bookBuffer.getByte(pos + 1) == 10) {
-			charinfo.character = '\n';
-			charinfo.length = 2;
-		}
-
-		if (this.bookBuffer.getByte(pos) < 0) {
-			bytes[0] = this.bookBuffer.getByte(pos);
-			bytes[1] = this.bookBuffer.getByte(pos + 1);
-			bytes[2] = this.bookBuffer.getByte(pos + 2);
-			try {
-				String str = new String(bytes, "utf8");
-				charinfo.character = str.charAt(0);
-				charinfo.length = 3;
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-		}
-		return charinfo;
-	}
-
-	@Override
-	public CharInfo getPreChar(int start) {
-		if (mTextCode == GBK) {
-			return getPreCharGbk(start);
-		}
-		if (mTextCode == UTF8) {
-			return getPreCharUtf(start);
-		}
-		return null;
-	}
-
-	public CharInfo getPreCharGbk(int start) {
-		if (this.bookBuffer.getByte(start - 1) == 10
-				&& this.bookBuffer.getByte(start - 2) == 13) {
-			return getChar(start - 2);
-		}
-		if (this.bookBuffer.getByte(start - 1) >= 0)
-			return getChar(start - 1);
-		return getChar(start - 2);
-	}
-
-	public CharInfo getPreCharUtf(int start) {
-		if (this.bookBuffer.getByte(start - 1) == 10
-				&& this.bookBuffer.getByte(start - 2) == 13) {
-			return getChar(start - 2);
-		}
-		if (this.bookBuffer.getByte(start - 1) >= 0)
-			return getChar(start - 1);
-		return getChar(start - 3);
-	}
-	
-	public void pushIntoList(BlockingQueue<Element> elements) {
+	public void pushIntoList(BlockingQueue<MarkupElement> elements) {
 		try {
-			InputStream input = new BufferedInputStream(new FileInputStream(this.bookFile));
-//			Charset charset = Charset.forName("gbk");
-			Element element = new ParagraphElement(this);
+			InputStream input = new BufferedInputStream(new FileInputStream(
+					this.bookFile));
+			// Charset charset = Charset.forName("gbk");
+			MarkupElement element = new ParagraphElement(this);
 			int read = 0;
 			long size = bookFile.length();
 			int ch = 0;
-			
+
 			element.getElementCursor().setRealFileStart(read);
-			while ((ch = input.read()) !=-1) {
+			while ((ch = input.read()) != -1) {
 				read++;
-				if (ch != 13 ) {
+				if (ch != 13) {
 					if (element == null) {
 						element = new ParagraphElement(this);
 						element.getElementCursor().setRealFileStart(read - 1);
@@ -225,30 +118,31 @@ public class TextBook extends Book {
 				element = null;
 				ch = input.read(); // ch should be equal to 10 here
 				read++;
-				
+
 			}
 			if (element != null) {
-				element.getElementCursor().setRealFileLast((int)size - 1);
+				element.getElementCursor().setRealFileLast((int) size - 1);
 				elements.add(element);
 			}
 			input.close();
-			
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public Map<Integer,CharInfo> loadContent() {
+
+	public Map<Integer, CharInfo> loadContent() {
 		try {
-			InputStream input = new BufferedInputStream(new FileInputStream(this.bookFile));
+			InputStream input = new BufferedInputStream(new FileInputStream(
+					this.bookFile));
 			Map<Integer, CharInfo> elements = new HashMap<Integer, CharInfo>();
 			final long size = bookFile.length();
 			long read = 0;
 			byte bytes[] = new byte[2];
 			Charset charset = Charset.forName("gbk");
-			
+
 			while (read < size) {
 				CharInfo charinfo = new CharInfo();
 				int ch = input.read();
@@ -260,11 +154,12 @@ public class TextBook extends Book {
 					elements.put(charinfo.position, charinfo);
 					continue;
 				}
-				bytes[0] = (byte)ch;
-				bytes[1] = (byte)input.read();
+				bytes[0] = (byte) ch;
+				bytes[1] = (byte) input.read();
 				read++;
 				charinfo.length = 2;
-				charinfo.character = charset.decode(ByteBuffer.wrap(bytes)).charAt(0);
+				charinfo.character = charset.decode(ByteBuffer.wrap(bytes))
+						.charAt(0);
 				charinfo.position = (int) read - 1;
 				elements.put(charinfo.position, charinfo);
 			}
@@ -278,6 +173,7 @@ public class TextBook extends Book {
 		}
 		return null;
 	}
+
 	@Override
 	public boolean isEof() {
 		return EOFBOOK;

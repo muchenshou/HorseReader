@@ -13,7 +13,7 @@ import com.reader.book.Page;
 import com.reader.book.PageBuffer;
 import com.reader.book.bookview.BookView;
 import com.reader.book.model.BookModel;
-import com.reader.book.model.Element;
+import com.reader.book.model.MarkupElement;
 import com.reader.config.PageConfig;
 
 public class BookContent {
@@ -52,7 +52,7 @@ public class BookContent {
 	}
 
 	public Page mCurPage;
-	public Element mCurElement;
+	public MarkupElement mCurElement;
 	public void setCurPosition(BookPosition cur) {
 		mCurPage = getPage(cur);
 	}
@@ -86,8 +86,8 @@ public class BookContent {
 	public BookPosition getNextPagePosition() {
 		final Page page = mCurPage;
 		BookPosition pos = page.getLastPos();
-		Element.Iterator iter = mBookModel.iterator(pos.mElementIndex, pos.mRealBookPos);
-		Element element = iter.next();
+		MarkupElement.Iterator iter = mBookModel.iterator(pos.mElementIndex, pos.mRealBookPos);
+		MarkupElement element = iter.next();
 		if ((pos.mOffset + 1)>= element.getLength()) {
 			pos.mElementIndex += 1;
 			pos.mOffset=0;

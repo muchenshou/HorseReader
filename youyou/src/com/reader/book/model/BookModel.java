@@ -3,20 +3,18 @@ package com.reader.book.model;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import android.util.SparseArray;
-
 import com.reader.book.Book;
 
 public class BookModel {
 	Book mBook;
-	BlockingQueue<Element> mElements = new LinkedBlockingQueue<Element>();
+	BlockingQueue<MarkupElement> mElements = new LinkedBlockingQueue<MarkupElement>();
 
 	public BookModel(Book book) {
 		mBook = book;
 	}
 
-	public class IteratorIml implements Element.Iterator {
-		Element mCurrentElement;
+	public class IteratorIml implements MarkupElement.Iterator {
+		MarkupElement mCurrentElement;
 
 		@Override
 		public boolean hasNext() {
@@ -25,8 +23,8 @@ public class BookModel {
 		}
 
 		@Override
-		public Element next() {
-			Element cur = mCurrentElement;
+		public MarkupElement next() {
+			MarkupElement cur = mCurrentElement;
 			mCurrentElement = new ParagraphElement(mBook);
 			mCurrentElement.mElementCursor.mRealFileStart = cur.mElementCursor.mRealFileLast+1;
 			mCurrentElement.index = cur.index + 1;
@@ -35,10 +33,10 @@ public class BookModel {
 		}
 	}
 
-	public Element.Iterator iterator(int elementIndex, int realfilepos) {
+	public MarkupElement.Iterator iterator(int elementIndex, int realfilepos) {
 		// need to judge which type of element
 		// default text element now
-		Element element = new ParagraphElement(mBook);
+		MarkupElement element = new ParagraphElement(mBook);
 		element.mElementCursor.setRealFileStart(realfilepos);
 		element.index = elementIndex;
 		element.fill();

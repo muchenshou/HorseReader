@@ -16,18 +16,12 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.BlockingQueue;
 
-import android.util.Log;
-
 import com.reader.book.Book;
-import com.reader.book.BookBuffer;
-import com.reader.book.CharInfo;
-import com.reader.book.model.Element;
-import com.reader.book.model.ParagraphElement;
+import com.reader.book.model.MarkupElement;
 import com.reader.book.model.UmdParagraphElement;
 
 public class UmdBook extends Book {
 	public UmdInfo umdInfo = null;
-	private BookBuffer bookBuffer = new BookBuffer(this);
 
 	public UmdBook(File umd) throws IOException {
 		bookFile = umd;
@@ -144,30 +138,12 @@ public class UmdBook extends Book {
 	}
 
 	@Override
-	public CharInfo getChar(int pos) {
-		// if(mEnd > boo)
-		if (pos >= this.size())
-			return null;
-		CharInfo charinfo = new CharInfo();
-		charinfo.character = this.bookBuffer.getChar(pos);
-		if (charinfo.character == 8233)
-			charinfo.character = '\n';
-		charinfo.length = 2;
-		charinfo.position = pos;
-		return charinfo;
-	}
-
-	public CharInfo getPreChar(int start) {
-		return getChar(start - 2);
-	}
-
-	@Override
-	public void pushIntoList(BlockingQueue<Element> elements) {
+	public void pushIntoList(BlockingQueue<MarkupElement> elements) {
 
 		try {
 			InputStream input = new BufferedInputStream(new UmdInputStream());
 //			Charset charset = Charset.forName("gbk");
-			Element element = new UmdParagraphElement(this);
+			MarkupElement element = new UmdParagraphElement(this);
 			int read = 0;
 			long size = bookFile.length();
 			int ch = 0;
