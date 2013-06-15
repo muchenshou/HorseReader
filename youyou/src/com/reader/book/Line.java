@@ -2,17 +2,16 @@ package com.reader.book;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import com.reader.book.bookview.BookView;
-import com.reader.book.manager.BookPosition;
 import com.reader.book.model.MarkupElement;
 import com.reader.book.model.ParagraphElement;
+import com.reader.book.model.UmdParagraphElement;
+import com.reader.bookview.BookView;
 import com.reader.config.PageConfig;
 
 public class Line extends AreaDraw {
-	private char str[];
-
-	public Line(BookPosition pos, MarkupElement element) {
-		this.offset = pos.mOffset;
+	private char str[] = {'a','a'};
+	public Line(int offset, MarkupElement element) {
+		this.offset = offset;
 		this.element = element;
 	}
 
@@ -39,7 +38,7 @@ public class Line extends AreaDraw {
 		char chars[] = new char[1];
 		float widths[] = new float[1];
 		float linewidth = 0.0f;
-		if (element instanceof ParagraphElement) {
+		if (element instanceof ParagraphElement || element instanceof UmdParagraphElement) {
 
 			final ParagraphElement para = (ParagraphElement) element;
 			while ((offset + length) < element.getLength()) {
@@ -54,9 +53,8 @@ public class Line extends AreaDraw {
 			}
 			str = new char[length];
 			para.copy(str, offset, length);
+			length = str.length;
 		}
-
 		// if the element only had a char '\n',should return
-
 	}
 }

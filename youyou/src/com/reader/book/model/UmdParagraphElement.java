@@ -9,27 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.reader.book.Book;
-import com.reader.book.umd.UmdBook;
-import com.reader.book.umd.UmdBook.UmdInputStream;
+import com.reader.code.umd.UmdBook;
+import com.reader.code.umd.UmdBook.UmdInputStream;
 
-public class UmdParagraphElement extends MarkupElement {
-	char content[];
+public class UmdParagraphElement extends ParagraphElement {
 	public UmdParagraphElement(Book book) {
-		mBook = book;
+		super(book);
 	}
 
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		for (Character ch : content) {
-			sb.append(ch);
-		}
-		return sb.toString();
-	}
-
-	public void copy(char dest[], int off, int len) {
-		System.arraycopy(content, off, dest, 0, len);
-	}
 	@Override
 	public void fill() {
 		try {
@@ -44,13 +31,12 @@ public class UmdParagraphElement extends MarkupElement {
 			for(int i=0; i<bytes.length; ) {
 				ch = bytes[i++];
 				word[0] = (byte)ch;
-				word[1] = (byte)bytes[i++];
+				word[1] = bytes[i++];
 				ByteBuffer buf = ByteBuffer.wrap(word);
 				buf.order(ByteOrder.LITTLE_ENDIAN);
 				char c = buf.getChar();
 				chars.add(c);
 			}
-				
 			
 			this.content = new char[chars.size()];
 			for (int i=0; i<chars.size(); i++) {
@@ -62,14 +48,5 @@ public class UmdParagraphElement extends MarkupElement {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public char charAt(int index) {
-		return content[index];
-	}
-
-	@Override
-	public int getLength() {
-		return content.length;
 	}
 }

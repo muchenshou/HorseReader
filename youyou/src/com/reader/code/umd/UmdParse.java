@@ -5,13 +5,13 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.book.umd;
+package com.reader.code.umd;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.reader.book.umd.UmdInfo.Chapter;
+import com.reader.code.umd.UmdInfo.Chapter;
 import com.reader.util.BytesTransfer;
 
 public class UmdParse {

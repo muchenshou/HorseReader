@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.book.bookview;
+package com.reader.bookview;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -123,7 +123,7 @@ public class BookView extends View implements View.OnTouchListener {
 		mBookContent.update();
 		Log.i("hello","bookview:reset");
 		if (this.mInit == false) {
-			mBookContent.setCurPosition(mBook.openOffset);
+			//mBookContent.setCurPosition(mBook.openOffset);
 			mInit = true;
 		}
 		mAnimation.setFrontBitmap(mBookScreenDisplay.tranlateFrontBitmap(mBookContent

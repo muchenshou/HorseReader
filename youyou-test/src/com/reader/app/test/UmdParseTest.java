@@ -15,11 +15,11 @@ import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.reader.book.model.MarkupElement;
-import com.reader.book.umd.UmdBook;
-import com.reader.book.umd.UmdBook.UmdInputStream;
-import com.reader.book.umd.UmdInfo;
-import com.reader.book.umd.UmdInfo.Chapter;
-import com.reader.book.umd.UmdParse;
+import com.reader.code.umd.UmdBook;
+import com.reader.code.umd.UmdInfo;
+import com.reader.code.umd.UmdParse;
+import com.reader.code.umd.UmdBook.UmdInputStream;
+import com.reader.code.umd.UmdInfo.Chapter;
 
 public class UmdParseTest extends AndroidTestCase {
 	public void testUmd() {

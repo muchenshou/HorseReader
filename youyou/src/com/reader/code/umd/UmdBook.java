@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.book.umd;
+package com.reader.code.umd;
 
 import java.io.BufferedInputStream;
 import java.io.File;

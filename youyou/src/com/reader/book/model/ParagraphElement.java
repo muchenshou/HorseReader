@@ -48,7 +48,7 @@ public class ParagraphElement extends MarkupElement {
 					continue;
 				}
 				word[0] = (byte)ch;
-				word[1] = (byte)bytes[++i];
+				word[1] = bytes[++i];
 				chars.add(charset.decode(ByteBuffer.wrap(word)).charAt(0));
 			}
 				

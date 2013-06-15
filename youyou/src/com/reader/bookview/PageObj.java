@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.book.bookview;
+package com.reader.bookview;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -56,6 +56,7 @@ public class PageObj extends DrawableObj {
 	@Override
 	public void Draw(Canvas canvas, Paint paint) {
 		int y = 0;
+		if (pageString == null)return;
 		List<AreaDraw> list = pageString.getAreasDraw();
 		for (AreaDraw strLine : list) {
 			strLine.draw(canvas, 0, y + baseLineHeight, paint);

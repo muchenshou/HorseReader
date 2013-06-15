@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.book.text;
+package com.reader.code.text;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -15,13 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 import com.reader.book.Book;
-import com.reader.book.CharInfo;
 import com.reader.book.model.MarkupElement;
 import com.reader.book.model.ParagraphElement;
 
@@ -91,6 +87,7 @@ public class TextBook extends Book {
 		return (int) bookFile.length();
 	}
 
+	@Override
 	public void pushIntoList(BlockingQueue<MarkupElement> elements) {
 		try {
 			InputStream input = new BufferedInputStream(new FileInputStream(
@@ -131,47 +128,6 @@ public class TextBook extends Book {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public Map<Integer, CharInfo> loadContent() {
-		try {
-			InputStream input = new BufferedInputStream(new FileInputStream(
-					this.bookFile));
-			Map<Integer, CharInfo> elements = new HashMap<Integer, CharInfo>();
-			final long size = bookFile.length();
-			long read = 0;
-			byte bytes[] = new byte[2];
-			Charset charset = Charset.forName("gbk");
-
-			while (read < size) {
-				CharInfo charinfo = new CharInfo();
-				int ch = input.read();
-				read++;
-				if (ch <= 127) {
-					charinfo.length = 1;
-					charinfo.character = (char) ch;
-					charinfo.position = (int) read - 1;
-					elements.put(charinfo.position, charinfo);
-					continue;
-				}
-				bytes[0] = (byte) ch;
-				bytes[1] = (byte) input.read();
-				read++;
-				charinfo.length = 2;
-				charinfo.character = charset.decode(ByteBuffer.wrap(bytes))
-						.charAt(0);
-				charinfo.position = (int) read - 1;
-				elements.put(charinfo.position, charinfo);
-			}
-			input.close();
-			return elements;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	@Override

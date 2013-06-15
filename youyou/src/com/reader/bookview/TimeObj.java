@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.book.bookview;
+package com.reader.bookview;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

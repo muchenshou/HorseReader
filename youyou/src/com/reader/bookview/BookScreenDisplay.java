@@ -1,4 +1,4 @@
-package com.reader.book.bookview;
+package com.reader.bookview;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

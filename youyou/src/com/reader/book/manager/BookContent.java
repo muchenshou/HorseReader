@@ -7,13 +7,16 @@
  * */
 package com.reader.book.manager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Paint;
+import android.util.Log;
+
 import com.reader.book.Book;
 import com.reader.book.Page;
-import com.reader.book.PageBuffer;
-import com.reader.book.bookview.BookView;
 import com.reader.book.model.BookModel;
-import com.reader.book.model.MarkupElement;
+import com.reader.bookview.BookView;
 import com.reader.config.PageConfig;
 
 public class BookContent {
@@ -23,20 +26,15 @@ public class BookContent {
 	private float pageWidth = (float) 0.0;
 	private float pageHeight = (float) 0.0;
 	private Paint mPaint = null;
-	PageBuffer mPageBuffer = new PageBuffer();
 	BookModel mBookModel;
 	public Book mBook = null;
+	private List<Page> mPages = new ArrayList<Page>();
 
 	public BookContent(Book book) {
 		mBook = book;
 		mBookModel = new BookModel(mBook);
 		this.mPaint = PageConfig.pagePaintFromConfig(false);
 	}
-
-	public String getCurContent() {
-		return "nothing";
-	}
-
 
 	public int getLineHeight() {
 		return BookView.getTextHeight(mPaint) + PageConfig.getPadding();
@@ -45,6 +43,7 @@ public class BookContent {
 	public void update(int w, int h) {
 		pageHeight = h;
 		pageWidth = w;
+		mBookModel.pushIntoPagesList(mPages);
 	}
 
 	public void update() {
@@ -52,71 +51,39 @@ public class BookContent {
 	}
 
 	public Page mCurPage;
-	public MarkupElement mCurElement;
+	public int mCurIndex = 0;
+
 	public void setCurPosition(BookPosition cur) {
-		mCurPage = getPage(cur);
+		// mCurPage = getPage(cur);
 	}
 
 	public Page getNextPage() {
-		final Page page = getPage(getNextPagePosition());
-		return page;
+		return mPages.get(mCurIndex < mPages.size() - 1 ? mCurIndex + 1
+				: mCurIndex);
 	}
 
 	public Page getPrePage() {
-//		int pos = getprePagePosition();
-//		return pos != -1 ? getPageStr(new BookPosition(pos)) : null;
-		return null;
+		return mPages.get(mCurIndex > 0 ? mCurIndex - 1 : 0);
 	}
 
 	public void turnToPre() {
-		//setCurPosition(new BookPosition(getprePagePosition()));
+		// setCurPosition(new BookPosition(getprePagePosition()));
+		if (mCurIndex > 0)
+			mCurIndex--;
 	}
 
 	public void turnToNext() {
-		setCurPosition(getNextPagePosition());
+		Log.i("hello","trunToNext"+mPages.size());
+		if (mCurIndex < mPages.size() - 1)
+			mCurIndex++;
 	}
-
-	private synchronized Page getPage(BookPosition position) {
-		final Page page = new Page(mBookModel,position);
-		page.clear();
-		page.fill();
-		return page;
-	}
-
-	public BookPosition getNextPagePosition() {
-		final Page page = mCurPage;
-		BookPosition pos = page.getLastPos();
-		MarkupElement.Iterator iter = mBookModel.iterator(pos.mElementIndex, pos.mRealBookPos);
-		MarkupElement element = iter.next();
-		if ((pos.mOffset + 1)>= element.getLength()) {
-			pos.mElementIndex += 1;
-			pos.mOffset=0;
-			element = iter.next();
-			pos.mRealBookPos = element.getElementCursor().getRealFileStart();
-		} else {
-			pos.mOffset += 1;
-		}
-		return pos;
-	}
-
-	public boolean isBookEnd() {
-		return false;
-	}
-
-	public boolean isBookStart() {
-		return false;
-	}
-
-//	private int getprePagePosition() {
-//		
-//	}
 
 	public Page getCurPage() {
-		return mCurPage;
+		return mPages.get(mCurIndex);
 	}
 
 	public BookPosition getCurPosition() {
-		return mCurPage.mBookPosition;
+		return null;
 	}
 
 }

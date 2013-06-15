@@ -13,7 +13,8 @@ import java.io.IOException;
 import android.content.Context;
 
 import com.reader.book.Book;
-import com.reader.book.BookFactory;
+import com.reader.code.text.TextBook;
+import com.reader.code.umd.UmdBook;
 
 public class BookManager {
 
@@ -27,7 +28,7 @@ public class BookManager {
 	int position = 0;
 
 	public BookManager(Context con, File file) throws IOException {
-		book = BookFactory.createBook(file);
+		book = BookManager.createBook(file);
 	}
 
 	public Book openBook(BookPosition position) throws IOException {
@@ -46,5 +47,18 @@ public class BookManager {
 
 	public Book getBook() {
 		return book;
+	}
+
+	public static Book createBook(File file) throws IOException {
+		String str = file.toString()
+				.substring(file.toString().lastIndexOf('.') + 1).toLowerCase();
+		if (str.equals("umd")) {
+			return new UmdBook(file);
+		}
+		if (str.equals("txt")) {
+			return new TextBook(file);
+		}
+		return null;
+	
 	}
 }

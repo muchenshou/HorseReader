@@ -21,11 +21,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.reader.book.bookview.BookView;
-import com.reader.book.bookview.NoTurnAnimation;
-import com.reader.book.bookview.SimulateTurnPage;
 import com.reader.book.manager.BookManager;
 import com.reader.book.manager.BookPosition;
+import com.reader.bookview.BookView;
+import com.reader.bookview.NoTurnAnimation;
+import com.reader.bookview.SimulateTurnPage;
 import com.reader.preference.ReadingSetting;
 import com.reader.record.BookHistory;
 

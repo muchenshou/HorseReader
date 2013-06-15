@@ -1,47 +1,50 @@
 package com.reader.book.model;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import android.util.Log;
+
+import com.reader.book.AreaDraw;
 import com.reader.book.Book;
+import com.reader.book.Line;
+import com.reader.book.Page;
 
 public class BookModel {
 	Book mBook;
 	BlockingQueue<MarkupElement> mElements = new LinkedBlockingQueue<MarkupElement>();
+	LinkedList<AreaDraw> mLines = new LinkedList<AreaDraw>();
 
 	public BookModel(Book book) {
 		mBook = book;
 	}
 
-	public class IteratorIml implements MarkupElement.Iterator {
-		MarkupElement mCurrentElement;
-
-		@Override
-		public boolean hasNext() {
-			return mCurrentElement.mElementCursor.getRealFileLast() < mBook
-					.size() - 1;
-		}
-
-		@Override
-		public MarkupElement next() {
-			MarkupElement cur = mCurrentElement;
-			mCurrentElement = new ParagraphElement(mBook);
-			mCurrentElement.mElementCursor.mRealFileStart = cur.mElementCursor.mRealFileLast+1;
-			mCurrentElement.index = cur.index + 1;
-			mCurrentElement.fill();
-			return cur;
-		}
+	private void pushIntoElementsList() {
+		mElements.clear();
+		mBook.pushIntoList(mElements);
 	}
 
-	public MarkupElement.Iterator iterator(int elementIndex, int realfilepos) {
-		// need to judge which type of element
-		// default text element now
-		MarkupElement element = new ParagraphElement(mBook);
-		element.mElementCursor.setRealFileStart(realfilepos);
-		element.index = elementIndex;
-		element.fill();
-		IteratorIml iter = new IteratorIml();
-		iter.mCurrentElement = element;
-		return iter;
+	public void pushIntoPagesList(List<Page> pages) {
+		pushIntoElementsList();
+		Iterator<MarkupElement> iter = mElements.iterator();
+		while (iter.hasNext() ) {
+			MarkupElement element = iter.next();
+			element.pushIntoLines(mLines);
+		}
+		int flag = 0;
+
+		Page page = new Page(this);
+		for (AreaDraw a : mLines) {
+			flag++;
+			page.addLine(a);
+			if (flag == 17) {
+				pages.add(page);
+				page = new Page(this);
+				flag = 0;
+			}
+		}
 	}
 }
