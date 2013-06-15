@@ -164,6 +164,7 @@ public class SimpleAnimation extends BookViewAnimation {
 
 		canvas.save();
 		canvas.clipPath(path);
+		if (mBackBitmap != null)
 		canvas.drawBitmap(mBackBitmap, 0, 0, new Paint());
 
 		canvas.restore();
