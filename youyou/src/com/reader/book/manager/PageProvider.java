@@ -18,7 +18,7 @@ import com.reader.book.Page;
 import com.reader.book.model.BookModel;
 import com.reader.config.PageConfig;
 
-public class BookContent {
+public class PageProvider {
 	int mStart = 0;
 	int mEnd = 0;
 	public int pageline = 5;
@@ -29,7 +29,7 @@ public class BookContent {
 	public Book mBook = null;
 	private List<Page> mPages = new ArrayList<Page>();
 
-	public BookContent(Book book) {
+	public PageProvider(Book book) {
 		mBook = book;
 		mBookModel = new BookModel(mBook);
 		this.mPaint = PageConfig.pagePaintFromConfig(false);

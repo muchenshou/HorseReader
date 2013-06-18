@@ -22,7 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.reader.book.Book;
-import com.reader.book.manager.BookContent;
+import com.reader.book.manager.PageProvider;
 import com.reader.book.manager.BookManager;
 import com.reader.config.PageConfig;
 import com.reader.view.curl.BookViewAnimation;
@@ -33,7 +33,7 @@ public class BookView extends View implements View.OnTouchListener {
 	protected byte bookContent;
 	protected byte[] content;
 	protected int padding = 5;
-	public BookContent mBookContent;
+	public PageProvider mBookContent;
 	private BookViewAnimation mAnimation;
 	public Bitmap m_book_bg = null;
 	Book mBook;
@@ -46,7 +46,7 @@ public class BookView extends View implements View.OnTouchListener {
 		setOnTouchListener(this);
 		this.mBook = book;
 		mPaint = PageConfig.pagePaintFromConfig(false);
-		mBookContent = new BookContent(book);
+		mBookContent = new PageProvider(book);
 
 		mBookScreenDisplay = new BookScreenDisplay(mBookContent);
 		// this.mAnimation = new SimulateTurnPage(getContext());

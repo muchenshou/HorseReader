@@ -18,7 +18,7 @@ import android.graphics.Paint.FontMetrics;
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
 import com.reader.book.Page;
-import com.reader.book.manager.BookContent;
+import com.reader.book.manager.PageProvider;
 import com.reader.config.PageConfig;
 
 class StringUtils {
@@ -37,9 +37,9 @@ class StringUtils {
 public class PageObj extends DrawableObj {
 	float baseLineHeight;
 	float fontHeight;
-	private BookContent mBookContent;
+	private PageProvider mBookContent;
 
-	public PageObj(BookContent bookContent, Book book) {
+	public PageObj(PageProvider bookContent, Book book) {
 		mBookContent = bookContent;
 		Paint paint = PageConfig.pagePaintFromConfig(false);
 		FontMetrics metrics = paint.getFontMetrics();

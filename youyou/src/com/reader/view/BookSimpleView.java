@@ -1,13 +1,13 @@
 package com.reader.view;
 
-import com.reader.book.manager.BookContent;
+import com.reader.book.manager.PageProvider;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.ViewGroup;
 
 public class BookSimpleView extends ViewGroup {
-	public BookContent mBookContent;
+	public PageProvider mBookContent;
 	public Bitmap m_book_bg = null;
 
 	public BookSimpleView(Context context) {

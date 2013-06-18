@@ -6,12 +6,12 @@ import android.graphics.Paint;
 
 import com.reader.book.Book;
 import com.reader.book.Page;
-import com.reader.book.manager.BookContent;
+import com.reader.book.manager.PageProvider;
 import com.reader.config.PageConfig;
 
 public class BookScreenDisplay {
 	public static BookScreenDisplay Instance;
-	private BookContent mBookContent;
+	private PageProvider mBookContent;
 	private Paint mPaint;
 	private Book mBook;
 	private Bitmap mfrontPageBitmap;
@@ -26,7 +26,7 @@ public class BookScreenDisplay {
 	public static int PRE = 1;
 	public static int NEXT = 2;
 
-	public BookScreenDisplay(BookContent bookContent) {
+	public BookScreenDisplay(PageProvider bookContent) {
 		mBookContent = bookContent;
 		mPaint = PageConfig.pagePaintFromConfig(false);
 		mBook = mBookContent.mBook;

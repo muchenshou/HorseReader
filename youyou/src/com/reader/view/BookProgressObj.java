@@ -9,17 +9,17 @@ package com.reader.view;
 
 import java.text.DecimalFormat;
 
-import com.reader.book.manager.BookContent;
+import com.reader.book.manager.PageProvider;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
 public class BookProgressObj extends DrawableObj {
 
-	public BookContent mBookReading;
+	public PageProvider mBookReading;
 	public int mSize;
 
-	public BookProgressObj(BookContent bookreading, int size) {
+	public BookProgressObj(PageProvider bookreading, int size) {
 		this.mBookReading = bookreading;
 		this.mSize = size;
 	}
