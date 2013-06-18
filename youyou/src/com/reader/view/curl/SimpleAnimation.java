@@ -1,5 +1,7 @@
 package com.reader.view.curl;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import com.reader.view.BookScreenDisplay;
 
 import android.content.Context;
@@ -33,25 +35,14 @@ public class SimpleAnimation extends BookViewAnimation {
 
 	dir mPagedir = dir.GO;
 
-	public SimpleAnimation(Context context) {
-		mContext = context;
-
+	public SimpleAnimation(BitmapSetup setup) {
+		super(setup);
 		mShadowR = new GradientDrawable(
 				GradientDrawable.Orientation.LEFT_RIGHT, mShadowRColors);
 		mShadowR.setGradientType(GradientDrawable.LINEAR_GRADIENT);
 		mShadowL = new GradientDrawable(
 				GradientDrawable.Orientation.LEFT_RIGHT, mFrontShadowColors);
 		mShadowL.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-	}
-
-	@Override
-	public void setFrontBitmap(Bitmap bitmap) {
-		mFrontBitmap = bitmap;
-	}
-
-	@Override
-	public void setBackBitmap(Bitmap bitmap) {
-		mBackBitmap = bitmap;
 	}
 
 	@Override
@@ -69,53 +60,53 @@ public class SimpleAnimation extends BookViewAnimation {
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			mState = STATE_TOUCH_START;
-			mBoundLine = mWidth;
-			clickDown = event.getX();
-			isTurnToPre = false;
-			setBackBitmap(BookScreenDisplay.Instance
-					.tranlateBackBitmap(BookScreenDisplay.NEXT));
-		}
-		boolean pre = false;
-		if (event.getAction() == MotionEvent.ACTION_MOVE) {
-			mState = STATE_TOUCHING;
-			pre = clickDown < event.getX() ? true : false;
-			if (pre != isTurnToPre) {
-				isTurnToPre = pre;
-				// Draw current page and Set
-				setFrontBitmap(BookScreenDisplay.Instance.tranlateFrontBitmap());
-
-				// Draw next or pre page and Set it
-				if (DragToRight()) {
-					setBackBitmap(BookScreenDisplay.Instance
-							.tranlateBackBitmap(BookScreenDisplay.PRE));
-				} else {
-					setBackBitmap(BookScreenDisplay.Instance
-							.tranlateBackBitmap(BookScreenDisplay.NEXT));
-				}
-			}
-			if (isTurnToPre) {
-				mBoundLine = event.getX() - clickDown;
-			} else {
-				mBoundLine = mWidth + event.getX() - clickDown;
-			}
-		}
-		if (event.getAction() == MotionEvent.ACTION_UP) {
-			clickUp = event.getX();
-			if (isTurnToPre) {
-				mBoundLine = clickUp - clickDown;
-				mEndX = mWidth;
-			} else {
-				mBoundLine = mWidth + clickUp - clickDown;
-				mEndX = 0;
-			}
-			mStartX = (int) mBoundLine;
-			mPagedir = (clickUp - clickDown <= 0) ? dir.GO : dir.BACK;
-			isTurnToPre = mPagedir == dir.GO ? false : true;
-
-			startAnimation(DELAY_TURN_RIGHT);
-		}
+//		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//			mState = STATE_TOUCH_START;
+//			mBoundLine = mWidth;
+//			clickDown = event.getX();
+//			isTurnToPre = false;
+//			setBackBitmap(BookScreenDisplay.Instance
+//					.tranlateBackBitmap(BookScreenDisplay.NEXT));
+//		}
+//		boolean pre = false;
+//		if (event.getAction() == MotionEvent.ACTION_MOVE) {
+//			mState = STATE_TOUCHING;
+//			pre = clickDown < event.getX() ? true : false;
+//			if (pre != isTurnToPre) {
+//				isTurnToPre = pre;
+//				// Draw current page and Set
+//				setFrontBitmap(BookScreenDisplay.Instance.tranlateFrontBitmap());
+//
+//				// Draw next or pre page and Set it
+//				if (DragToRight()) {
+//					setBackBitmap(BookScreenDisplay.Instance
+//							.tranlateBackBitmap(BookScreenDisplay.PRE));
+//				} else {
+//					setBackBitmap(BookScreenDisplay.Instance
+//							.tranlateBackBitmap(BookScreenDisplay.NEXT));
+//				}
+//			}
+//			if (isTurnToPre) {
+//				mBoundLine = event.getX() - clickDown;
+//			} else {
+//				mBoundLine = mWidth + event.getX() - clickDown;
+//			}
+//		}
+//		if (event.getAction() == MotionEvent.ACTION_UP) {
+//			clickUp = event.getX();
+//			if (isTurnToPre) {
+//				mBoundLine = clickUp - clickDown;
+//				mEndX = mWidth;
+//			} else {
+//				mBoundLine = mWidth + clickUp - clickDown;
+//				mEndX = 0;
+//			}
+//			mStartX = (int) mBoundLine;
+//			mPagedir = (clickUp - clickDown <= 0) ? dir.GO : dir.BACK;
+//			isTurnToPre = mPagedir == dir.GO ? false : true;
+//
+//			startAnimation(DELAY_TURN_RIGHT);
+//		}
 		return true;
 	}
 
@@ -124,7 +115,7 @@ public class SimpleAnimation extends BookViewAnimation {
 		mWidth = w;
 	}
 
-	@Override
+	
 	public void onDraw(Canvas canvas) {
 		DrawFront(canvas);
 		DrawBack(canvas);
@@ -211,5 +202,11 @@ public class SimpleAnimation extends BookViewAnimation {
 			mBoundLine = mWidth;
 			mAnimationView.postInvalidate();
 		}
+	}
+
+	@Override
+	public void onDrawFrame(GL10 gl) {
+		// TODO Auto-generated method stub
+		
 	}
 }

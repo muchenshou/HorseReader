@@ -1,5 +1,6 @@
 package com.reader.view.curl;
 
+import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,10 +9,15 @@ import android.view.View;
 
 public abstract class BookViewAnimation {
 	// public void startAnimation();
-	public abstract void setFrontBitmap(Bitmap bitmap);
-
-	public abstract void setBackBitmap(Bitmap bitmap);
-
+	public interface BitmapSetup {
+		public abstract Bitmap frontBitmap();
+		public abstract Bitmap backBitmap();
+	}
+	protected BitmapSetup mBitmapSetup;
+	
+	public BookViewAnimation(BitmapSetup setup){
+		mBitmapSetup = setup;
+	}
 	public abstract boolean DragToRight();
 
 	public abstract void setBookView(View bookview);
@@ -20,7 +26,7 @@ public abstract class BookViewAnimation {
 
 	public abstract void onSizeChange(int w, int h, int oldw, int oldh);
 
-	public abstract void onDraw(Canvas canvas);
+	public abstract void onDrawFrame(GL10 gl);
 
 	public abstract void update();
 

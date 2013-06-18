@@ -60,16 +60,18 @@ import com.reader.config.PageConfig;
 import com.reader.ui.gl.MyGLUtils;
 import com.reader.ui.gl.Texture;
 import com.reader.view.curl.BookViewAnimation;
+import com.reader.view.curl.BookViewAnimation.BitmapSetup;
+import com.reader.view.curl.CurlAnimation;
 import com.reader.view.curl.SimpleAnimation;
 
 public class GLView extends GLSurfaceView implements View.OnTouchListener,
-		Renderer {
+		Renderer, BitmapSetup {
 
 	protected int bookSize;
 	protected byte bookContent;
 	protected byte[] content;
 	protected int padding = 5;
-	public PageProvider mBookContent;
+	public PageProvider mPageProvider;
 	private BookViewAnimation mAnimation;
 	public Bitmap m_book_bg = null;
 	Book mBook;
@@ -89,19 +91,19 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		super(context);
 		this.setRenderer(this);
 		getHolder().setFormat(PixelFormat.RGB_565);
-		
+
 		BookManager.Instance = this;
 		setOnTouchListener(this);
 		this.mBook = book;
 		mPaint = PageConfig.pagePaintFromConfig(false);
-		mBookContent = new PageProvider(book);
+		mPageProvider = new PageProvider(book);
 
 		indicesBuffer = MyGLUtils.toShortBuffer(indices);
 
-		mBookScreenDisplay = new BookScreenDisplay(mBookContent);
+		mBookScreenDisplay = new BookScreenDisplay(mPageProvider);
 		// this.mAnimation = new SimulateTurnPage(getContext());
 		// this.mAnimation = new NoTurnAnimation(getContext());
-		this.mAnimation = new SimpleAnimation(getContext());
+		this.mAnimation = new CurlAnimation(this);
 		this.mAnimation.setBookView(this);
 		thread.setPriority(Thread.NORM_PRIORITY);
 		thread.start();
@@ -117,22 +119,21 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 
 	protected void sizeChanged(int w, int h) {
 		this.mAnimation.onSizeChange(w, h, 0, 0);
-		Log.i("hello","w:"+w+"h"+h);
+		Log.i("hello", "w:" + w + "h" + h);
 		float vertex[] = new float[] { 0f, (float) h, 0f, // top left
 				0f, 0f, 0f, // bottom left
 				(float) w, 0f, 0f,// bottom right
 				(float) w, (float) h, 0f // top right
 		};
 		vertexBuffer = MyGLUtils.toFloatBuffer(vertex);
-		
+
 		int glw = Integer.highestOneBit(w - 1) << 1;
 		int glh = Integer.highestOneBit(h - 1) << 1;
-		textureCoordinates = new float[] { 0.0f, 0.0f,
-				0.0f, (float)h/ (float)glh,
-				(float)w/ (float)glw, (float)h/ (float)glh,
-				(float)w/ (float)glw, 0.0f };
+		textureCoordinates = new float[] { 0.0f, 0.0f, 0.0f,
+				(float) h / (float) glh, (float) w / (float) glw,
+				(float) h / (float) glh, (float) w / (float) glw, 0.0f };
 		textureFloatBuffer = MyGLUtils.toFloatBuffer(textureCoordinates);
-		mBookContent.update(w - 20,
+		mPageProvider.update(w - 20,
 				h - PageConfig.getTextHeight(PageConfig.getOthersPaint(false))
 						- 20);
 		//
@@ -155,18 +156,18 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 	protected void drawDisplayBitmap(Canvas canvas) {
 		if (mAnimation.state() == BookViewAnimation.NONE) {
 			canvas.drawBitmap(mBookScreenDisplay
-					.tranlateFrontBitmap(mBookContent.getCurPage()), 0, 0,
+					.tranlateFrontBitmap(mPageProvider.getCurPage()), 0, 0,
 					mPaint);
 			return;
 		}
 		if (mAnimation.state() == BookViewAnimation.STATE_ANIMATION_END) {
 			if (mAnimation.DragToRight())
-				mBookContent.turnToPre();
+				mPageProvider.turnToPre();
 			else
-				mBookContent.turnToNext();
+				mPageProvider.turnToNext();
 
 			canvas.drawBitmap(mBookScreenDisplay
-					.tranlateFrontBitmap(mBookContent.getCurPage()), 0, 0,
+					.tranlateFrontBitmap(mPageProvider.getCurPage()), 0, 0,
 					mPaint);
 
 			mAnimation.setState(BookViewAnimation.NONE);
@@ -176,18 +177,15 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 			postInvalidate();
 			return;
 		}
-		this.mAnimation.onDraw(canvas);
 	}
 
 	private void reset() {
-		mBookContent.update();
+		mPageProvider.update();
 		Log.i("hello", "bookview:reset");
 		if (this.mInit == false) {
 			// mBookContent.setCurPosition(mBook.openOffset);
 			mInit = true;
 		}
-		mAnimation.setFrontBitmap(mBookScreenDisplay
-				.tranlateFrontBitmap(mBookContent.getCurPage()));
 		this.mAnimation.update();
 		postInvalidate();
 	}
@@ -240,9 +238,9 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 					// e.printStackTrace();
 				}
 				if (mAnimation.DragToRight()) {
-					mBookContent.getPrePage();
+					mPageProvider.getPrePage();
 				} else {
-					mBookContent.getNextPage();
+					mPageProvider.getNextPage();
 				}
 				lock.unlock();
 			}
@@ -338,6 +336,18 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		gl.glEnable(GL_DEPTH_TEST);
 		gl.glDepthFunc(GL_LEQUAL);
 		gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	}
+
+	@Override
+	public Bitmap frontBitmap() {
+		return mBookScreenDisplay.tranlateFrontBitmap(mPageProvider
+				.getCurPage());
+	}
+
+	@Override
+	public Bitmap backBitmap() {
+		return mBookScreenDisplay.tranlateFrontBitmap(mPageProvider
+				.getNextPage());
 	}
 
 }

@@ -26,10 +26,7 @@ import com.reader.book.manager.BookManager;
 import com.reader.book.manager.BookPosition;
 import com.reader.preference.ReadingSetting;
 import com.reader.record.BookHistory;
-import com.reader.view.BookView;
 import com.reader.view.GLView;
-import com.reader.view.curl.NoTurnAnimation;
-import com.reader.view.curl.SimulateTurnPage;
 
 public class ReadingActivity extends Activity {
 	public GLView bookView;
@@ -74,7 +71,7 @@ public class ReadingActivity extends Activity {
 	protected void onStop() {
 		BookHistory history = new BookHistory(this);
 		history.storePosition(this.mBookName,
-				this.bookView.mBookContent.getCurPosition());
+				this.bookView.mPageProvider.getCurPosition());
 		super.onStop();
 	}
 
@@ -116,10 +113,10 @@ public class ReadingActivity extends Activity {
 				.getDefaultSharedPreferences(this);
 		String str = spf.getString("turn_page", "none");
 		if (str.equals("none")) {
-			bookView.setTurnAnimation(new NoTurnAnimation(this));
+//			bookView.setTurnAnimation(new NoTurnAnimation(this));
 		}
 		if (str.equals("real")) {
-			bookView.setTurnAnimation(new SimulateTurnPage(this));
+//			bookView.setTurnAnimation(new SimulateTurnPage(this));
 		}
 	}
 

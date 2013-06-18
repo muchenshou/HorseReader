@@ -15,7 +15,6 @@ import android.content.Context;
 import com.reader.book.Book;
 import com.reader.code.text.TextBook;
 import com.reader.code.umd.UmdBook;
-import com.reader.view.BookView;
 import com.reader.view.GLView;
 
 public class BookManager {
