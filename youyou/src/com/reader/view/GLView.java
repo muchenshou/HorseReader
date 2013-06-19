@@ -46,6 +46,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.opengl.GLSurfaceView.Renderer;
@@ -78,18 +79,17 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 	private boolean mInit = false;
 	BookScreenDisplay mBookScreenDisplay;
 	private Paint mPaint;
-	private Bitmap mDisplayBitmap;
 
 	float textureCoordinates[];
 	FloatBuffer textureFloatBuffer;
 
-	private short[] indices = { 0, 1, 2, 0, 2, 3 };
-	private ShortBuffer indicesBuffer;
-	private FloatBuffer vertexBuffer;
+	// Rect for render area.
+	private RectF mViewRect = new RectF();
 
 	public GLView(Context context, Book book) {
 		super(context);
 		this.setRenderer(this);
+		this.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		getHolder().setFormat(PixelFormat.RGB_565);
 
 		BookManager.Instance = this;
@@ -97,8 +97,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		this.mBook = book;
 		mPaint = PageConfig.pagePaintFromConfig(false);
 		mPageProvider = new PageProvider(book);
-
-		indicesBuffer = MyGLUtils.toShortBuffer(indices);
 
 		mBookScreenDisplay = new BookScreenDisplay(mPageProvider);
 		// this.mAnimation = new SimulateTurnPage(getContext());
@@ -119,14 +117,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 
 	protected void sizeChanged(int w, int h) {
 		this.mAnimation.onSizeChange(w, h, 0, 0);
-		Log.i("hello", "w:" + w + "h" + h);
-		float vertex[] = new float[] { 0f, (float) h, 0f, // top left
-				0f, 0f, 0f, // bottom left
-				(float) w, 0f, 0f,// bottom right
-				(float) w, (float) h, 0f // top right
-		};
-		vertexBuffer = MyGLUtils.toFloatBuffer(vertex);
-
 		int glw = Integer.highestOneBit(w - 1) << 1;
 		int glh = Integer.highestOneBit(h - 1) << 1;
 		textureCoordinates = new float[] { 0.0f, 0.0f, 0.0f,
@@ -142,14 +132,11 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		Bitmap BG = this.m_book_bg;
 		int bitmap_w = BG.getWidth();
 		int bitmap_h = BG.getHeight();
-		Log.i("[BookView]", "" + bitmap_w + " " + bitmap_h);
 		Matrix m = new Matrix();
 		m.postScale((float) w / (float) bitmap_w, (float) h / (float) bitmap_h);
 		mBookScreenDisplay.setBg(Bitmap.createBitmap(BG, 0, 0, bitmap_w,
 				bitmap_h, m, true));
 
-		mDisplayBitmap = Bitmap.createBitmap(BG, 0, 0, bitmap_w, bitmap_h, m,
-				true);
 		this.reset();
 	}
 
@@ -251,46 +238,7 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		Canvas canvas = new Canvas(mDisplayBitmap);
-		drawDisplayBitmap(canvas);
-
-		// save all clip
-		canvas.save(Canvas.ALL_SAVE_FLAG);// ±£´æ
-		// store
-		canvas.restore();// ´æ´¢
-
-		Texture texture = Texture.createTexture(mDisplayBitmap, gl);
-
-		gl.glFrontFace(GL_CCW);
-
-		gl.glEnable(GL_CULL_FACE);
-		gl.glCullFace(GL_BACK);
-
-		gl.glEnableClientState(GL_VERTEX_ARRAY);
-
-		gl.glEnable(GL_BLEND);
-		gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		gl.glEnable(GL_TEXTURE_2D);
-		gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		gl.glTexCoordPointer(2, GL_FLOAT, 0, textureFloatBuffer);
-		gl.glBindTexture(GL_TEXTURE_2D, texture.getId()[0]);
-
-		gl.glVertexPointer(3, GL_FLOAT, 0, vertexBuffer);
-		gl.glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_SHORT,
-				indicesBuffer);
-
-		gl.glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		gl.glDisable(GL_TEXTURE_2D);
-		gl.glDisable(GL_BLEND);
-
-		gl.glDisableClientState(GL_VERTEX_ARRAY);
-		gl.glDisable(GL_CULL_FACE);
-		texture.destroy(gl);
+		mAnimation.onDrawFrame(gl);
 	}
 
 	public static float[] light0Position = { 0, 0, 100f, 0f };
@@ -299,31 +247,19 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		// TODO Auto-generated method stub
 		gl.glViewport(0, 0, width, height);
-		Log.i("hello", "width:" + width + "height:" + height);
+		float ratio = (float) width / height;
+		mViewRect.top = 1.0f;
+		mViewRect.bottom = -1.0f;
+		mViewRect.left = -ratio;
+		mViewRect.right = ratio;
 
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
-
-		float fovy = 20f;
-		float eyeZ = height / 2f / (float) Math.tan(MyGLUtils.d2r(fovy / 2));
-
-		GLU.gluPerspective(gl, fovy, (float) width / (float) height, 0.5f,
-				Math.max(2500.0f, eyeZ));
+		GLU.gluOrtho2D(gl, mViewRect.left, mViewRect.right, mViewRect.bottom,
+				mViewRect.top);
 
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
-
-		GLU.gluLookAt(gl, width / 2.0f, height / 2f, eyeZ, width / 2.0f,
-				height / 2.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-
-		gl.glEnable(GL_LIGHTING);
-		gl.glEnable(GL_LIGHT0);
-
-		float lightAmbient[] = new float[] { 3.5f, 3.5f, 3.5f, 1f };
-		gl.glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient, 0);
-
-		light0Position = new float[] { 0, 0, eyeZ, 0f };
-		gl.glLightfv(GL_LIGHT0, GL_POSITION, light0Position, 0);
 
 		sizeChanged(width, height);
 	}
@@ -348,6 +284,11 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 	public Bitmap backBitmap() {
 		return mBookScreenDisplay.tranlateFrontBitmap(mPageProvider
 				.getNextPage());
+	}
+
+	@Override
+	public void requestFresh() {
+		this.requestRender();
 	}
 
 }

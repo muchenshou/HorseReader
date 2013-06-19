@@ -25,7 +25,8 @@ public class BookScreenDisplay {
 	public static int CUR = 0;
 	public static int PRE = 1;
 	public static int NEXT = 2;
-
+	int mBitmapWidth;
+	int mBitmapHeight;
 	public BookScreenDisplay(PageProvider bookContent) {
 		mBookContent = bookContent;
 		mPaint = PageConfig.pagePaintFromConfig(false);
@@ -53,6 +54,8 @@ public class BookScreenDisplay {
 	}
 
 	public void init(int w, int h) {
+		mBitmapWidth = w;
+		mBitmapHeight = h;
 		mfrontPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 		mBackPageBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 		float len = mBookNameObj.getNameMeasure(PageConfig.getOthersPaint(false));
@@ -69,6 +72,8 @@ public class BookScreenDisplay {
 	}
 
 	public Bitmap tranlateFrontBitmap(Page page) {
+		mfrontPageBitmap.recycle();
+		mfrontPageBitmap = Bitmap.createBitmap(mBitmapWidth, mBitmapHeight, Bitmap.Config.ARGB_8888);
 		Canvas c = new Canvas(mfrontPageBitmap);
 		mPageObj.setPage(page);
 		Draw(c);
@@ -76,25 +81,10 @@ public class BookScreenDisplay {
 	}
 
 	public Bitmap tranlateBackBitmap(Page page) {
+		mBackPageBitmap.recycle();
+		mBackPageBitmap = Bitmap.createBitmap(mBitmapWidth,mBitmapHeight, Bitmap.Config.ARGB_8888);
 		Canvas c = new Canvas(mBackPageBitmap);
 		mPageObj.setPage(page);
-		Draw(c);
-		return mBackPageBitmap;
-	}
-
-	public Bitmap tranlateFrontBitmap() {
-		Page page = mBookContent.getCurPage();
-		Canvas c = new Canvas(mfrontPageBitmap);
-		mPageObj.setPage(page);
-		Draw(c);
-		return mfrontPageBitmap;
-	}
-
-	public Bitmap tranlateBackBitmap(int dir) {
-		Page page = dir == PRE ? mBookContent.getPrePage()
-				: mBookContent.getNextPage();
-		Canvas c = new Canvas(mBackPageBitmap);
-		mPageObj.setPage(page == null? mBookContent.getCurPage():page);
 		Draw(c);
 		return mBackPageBitmap;
 	}
