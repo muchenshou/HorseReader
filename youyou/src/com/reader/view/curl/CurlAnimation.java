@@ -276,6 +276,7 @@ public class CurlAnimation extends BookViewAnimation {
 				// If we were curling left page update current index.
 				if (mCurlState == CURL_LEFT) {
 					// --mCurrentIndex;
+					mBitmapSetup.turnToPre();
 				}
 			} else if (mAnimationTargetEvent == SET_CURL_TO_LEFT) {
 				// Switch curled page to left.
@@ -293,6 +294,7 @@ public class CurlAnimation extends BookViewAnimation {
 				// If we were curling right page update current index.
 				if (mCurlState == CURL_RIGHT) {
 					// ++mCurrentIndex;
+					mBitmapSetup.turnToNext();
 				}
 			}
 			mCurlState = CURL_NONE;

@@ -12,6 +12,8 @@ public abstract class BookViewAnimation {
 	public interface BitmapSetup {
 		public abstract Bitmap frontBitmap();
 		public abstract Bitmap backBitmap();
+		public void turnToPre();
+		public void turnToNext();
 		public void requestFresh();
 	}
 	protected BitmapSetup mBitmapSetup;

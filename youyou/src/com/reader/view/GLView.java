@@ -260,4 +260,14 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		this.requestRender();
 	}
 
+	@Override
+	public void turnToPre() {
+		mPageProvider.turnToPre();
+	}
+
+	@Override
+	public void turnToNext() {
+		mPageProvider.turnToNext();
+	}
+
 }
