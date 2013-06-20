@@ -16,6 +16,8 @@ public class CurlAnimation extends BookViewAnimation {
 	CurlMesh mPageRight = new CurlMesh(10);
 	CurlMesh mPageCurl = new CurlMesh(10);
 
+	private boolean mAnimate = false;
+
 	// Curl state. We are flipping none, left or right page.
 	private static final int CURL_LEFT = 1;
 	private static final int CURL_NONE = 0;
@@ -54,10 +56,10 @@ public class CurlAnimation extends BookViewAnimation {
 
 	private boolean mAllowLastPageCurl = true;
 
-
 	private int mCurlState = CURL_NONE;
 	private PointF mAnimationSource = new PointF();
 	private long mAnimationStartTime;
+	private long mAnimationDurationTime = 300;
 	private PointF mAnimationTarget = new PointF();
 	private int mAnimationTargetEvent;
 
@@ -88,7 +90,9 @@ public class CurlAnimation extends BookViewAnimation {
 	public boolean onTouch(View v, MotionEvent event) {
 		// No dragging during animation at the moment.
 		// TODO: Stop animation on touch event and return to drag mode.
-
+		if (mAnimate) {
+			return false;
+		}
 		// We need page rects quite extensively so get them for later use.
 		RectF rightRect = mPageRectRight;
 		RectF leftRect = mPageRectLeft;
@@ -152,7 +156,7 @@ public class CurlAnimation extends BookViewAnimation {
 					/* && mCurrentIndex >= mPageProvider.getPageCount() - 1 */) {
 						return false;
 					}
-					Log.i("hello","curl right");
+					Log.i("hello", "curl right");
 					startCurl(CURL_RIGHT);
 					Log.i("hello", "curl end");
 				}
@@ -200,6 +204,7 @@ public class CurlAnimation extends BookViewAnimation {
 					}
 					mAnimationTargetEvent = SET_CURL_TO_LEFT;
 				}
+				mAnimate = true;
 				this.mBitmapSetup.requestFresh();
 			}
 			break;
@@ -247,7 +252,60 @@ public class CurlAnimation extends BookViewAnimation {
 			// page.setTexture(null, CurlPage.SIDE_BOTH);
 			addCurlMesh(mPageRight);
 		}
+		// We are not animating.
+		if (mAnimate == false) {
+			for (int i = 0; i < mCurlMeshes.size(); ++i) {
+				mCurlMeshes.get(i).onDrawFrame(gl);
+			}
+			return;
+		}
 
+		long currentTime = System.currentTimeMillis();
+		// If animation is done.
+		if (currentTime >= mAnimationStartTime + mAnimationDurationTime) {
+			if (mAnimationTargetEvent == SET_CURL_TO_RIGHT) {
+				// Switch curled page to right.
+				CurlMesh right = mPageCurl;
+				CurlMesh curl = mPageRight;
+				right.setRect(mPageRectRight);
+				right.setFlipTexture(false);
+				right.reset();
+				removeCurlMesh(curl);
+				mPageCurl = curl;
+				mPageRight = right;
+				// If we were curling left page update current index.
+				if (mCurlState == CURL_LEFT) {
+					// --mCurrentIndex;
+				}
+			} else if (mAnimationTargetEvent == SET_CURL_TO_LEFT) {
+				// Switch curled page to left.
+				CurlMesh left = mPageCurl;
+				CurlMesh curl = mPageLeft;
+				left.setRect(mPageRectLeft);
+				left.setFlipTexture(true);
+				left.reset();
+				removeCurlMesh(curl);
+				if (!mRenderLeftPage) {
+					removeCurlMesh(left);
+				}
+				mPageCurl = curl;
+				mPageLeft = left;
+				// If we were curling right page update current index.
+				if (mCurlState == CURL_RIGHT) {
+					// ++mCurrentIndex;
+				}
+			}
+			mCurlState = CURL_NONE;
+			mAnimate = false;
+			this.mBitmapSetup.requestFresh();
+		} else {
+			mPointerPos.mPos.set(mAnimationSource);
+			float t = 1f - ((float) (currentTime - mAnimationStartTime) / mAnimationDurationTime);
+			t = 1f - (t * t * t * (3 - 2 * t));
+			mPointerPos.mPos.x += (mAnimationTarget.x - mAnimationSource.x) * t;
+			mPointerPos.mPos.y += (mAnimationTarget.y - mAnimationSource.y) * t;
+			updateCurlPos(mPointerPos);
+		}
 		for (int i = 0; i < mCurlMeshes.size(); ++i) {
 			mCurlMeshes.get(i).onDrawFrame(gl);
 		}
@@ -398,16 +456,16 @@ public class CurlAnimation extends BookViewAnimation {
 			CurlMesh curl = mPageLeft;
 			mPageLeft = mPageCurl;
 			mPageCurl = curl;
-
-			// if (mCurrentIndex > 1) {
-			// updatePage(mPageLeft.getTexturePage(), mCurrentIndex - 2);
-			// mPageLeft.setFlipTexture(true);
-			// mPageLeft.setRect(mPageRectRight);
-			// mPageLeft.reset();
-			// if (mRenderLeftPage) {
-			// addCurlMesh(mPageLeft);
-			// }
-			// }
+			Bitmap back = mBitmapSetup.backBitmap();
+			if (back != null) {
+				updatePage(mPageLeft.getTexturePage(), back);
+				mPageLeft.setFlipTexture(true);
+				mPageLeft.setRect(mPageRectRight);
+				mPageLeft.reset();
+				if (mRenderLeftPage) {
+					addCurlMesh(mPageLeft);
+				}
+			}
 
 			// If there is something to show on right page add it to renderer.
 			if (mBitmapSetup.backBitmap() != null) {

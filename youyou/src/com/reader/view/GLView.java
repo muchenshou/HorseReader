@@ -237,6 +237,10 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		gl.glEnable(GL_DEPTH_TEST);
 		gl.glDepthFunc(GL_LEQUAL);
 		gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		gl.glHint(GL10.GL_LINE_SMOOTH_HINT, GL10.GL_NICEST);
+		gl.glHint(GL10.GL_POLYGON_SMOOTH_HINT, GL10.GL_NICEST);
+		gl.glEnable(GL10.GL_LINE_SMOOTH);
+		gl.glDisable(GL10.GL_CULL_FACE);
 	}
 
 	@Override
