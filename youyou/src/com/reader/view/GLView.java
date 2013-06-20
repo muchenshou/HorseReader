@@ -1,36 +1,14 @@
 package com.reader.view;
 
-import static javax.microedition.khronos.opengles.GL10.GL_AMBIENT;
-import static javax.microedition.khronos.opengles.GL10.GL_BACK;
-import static javax.microedition.khronos.opengles.GL10.GL_BLEND;
-import static javax.microedition.khronos.opengles.GL10.GL_CCW;
-import static javax.microedition.khronos.opengles.GL10.GL_CLAMP_TO_EDGE;
-import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
-import static javax.microedition.khronos.opengles.GL10.GL_CULL_FACE;
-import static javax.microedition.khronos.opengles.GL10.GL_DEPTH_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_DEPTH_TEST;
-import static javax.microedition.khronos.opengles.GL10.GL_FLOAT;
 import static javax.microedition.khronos.opengles.GL10.GL_LEQUAL;
-import static javax.microedition.khronos.opengles.GL10.GL_LIGHT0;
-import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_NICEST;
-import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
 import static javax.microedition.khronos.opengles.GL10.GL_PERSPECTIVE_CORRECTION_HINT;
-import static javax.microedition.khronos.opengles.GL10.GL_POSITION;
 import static javax.microedition.khronos.opengles.GL10.GL_PROJECTION;
 import static javax.microedition.khronos.opengles.GL10.GL_SMOOTH;
-import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_WRAP_S;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_WRAP_T;
-import static javax.microedition.khronos.opengles.GL10.GL_TRIANGLES;
-import static javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_SHORT;
-import static javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY;
 
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,7 +18,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -48,22 +25,19 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
 import android.opengl.GLSurfaceView.Renderer;
+import android.opengl.GLU;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.reader.book.Book;
-import com.reader.book.manager.PageProvider;
 import com.reader.book.manager.BookManager;
+import com.reader.book.manager.PageProvider;
 import com.reader.config.PageConfig;
-import com.reader.ui.gl.MyGLUtils;
-import com.reader.ui.gl.Texture;
 import com.reader.view.curl.BookViewAnimation;
 import com.reader.view.curl.BookViewAnimation.BitmapSetup;
 import com.reader.view.curl.CurlAnimation;
-import com.reader.view.curl.SimpleAnimation;
 
 public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		Renderer, BitmapSetup {
@@ -79,9 +53,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 	private boolean mInit = false;
 	BookScreenDisplay mBookScreenDisplay;
 	private Paint mPaint;
-
-	float textureCoordinates[];
-	FloatBuffer textureFloatBuffer;
 
 	// Rect for render area.
 	private RectF mViewRect = new RectF();
@@ -117,12 +88,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 
 	protected void sizeChanged(int w, int h) {
 		this.mAnimation.onSizeChange(w, h, 0, 0);
-		int glw = Integer.highestOneBit(w - 1) << 1;
-		int glh = Integer.highestOneBit(h - 1) << 1;
-		textureCoordinates = new float[] { 0.0f, 0.0f, 0.0f,
-				(float) h / (float) glh, (float) w / (float) glw,
-				(float) h / (float) glh, (float) w / (float) glw, 0.0f };
-		textureFloatBuffer = MyGLUtils.toFloatBuffer(textureCoordinates);
 		mPageProvider.update(w - 20,
 				h - PageConfig.getTextHeight(PageConfig.getOthersPaint(false))
 						- 20);
