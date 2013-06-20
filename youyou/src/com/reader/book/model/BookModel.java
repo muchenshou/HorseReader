@@ -30,7 +30,8 @@ public class BookModel {
 	public void pushIntoPagesList(List<Page> pages) {
 		pushIntoElementsList();
 		Iterator<MarkupElement> iter = mElements.iterator();
-		while (iter.hasNext() ) {
+		int i = 0;
+		while (iter.hasNext()&&i++<100 ) {
 			MarkupElement element = iter.next();
 			element.pushIntoLines(mLines);
 		}

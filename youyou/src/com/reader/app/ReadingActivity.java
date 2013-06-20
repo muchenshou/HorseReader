@@ -8,7 +8,10 @@
 package com.reader.app;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,6 +19,7 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.Window;
@@ -39,7 +43,26 @@ public class ReadingActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 		String bookName = getIntent().getStringExtra("bookname");
+		// ///// test
+		try {
+			File my = File.createTempFile("aaaa", ".umd");
+			my.canWrite();
+			my.canRead();
+			OutputStream o = new FileOutputStream(my);
+			InputStream in = getResources().getAssets().open("weixin.umd");
+			byte[] filedata = new byte[1024];
+			int num;
+			while ((num = in.read(filedata)) > 0) {
+				o.write(filedata, 0, num);
+			}
+			o.close();
+			bookName = my.getPath();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// test
 		this.mBookName = bookName;
 		BookPosition position = new BookPosition(0, 0, 0);
 		BookHistory history = new BookHistory(this);
@@ -54,6 +77,7 @@ public class ReadingActivity extends Activity {
 				Toast.makeText(this, "文件不存在", Toast.LENGTH_LONG).show();
 				return;
 			}
+			Log.i("hello",bookName);
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
 			bookView = new GLView(this, bookmanager.openBook(position));
@@ -113,10 +137,10 @@ public class ReadingActivity extends Activity {
 				.getDefaultSharedPreferences(this);
 		String str = spf.getString("turn_page", "none");
 		if (str.equals("none")) {
-//			bookView.setTurnAnimation(new NoTurnAnimation(this));
+			// bookView.setTurnAnimation(new NoTurnAnimation(this));
 		}
 		if (str.equals("real")) {
-//			bookView.setTurnAnimation(new SimulateTurnPage(this));
+			// bookView.setTurnAnimation(new SimulateTurnPage(this));
 		}
 	}
 
