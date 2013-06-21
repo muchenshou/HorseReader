@@ -108,7 +108,8 @@ public class CurlAnimation extends BookViewAnimation {
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN: {
-
+			//set up our state
+			this.mState = STATE_TOUCHING;
 			// Once we receive pointer down event its position is mapped to
 			// right or left edge of page and that'll be the position from where
 			// user is holding the paper to make curl happen.
@@ -254,6 +255,7 @@ public class CurlAnimation extends BookViewAnimation {
 		}
 		// We are not animating.
 		if (mAnimate == false) {
+			Log.i("hello","size:"+mCurlMeshes.size());
 			for (int i = 0; i < mCurlMeshes.size(); ++i) {
 				mCurlMeshes.get(i).onDrawFrame(gl);
 			}
@@ -263,6 +265,8 @@ public class CurlAnimation extends BookViewAnimation {
 		long currentTime = System.currentTimeMillis();
 		// If animation is done.
 		if (currentTime >= mAnimationStartTime + mAnimationDurationTime) {
+			
+			this.mState = NONE;
 			if (mAnimationTargetEvent == SET_CURL_TO_RIGHT) {
 				// Switch curled page to right.
 				CurlMesh right = mPageCurl;
@@ -428,10 +432,12 @@ public class CurlAnimation extends BookViewAnimation {
 
 			Bitmap back = mBitmapSetup.backBitmap();
 			if (back != null) {
+				Log.i("hello", "right back");
+				updatePage(mPageRight.getTexturePage(), back);
 				mPageRight.setRect(mPageRectRight);
 				mPageRight.setFlipTexture(false);
 				mPageRight.reset();
-				updatePage(mPageRight.getTexturePage(), back);
+				
 				addCurlMesh(mPageRight);
 			}
 

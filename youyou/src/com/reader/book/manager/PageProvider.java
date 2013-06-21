@@ -54,6 +54,7 @@ public class PageProvider {
 	}
 
 	public Page getNextPage() {
+		Log.i("hello", "getNextPage");
 		return mPages.get(mCurIndex < mPages.size() - 1 ? mCurIndex + 1
 				: mCurIndex);
 	}
@@ -69,7 +70,7 @@ public class PageProvider {
 	}
 
 	public void turnToNext() {
-		Log.i("hello","trunToNext"+mPages.size());
+		Log.i("hello","trunToNext page size:"+mPages.size());
 		if (mCurIndex < mPages.size() - 1)
 			mCurIndex++;
 	}
