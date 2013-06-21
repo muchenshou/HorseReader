@@ -2,6 +2,8 @@ package com.reader.book;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.reader.book.manager.BookPosition;
 import com.reader.book.model.BookModel;
@@ -10,10 +12,7 @@ import com.reader.book.model.MarkupElement;
 
 public class Page implements Comparable<Page> {
 	LinkedList<AreaDraw> mLines = new LinkedList<AreaDraw>();
-	private BookModel mBookModel;
-
-	public Page(BookModel model) {
-		mBookModel = model;
+	public Page() {
 	}
 
 	public List<AreaDraw> getAreasDraw() {

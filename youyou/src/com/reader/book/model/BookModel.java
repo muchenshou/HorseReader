@@ -32,24 +32,10 @@ public class BookModel {
 	public void pushIntoPagesList(List<Page> pages) {
 		pushIntoElementsList();
 		Iterator<MarkupElement> iter = mElements.iterator();
-		int i = 0;
-		while (iter.hasNext()&&i++<100 ) {
+		while (iter.hasNext()) {
 			MarkupElement element = iter.next();
-			element.pushIntoLines(mLines);
+			element.pushIntoLines(mLines, pages);
 		}
-		float flag = 0.0f;
-		final float screenHeight = BookManager.View.getHeight() - 20;
-		Page page = new Page(this);
-		for (AreaDraw a : mLines) {
-			flag += a.getHeight();
-			if (flag<screenHeight) {
-				page.addLine(a);
-			}else{
-				pages.add(page);
-				page = new Page(this);
-				page.addLine(a);
-				flag = a.getHeight();
-			}
-		}
+		
 	}
 }

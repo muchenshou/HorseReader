@@ -35,13 +35,13 @@ public class ParagraphElement extends MarkupElement {
 		try {
 			BufferedInputStream input = new BufferedInputStream(new FileInputStream(mBook.bookFile));
 			Charset charset = Charset.forName("gbk");
-			byte bytes[] = new byte[this.getElementCursor().getLength()];
+			byte bytes[] = new byte[this.getElementCursor().getLength()+1];
 			List<Character> chars = new ArrayList<Character>();
 			byte word[] = new byte[2];
 			input.skip(this.getElementCursor().mRealFileStart);
 			input.read(bytes);
 			int ch;
-			for(int i=0; i<bytes.length; i++) {
+			for(int i=0; i<bytes.length-1; i++) {
 				ch = bytes[i];
 				if (ch >= 0) {
 					chars.add((char) ch);
