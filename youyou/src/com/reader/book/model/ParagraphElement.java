@@ -4,18 +4,25 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 import com.reader.book.Book;
+import com.reader.code.umd.UmdBook;
+import com.reader.code.umd.UmdBook.UmdInputStream;
 
 public class ParagraphElement extends MarkupElement {
 	char content[];
-	public ParagraphElement(Book book) {
+	Charset charset;
+	public ParagraphElement(Book book,Charset charset) {
 		mBook = book;
-		
+		this.charset = charset;
 	}
 
 	@Override
@@ -32,9 +39,46 @@ public class ParagraphElement extends MarkupElement {
 	}
 	@Override
 	public void fill() {
+		if (charset.displayName().equals("GBK")) {
+			fillByGbk();
+		} if (charset.displayName().equals("UTF-16")) {
+			fillByUnicode();
+		}
+	}
+	private void fillByUnicode() {
 		try {
 			BufferedInputStream input = new BufferedInputStream(new FileInputStream(mBook.bookFile));
-			Charset charset = Charset.forName("gbk");
+			//byte bytes[] = new byte[this.getElementCursor().getLength()+1];
+			InputStreamReader reader = new InputStreamReader(input, charset);
+			List<Character> chars = new ArrayList<Character>();
+			input.read();
+			input.read();
+			//input.skip(this.getElementCursor().mRealFileStart);
+			//input.read(bytes);
+			int ch;
+			while((ch = reader.read())!= -1 ) {
+				int a = ch & 0xff;
+				a = a << 8;
+				int b = ch & 0xff00;
+				b = b>>>8;
+				ch = a | b;
+				chars.add((char)ch);
+			}
+			
+			this.content = new char[chars.size()];
+			for (int i=0; i<chars.size(); i++) {
+				content[i] = chars.get(i);
+			}
+			input.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	private void fillByGbk() {
+		try {
+			BufferedInputStream input = new BufferedInputStream(new FileInputStream(mBook.bookFile));
 			byte bytes[] = new byte[this.getElementCursor().getLength()+1];
 			List<Character> chars = new ArrayList<Character>();
 			byte word[] = new byte[2];
@@ -64,7 +108,9 @@ public class ParagraphElement extends MarkupElement {
 			e.printStackTrace();
 		}
 	}
-
+	private void fillUTF8() {
+		
+	}
 	public char charAt(int index) {
 		return content[index];
 	}

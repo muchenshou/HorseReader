@@ -14,7 +14,7 @@ import com.reader.code.umd.UmdBook.UmdInputStream;
 
 public class UmdParagraphElement extends ParagraphElement {
 	public UmdParagraphElement(Book book) {
-		super(book);
+		super(book,null);
 	}
 
 	@Override

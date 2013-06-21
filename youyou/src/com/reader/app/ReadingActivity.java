@@ -47,11 +47,11 @@ public class ReadingActivity extends Activity {
 		String bookName = getIntent().getStringExtra("bookname");
 		// ///// test
 		try {
-			File my = File.createTempFile("aaaa", ".umd");
+			File my = File.createTempFile("aaaa", ".txt");
 			my.canWrite();
 			my.canRead();
 			OutputStream o = new FileOutputStream(my);
-			InputStream in = getResources().getAssets().open("weixin.umd");
+			InputStream in = getResources().getAssets().open("bingfa.txt");
 			byte[] filedata = new byte[1024];
 			int num;
 			while ((num = in.read(filedata)) > 0) {

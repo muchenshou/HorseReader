@@ -13,13 +13,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.concurrent.BlockingQueue;
+
+import android.util.Log;
 
 import com.reader.book.Book;
 import com.reader.book.model.MarkupElement;
 import com.reader.book.model.ParagraphElement;
+import com.reader.util.InputStreamWithCount;
 
 public class TextBook extends Book {
 	private RandomAccessFile mFile;
@@ -90,36 +96,92 @@ public class TextBook extends Book {
 	@Override
 	public void pushIntoList(BlockingQueue<MarkupElement> elements) {
 		try {
-			InputStream input = new BufferedInputStream(new FileInputStream(
-					this.bookFile));
-			// Charset charset = Charset.forName("gbk");
-			MarkupElement element = new ParagraphElement(this);
+			InputStream in = new FileInputStream(
+					this.bookFile);
+			InputStreamWithCount input = new InputStreamWithCount(in);
+			Charset charset = Charset.forName("gbk");
+
 			int read = 0;
 			long size = bookFile.length();
 			int ch = 0;
-
-			element.getElementCursor().setRealFileStart(read);
-			while ((ch = input.read()) != -1) {
+			ch = input.read();
+			read++;
+			if (ch == 0xFF) {
+				ch = input.read();
 				read++;
-				if (ch != 13) {
-					if (element == null) {
-						element = new ParagraphElement(this);
-						element.getElementCursor().setRealFileStart(read - 1);
+				if (ch == 0xFE)
+					charset = Charset.forName("Unicode");
+			}
+			if (ch == 0xEF) {
+				ch = input.read();
+				read++;
+				int ch1 = input.read();
+				read++;
+				if (ch == 0xBB && ch1 == 0xBF)
+					charset = Charset.forName("UTF-8");
+			}
+			Log.i("hello", charset.displayName());
+			if (charset.displayName().equals("UTF-16")) {
+				InputStreamReader reader = new InputStreamReader(input, charset);
+
+				MarkupElement element = new ParagraphElement(this, charset);
+				element.getElementCursor().setRealFileStart(read);
+				while ((ch = reader.read()) != -1) {
+					int a = ch & 0xff;
+					a = a << 8;
+					int b = ch & 0xff00;
+					b = b>>>8;
+					ch = a | b;
+					if (ch != 13) {
+						Log.i("hello", "" + (char)ch+"hex:"+Integer.toHexString(ch));
+						if (element == null) {
+							element = new ParagraphElement(this, charset);
+							Log.i("hello", "" + (input.getCount() - 2));
+							element.getElementCursor().setRealFileStart(
+									read - 2);
+						}
+						continue;
 					}
-					continue;
+					Log.i("hello","huanhang:"+input.getCount());
+					if (element != null) {
+						element.getElementCursor().setRealFileLast(read - 2);
+						elements.add(element);
+					}
+					element = null;
+					// ch = input.read(); // ch should be equal to 10 here
+					// read+=2;
 				}
 				if (element != null) {
-					element.getElementCursor().setRealFileLast(read - 2);
+					element.getElementCursor().setRealFileLast((int) size - 1);
 					elements.add(element);
 				}
-				element = null;
-				ch = input.read(); // ch should be equal to 10 here
-				read++;
+				reader.close();
+			} else {
+				MarkupElement element = new ParagraphElement(this, charset);
+				element.getElementCursor().setRealFileStart(read);
+				while ((ch = input.read()) != -1) {
+					read++;
+					if (ch != 13) {
+						if (element == null) {
+							element = new ParagraphElement(this, charset);
+							element.getElementCursor().setRealFileStart(
+									read - 1);
+						}
+						continue;
+					}
+					if (element != null) {
+						element.getElementCursor().setRealFileLast(read - 2);
+						elements.add(element);
+					}
+					element = null;
+					ch = input.read(); // ch should be equal to 10 here
+					read++;
+				}
+				if (element != null) {
+					element.getElementCursor().setRealFileLast((int) size - 1);
+					elements.add(element);
+				}
 
-			}
-			if (element != null) {
-				element.getElementCursor().setRealFileLast((int) size - 1);
-				elements.add(element);
 			}
 			input.close();
 
