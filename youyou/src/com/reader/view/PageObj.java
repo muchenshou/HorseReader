@@ -59,7 +59,7 @@ public class PageObj extends DrawableObj {
 		if (pageString == null)return;
 		List<AreaDraw> list = pageString.getAreasDraw();
 		for (AreaDraw strLine : list) {
-			strLine.draw(canvas, 0, y + baseLineHeight, paint);
+			strLine.draw(canvas, 15, y + baseLineHeight, paint);
 			y += strLine.getHeight();
 		}
 	}

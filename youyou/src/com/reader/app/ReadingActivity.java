@@ -77,7 +77,6 @@ public class ReadingActivity extends Activity {
 				Toast.makeText(this, "文件不存在", Toast.LENGTH_LONG).show();
 				return;
 			}
-			Log.i("hello",bookName);
 			bookmanager = new BookManager(ReadingActivity.this, new File(
 					bookName));
 			bookView = new GLView(this, bookmanager.openBook(position));

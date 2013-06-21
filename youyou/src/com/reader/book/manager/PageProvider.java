@@ -26,23 +26,30 @@ public class PageProvider {
 	private float pageHeight = (float) 0.0;
 	private Paint mPaint = null;
 	BookModel mBookModel;
-	public Book mBook = null;
 	private List<Page> mPages = new ArrayList<Page>();
 
-	public PageProvider(Book book) {
-		mBook = book;
-		mBookModel = new BookModel(mBook);
+	public PageProvider(BookModel bookModel) {
+		mBookModel = bookModel;
 		this.mPaint = PageConfig.pagePaintFromConfig(false);
 	}
 
 	public void update(int w, int h) {
 		pageHeight = h;
 		pageWidth = w;
-		mBookModel.pushIntoPagesList(mPages);
+		new Thread() {
+			@Override
+			public void run() {
+				mBookModel.pushIntoPagesList(mPages);
+			}
+		}.start();
+
+		while (mPages.size() == 0)
+			;
 	}
 
 	public void update() {
-		int lineHeight = PageConfig.getTextHeight(mPaint) + PageConfig.getPadding();
+		int lineHeight = PageConfig.getTextHeight(mPaint)
+				+ PageConfig.getPadding();
 		pageline = (int) (pageHeight / lineHeight);
 	}
 
@@ -54,7 +61,6 @@ public class PageProvider {
 	}
 
 	public Page getNextPage() {
-		Log.i("hello", "getNextPage");
 		return mPages.get(mCurIndex < mPages.size() - 1 ? mCurIndex + 1
 				: mCurIndex);
 	}
@@ -70,7 +76,6 @@ public class PageProvider {
 	}
 
 	public void turnToNext() {
-		Log.i("hello","trunToNext page size:"+mPages.size());
 		if (mCurIndex < mPages.size() - 1)
 			mCurIndex++;
 	}

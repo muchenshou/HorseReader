@@ -6,6 +6,7 @@ import android.graphics.Paint;
 
 import com.reader.book.Book;
 import com.reader.book.Page;
+import com.reader.book.manager.BookManager;
 import com.reader.book.manager.PageProvider;
 import com.reader.config.PageConfig;
 
@@ -28,7 +29,7 @@ public class BookScreenDisplay {
 	public BookScreenDisplay(PageProvider bookContent) {
 		mBookContent = bookContent;
 		mPaint = PageConfig.pagePaintFromConfig(false);
-		mBook = mBookContent.mBook;
+		mBook = BookManager.Model.mBook;
 
 		mPageObj = new PageObj(mBookContent, mBook);
 		mTimeObj = new TimeObj();

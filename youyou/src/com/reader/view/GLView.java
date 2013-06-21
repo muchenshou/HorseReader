@@ -34,6 +34,7 @@ import android.view.View;
 import com.reader.book.Book;
 import com.reader.book.manager.BookManager;
 import com.reader.book.manager.PageProvider;
+import com.reader.book.model.BookModel;
 import com.reader.config.PageConfig;
 import com.reader.view.curl.BookViewAnimation;
 import com.reader.view.curl.BookViewAnimation.BitmapSetup;
@@ -49,7 +50,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 	public PageProvider mPageProvider;
 	private BookViewAnimation mAnimation;
 	public Bitmap m_book_bg = null;
-	Book mBook;
 	private boolean mInit = false;
 	BookScreenDisplay mBookScreenDisplay;
 	private Paint mPaint;
@@ -57,17 +57,16 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 	// Rect for render area.
 	private RectF mViewRect = new RectF();
 
-	public GLView(Context context, Book book) {
+	public GLView(Context context, BookModel bookModel) {
 		super(context);
 		this.setRenderer(this);
 		this.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		getHolder().setFormat(PixelFormat.RGB_565);
 
-		BookManager.Instance = this;
+		BookManager.View = this;
 		setOnTouchListener(this);
-		this.mBook = book;
 		mPaint = PageConfig.pagePaintFromConfig(false);
-		mPageProvider = new PageProvider(book);
+		mPageProvider = new PageProvider(bookModel);
 
 		mBookScreenDisplay = new BookScreenDisplay(mPageProvider);
 		// this.mAnimation = new SimulateTurnPage(getContext());
@@ -108,7 +107,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 
 	private void reset() {
 		mPageProvider.update();
-		Log.i("hello", "bookview:reset");
 		if (this.mInit == false) {
 			// mBookContent.setCurPosition(mBook.openOffset);
 			mInit = true;

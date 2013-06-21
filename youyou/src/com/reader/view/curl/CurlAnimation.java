@@ -146,9 +146,7 @@ public class CurlAnimation extends BookViewAnimation {
 					/* && mCurrentIndex >= mPageProvider.getPageCount() - 1 */) {
 						return false;
 					}
-					Log.i("hello", "curl right");
 					startCurl(CURL_RIGHT);
-					Log.i("hello", "curl end");
 				}
 			}
 			// If we have are in curl state, let this case clause flow through
@@ -219,7 +217,6 @@ public class CurlAnimation extends BookViewAnimation {
 		mViewRect.left = -ratio;
 		mViewRect.right = ratio;
 		setMargins(0, 0, 0, 0);
-		Log.i("hello", "w:" + w + "h:" + h);
 		// updatePageRects();
 		mBitmapSetup.requestFresh();
 
@@ -244,7 +241,6 @@ public class CurlAnimation extends BookViewAnimation {
 		}
 		// We are not animating.
 		if (mAnimate == false) {
-			Log.i("hello","size:"+mCurlMeshes.size());
 			for (int i = 0; i < mCurlMeshes.size(); ++i) {
 				mCurlMeshes.get(i).onDrawFrame(gl);
 			}
@@ -420,7 +416,6 @@ public class CurlAnimation extends BookViewAnimation {
 
 			Bitmap back = mBitmapSetup.backBitmap();
 			if (back != null) {
-				Log.i("hello", "right back");
 				updatePage(mPageRight.getTexturePage(), back);
 				mPageRight.setRect(mPageRectRight);
 				mPageRight.setFlipTexture(false);

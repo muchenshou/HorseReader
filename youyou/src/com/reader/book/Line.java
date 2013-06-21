@@ -20,7 +20,7 @@ public class Line extends AreaDraw {
 
 	@Override
 	public float getWidth() {
-		return BookManager.Instance.getWidth();
+		return BookManager.View.getWidth();
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class Line extends AreaDraw {
 
 	@Override
 	public void fill() {
-		final int width = BookManager.Instance.getWidth();
+		final int width = BookManager.View.getWidth() - 15;
 		final Paint paint = PageConfig.pagePaintFromConfig(false);
 		char chars[] = new char[1];
 		float widths[] = new float[1];

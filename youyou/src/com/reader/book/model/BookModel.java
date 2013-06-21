@@ -12,9 +12,11 @@ import com.reader.book.AreaDraw;
 import com.reader.book.Book;
 import com.reader.book.Line;
 import com.reader.book.Page;
+import com.reader.book.manager.BookManager;
+import com.reader.config.PageConfig;
 
 public class BookModel {
-	Book mBook;
+	public Book mBook;
 	BlockingQueue<MarkupElement> mElements = new LinkedBlockingQueue<MarkupElement>();
 	LinkedList<AreaDraw> mLines = new LinkedList<AreaDraw>();
 
@@ -35,16 +37,18 @@ public class BookModel {
 			MarkupElement element = iter.next();
 			element.pushIntoLines(mLines);
 		}
-		int flag = 0;
-
+		float flag = 0.0f;
+		final float screenHeight = BookManager.View.getHeight() - 20;
 		Page page = new Page(this);
 		for (AreaDraw a : mLines) {
-			flag++;
-			page.addLine(a);
-			if (flag == 17) {
+			flag += a.getHeight();
+			if (flag<screenHeight) {
+				page.addLine(a);
+			}else{
 				pages.add(page);
 				page = new Page(this);
-				flag = 0;
+				page.addLine(a);
+				flag = a.getHeight();
 			}
 		}
 	}
