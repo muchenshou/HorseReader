@@ -181,14 +181,14 @@ public class SimpleAnimation extends BookViewAnimation {
 		mX = mEndX - mStartX;
 		animationtime = delayMillis;// (int)((float)delayMillis*((float)mX/(float)mWidth));
 		mEnd = mStart + animationtime;
-		this.mState = STATE_ANIMATION;
+		this.mAnimate = true;
 		mAnimationView.postInvalidate();
 	}
 
 	private static final Interpolator sInterpolator = new AccelerateInterpolator();
 
 	private void animation() {
-		if (mState != STATE_ANIMATION)
+		if (!mAnimate)
 			return;
 		long now = System.currentTimeMillis();
 		if (now < mEnd) {
@@ -198,7 +198,7 @@ public class SimpleAnimation extends BookViewAnimation {
 							/ (float) animationtime);
 			mAnimationView.postInvalidate();
 		} else {
-			mState = STATE_ANIMATION_END;
+			mAnimate = false;
 			mBoundLine = mWidth;
 			mAnimationView.postInvalidate();
 		}

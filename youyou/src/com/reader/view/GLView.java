@@ -105,31 +105,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		this.reset();
 	}
 
-	protected void drawDisplayBitmap(Canvas canvas) {
-		if (mAnimation.state() == BookViewAnimation.NONE) {
-			canvas.drawBitmap(mBookScreenDisplay
-					.tranlateFrontBitmap(mPageProvider.getCurPage()), 0, 0,
-					mPaint);
-			return;
-		}
-		if (mAnimation.state() == BookViewAnimation.STATE_ANIMATION_END) {
-			if (mAnimation.DragToRight())
-				mPageProvider.turnToPre();
-			else
-				mPageProvider.turnToNext();
-
-			canvas.drawBitmap(mBookScreenDisplay
-					.tranlateFrontBitmap(mPageProvider.getCurPage()), 0, 0,
-					mPaint);
-
-			mAnimation.setState(BookViewAnimation.NONE);
-			lock.lock();
-			con.signal();
-			lock.unlock();
-			postInvalidate();
-			return;
-		}
-	}
 
 	private void reset() {
 		mPageProvider.update();
@@ -154,18 +129,9 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 				&& event.getY() < rect.exactCenterY() + 20) { // gridview
 			return false;
 		}
-		if (event.getAction() == MotionEvent.ACTION_DOWN
-				&& mAnimation.state() != BookViewAnimation.NONE) {
-			filterPoint = event.getDownTime();
-		}
-		if (filterPoint == event.getDownTime()) {
-			return false;
-		}
-		mAnimation.onTouch(v, event);
-		if (mAnimation.state() == BookViewAnimation.STATE_TOUCH_START) {
 
-		}
-		postInvalidate();
+		mAnimation.onTouch(v, event);
+		requestRender();
 		return true;
 	}
 

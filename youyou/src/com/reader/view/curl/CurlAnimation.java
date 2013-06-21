@@ -16,16 +16,7 @@ public class CurlAnimation extends BookViewAnimation {
 	CurlMesh mPageRight = new CurlMesh(10);
 	CurlMesh mPageCurl = new CurlMesh(10);
 
-	private boolean mAnimate = false;
 
-	// Curl state. We are flipping none, left or right page.
-	private static final int CURL_LEFT = 1;
-	private static final int CURL_NONE = 0;
-	private static final int CURL_RIGHT = 2;
-
-	// Constants for mAnimationTargetEvent.
-	private static final int SET_CURL_TO_LEFT = 1;
-	private static final int SET_CURL_TO_RIGHT = 2;
 
 	// Curl meshes used for static and dynamic rendering.
 	private Vector<CurlMesh> mCurlMeshes = new Vector<CurlMesh>();
@@ -56,7 +47,6 @@ public class CurlAnimation extends BookViewAnimation {
 
 	private boolean mAllowLastPageCurl = true;
 
-	private int mCurlState = CURL_NONE;
 	private PointF mAnimationSource = new PointF();
 	private long mAnimationStartTime;
 	private long mAnimationDurationTime = 300;
@@ -109,7 +99,6 @@ public class CurlAnimation extends BookViewAnimation {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN: {
 			//set up our state
-			this.mState = STATE_TOUCHING;
 			// Once we receive pointer down event its position is mapped to
 			// right or left edge of page and that'll be the position from where
 			// user is holding the paper to make curl happen.
@@ -240,7 +229,7 @@ public class CurlAnimation extends BookViewAnimation {
 	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		gl.glLoadIdentity();
-		if (this.state() == NONE) {
+		if (this.state() == CURL_NONE) {
 
 			Bitmap front = this.mBitmapSetup.frontBitmap();
 
@@ -266,7 +255,6 @@ public class CurlAnimation extends BookViewAnimation {
 		// If animation is done.
 		if (currentTime >= mAnimationStartTime + mAnimationDurationTime) {
 			
-			this.mState = NONE;
 			if (mAnimationTargetEvent == SET_CURL_TO_RIGHT) {
 				// Switch curled page to right.
 				CurlMesh right = mPageCurl;

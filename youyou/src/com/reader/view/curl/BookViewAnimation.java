@@ -33,18 +33,22 @@ public abstract class BookViewAnimation {
 
 	public abstract void update();
 
-	public static final int STATE_TOUCH_START = 0;
-	public static final int STATE_TOUCHING = 1;
-	public static final int STATE_ANIMATION = 2;
-	public static final int STATE_ANIMATION_END = 3;
-	public static final int NONE = 4;
-	protected int mState = NONE;
+	// Curl state. We are flipping none, left or right page.
+	public static final int CURL_LEFT = 1;
+	public static final int CURL_NONE = 0;
+	public static final int CURL_RIGHT = 2;
+
+	// Constants for mAnimationTargetEvent.
+	public static final int SET_CURL_TO_LEFT = 1;
+	public static final int SET_CURL_TO_RIGHT = 2;
+	protected boolean mAnimate = false;
+	protected int mCurlState = CURL_NONE;
 
 	public int state() {
-		return mState;
+		return mCurlState;
 	}
 
 	public void setState(int s) {
-		mState = s;
+		mCurlState = s;
 	}
 }
