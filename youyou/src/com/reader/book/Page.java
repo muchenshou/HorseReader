@@ -1,17 +1,13 @@
 package com.reader.book;
 
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import com.reader.book.manager.BookPosition;
-import com.reader.book.model.BookModel;
-import com.reader.book.model.Cursor;
-import com.reader.book.model.MarkupElement;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 
-public class Page implements Comparable<Page> {
-	LinkedList<AreaDraw> mLines = new LinkedList<AreaDraw>();
+public class Page extends AreaDraw {
+
 	public Page() {
 	}
 
@@ -19,35 +15,46 @@ public class Page implements Comparable<Page> {
 		return mLines;
 	}
 
-	public boolean isNull() {
-		return mLines.size() == 0;
-	}
-
-	public int getLinesSize() {
-		return mLines.size();
-	}
-
-	public void clear() {
-		mLines.clear();
-	}
-
-	public void addLine(AreaDraw line) {
+	@Override
+	public void add(AreaDraw line) {
 		mLines.add(line);
 	}
 
 	@Override
-	public int compareTo(Page another) {
+	public float getWidth() {
 		return 0;
 	}
 
-	public BookPosition getLastPos() {
-		BookPosition pos = new BookPosition(0, 0, 0);
-		final AreaDraw lastLine = mLines.getLast();
-		final MarkupElement element = lastLine.element;
-		final Cursor cursor = element.getElementCursor();
-		pos.mElementIndex = element.index;
-		pos.mOffset = lastLine.offset + lastLine.length;
-		pos.mRealBookPos = cursor.getRealFileStart();
-		return pos;
+	@Override
+	public float getHeight() {
+		return 0;
+	}
+
+	@Override
+	public void draw(Canvas canvas, float left, float top, Paint paint) {
+		Iterator<AreaDraw> iter = createIterator();
+		while (iter.hasNext()) {
+			AreaDraw area = iter.next();
+			area.draw(canvas, area.getX(), area.getY(), paint);
+		}
+	}
+
+	@Override
+	public void fill() {
+		Iterator<AreaDraw> iter = createIterator();
+		while (iter.hasNext()) {
+			AreaDraw area = iter.next();
+			area.fill();
+		}
+	}
+
+	@Override
+	public Iterator<AreaDraw> createIterator() {
+		return mLines.iterator();
+	}
+
+	@Override
+	public boolean hasChild() {
+		return true;
 	}
 }

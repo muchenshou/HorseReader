@@ -29,7 +29,7 @@ public class PageConfig {
 	}
 
 	private static Paint mPaint;
-
+	private static FontMetrics fm;
 	public static Paint pagePaintFromConfig(boolean update) {
 		if (mPaint != null && !update) {
 			return mPaint;
@@ -48,6 +48,7 @@ public class PageConfig {
 		mPaint.setColor(mFontColor);
 		mPaint.setAntiAlias(true);
 		mPaint.setTypeface(Typeface.MONOSPACE);
+		fm = mPaint.getFontMetrics();//
 		return mPaint;
 	}
 
@@ -78,7 +79,10 @@ public class PageConfig {
 	}
 
 	public static int getTextHeight(Paint paint) {
-		FontMetrics fm = paint.getFontMetrics();//
 		return (int) (Math.ceil(fm.descent - fm.top) + 1);
+	}
+	
+	public static float getBaseLineText(){
+		return fm.top;
 	}
 }

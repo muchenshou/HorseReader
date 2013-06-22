@@ -1,8 +1,9 @@
 package com.reader.book.model;
 
 import java.util.List;
-
-import android.util.Log;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
@@ -39,7 +40,7 @@ public abstract class MarkupElement {
 	private static float flag = 0.0f;
 	final float screenHeight = BookManager.View.getHeight() - 20;
 
-	private void addLineIntoPage(AreaDraw line, List<Page> pages) {
+	private void addLineIntoPage(AreaDraw line, CopyOnWriteArrayList <Page> pages) {
 		Page page;
 		if (flag == 0.0f) {
 			page = new Page();
@@ -49,16 +50,18 @@ public abstract class MarkupElement {
 		}
 		flag += line.getHeight();
 		if (flag < screenHeight) {
-			page.addLine(line);
+			line.setPos(0.0f, flag - line.getHeight());
+			page.add(line);
 		} else {
 			page = new Page();
-			page.addLine(line);
+			line.setPos(.0f, .0f);
+			page.add(line);
 			pages.add(page);
 			flag = line.getHeight();
 		}
 	}
 
-	public void pushIntoLines(List<AreaDraw> lines, List<Page> pages) {
+	public void pushIntoLines(List<AreaDraw> lines, CopyOnWriteArrayList<Page> pages) {
 		AreaDraw next;
 		int offset = 0;
 		fill();

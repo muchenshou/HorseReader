@@ -72,7 +72,12 @@ public class BookScreenDisplay {
 		Bitmap mfrontPageBitmap = Bitmap.createBitmap(mBitmapWidth, mBitmapHeight, Bitmap.Config.ARGB_8888);
 		Canvas c = new Canvas(mfrontPageBitmap);
 		mPageObj.setPage(page);
-		Draw(c);
+		if (m_book_bg == null)
+			c.drawColor(m_backColor);
+		else
+			c.drawBitmap(m_book_bg, 0, 0, null);
+		//Draw(c);
+		page.draw(c, 0, 0, mPaint);
 		return mfrontPageBitmap;
 	}
 
@@ -80,7 +85,8 @@ public class BookScreenDisplay {
 		Bitmap mBackPageBitmap = Bitmap.createBitmap(mBitmapWidth,mBitmapHeight, Bitmap.Config.ARGB_8888);
 		Canvas c = new Canvas(mBackPageBitmap);
 		mPageObj.setPage(page);
-		Draw(c);
+		// Draw(c);
+		page.draw(c, 0, 0, mPaint);
 		return mBackPageBitmap;
 	}
 }

@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.reader.book.manager.BookPosition;
 import com.reader.book.model.MarkupElement;
@@ -28,15 +29,16 @@ public abstract class Book {
 	public abstract void excuteCmd(int cmd);
 
 	public abstract int getContent(int start, ByteBuffer buffer);
-	
-	public abstract void pushIntoList(BlockingQueue<MarkupElement> elements,List<Page> pages,LinkedList<AreaDraw> lines);
+
+	public abstract void pushIntoList(BlockingQueue<MarkupElement> elements,
+			CopyOnWriteArrayList<Page> pages, LinkedList<AreaDraw> lines);
 
 	public abstract int size();
 
 	public boolean isEof() {
 		return EOFBOOK;
 	}
-	
+
 	public String getName() {
 		String name = bookFile.getName();
 		return name.substring(0, name.length() - 4);

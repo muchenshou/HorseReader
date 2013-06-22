@@ -2,7 +2,6 @@ package com.reader.book;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.view.View;
 
 import com.reader.book.manager.BookManager;
 import com.reader.book.model.MarkupElement;
@@ -31,7 +30,7 @@ public class Line extends AreaDraw {
 
 	@Override
 	public void draw(Canvas canvas, float left, float top, Paint paint) {
-		canvas.drawText(new String(str), left, top, paint);
+		canvas.drawText(new String(str), getX(), getY() - PageConfig.getBaseLineText(), paint);
 	}
 
 	@Override

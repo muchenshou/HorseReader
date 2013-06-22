@@ -9,6 +9,7 @@ package com.reader.book.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.graphics.Paint;
 import android.util.Log;
@@ -26,7 +27,7 @@ public class PageProvider {
 	private float pageHeight = (float) 0.0;
 	private Paint mPaint = null;
 	BookModel mBookModel;
-	private List<Page> mPages = new ArrayList<Page>();
+	private CopyOnWriteArrayList<Page> mPages = new CopyOnWriteArrayList<Page>();
 
 	public PageProvider(BookModel bookModel) {
 		mBookModel = bookModel;
@@ -46,7 +47,7 @@ public class PageProvider {
 		while (mPages.size() == 0)
 			;
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

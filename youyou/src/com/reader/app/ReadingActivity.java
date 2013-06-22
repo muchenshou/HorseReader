@@ -46,22 +46,22 @@ public class ReadingActivity extends Activity {
 
 		String bookName = getIntent().getStringExtra("bookname");
 		// ///// test
-		try {
-			File my = File.createTempFile("aaaa", ".txt");
-			my.canWrite();
-			my.canRead();
-			OutputStream o = new FileOutputStream(my);
-			InputStream in = getResources().getAssets().open("suan.txt");
-			byte[] filedata = new byte[1024];
-			int num;
-			while ((num = in.read(filedata)) > 0) {
-				o.write(filedata, 0, num);
-			}
-			o.close();
-			bookName = my.getPath();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			File my = File.createTempFile("aaaa", ".txt");
+//			my.canWrite();
+//			my.canRead();
+//			OutputStream o = new FileOutputStream(my);
+//			InputStream in = getResources().getAssets().open("suan.txt");
+//			byte[] filedata = new byte[1024];
+//			int num;
+//			while ((num = in.read(filedata)) > 0) {
+//				o.write(filedata, 0, num);
+//			}
+//			o.close();
+//			bookName = my.getPath();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		// test
 		this.mBookName = bookName;
 		BookPosition position = new BookPosition(0, 0, 0);

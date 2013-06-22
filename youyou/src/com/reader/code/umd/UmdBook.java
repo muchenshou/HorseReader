@@ -17,6 +17,7 @@ import java.nio.ByteOrder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
@@ -142,20 +143,21 @@ public class UmdBook extends Book {
 	}
 
 	@Override
-	public void pushIntoList(BlockingQueue<MarkupElement> elements,List<Page> pages,LinkedList<AreaDraw> lines) {
+	public void pushIntoList(BlockingQueue<MarkupElement> elements,
+			CopyOnWriteArrayList<Page> pages, LinkedList<AreaDraw> lines) {
 
 		try {
 			InputStream input = new BufferedInputStream(new UmdInputStream());
-//			Charset charset = Charset.forName("gbk");
+			// Charset charset = Charset.forName("gbk");
 			MarkupElement element = new UmdParagraphElement(this);
 			int read = 0;
 			long size = bookFile.length();
 			int ch = 0;
-			
+
 			element.getElementCursor().setRealFileStart(read);
-			while ((ch = input.read()) !=-1) {
+			while ((ch = input.read()) != -1) {
 				read++;
-				if (ch != 0x29 ) {
+				if (ch != 0x29) {
 					if (element == null) {
 						element = new UmdParagraphElement(this);
 						element.getElementCursor().setRealFileStart(read - 1);
@@ -170,15 +172,15 @@ public class UmdBook extends Book {
 				element = null;
 				ch = input.read(); // ch should be equal to 0x29 here
 				read++;
-				
+
 			}
 			if (element != null) {
-				element.getElementCursor().setRealFileLast((int)size - 1);
+				element.getElementCursor().setRealFileLast((int) size - 1);
 				elements.add(element);
 				element.pushIntoLines(lines, pages);
 			}
 			input.close();
-			
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

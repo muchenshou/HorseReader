@@ -174,7 +174,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		// TODO Auto-generated method stub
 		gl.glViewport(0, 0, width, height);
 		float ratio = (float) width / height;
 		mViewRect.top = 1.0f;
@@ -206,17 +205,28 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		gl.glEnable(GL10.GL_LINE_SMOOTH);
 		gl.glDisable(GL10.GL_CULL_FACE);
 	}
-
+	Bitmap bb;
 	@Override
 	public Bitmap frontBitmap() {
-		return mBookScreenDisplay.tranlateFrontBitmap(mPageProvider
+		Bitmap ff = mBookScreenDisplay.tranlateFrontBitmap(mPageProvider
 				.getCurPage());
+		new Thread(){
+			@Override
+			public void run() {
+				bb = mBookScreenDisplay.tranlateFrontBitmap(mPageProvider
+						.getNextPage());
+			}
+			
+		}.start();
+		return ff;
 	}
 
 	@Override
 	public Bitmap backBitmap() {
-		return mBookScreenDisplay.tranlateFrontBitmap(mPageProvider
-				.getNextPage());
+		while(bb == null);
+		Bitmap b = bb;
+		bb = null;
+		return b;
 	}
 
 	@Override

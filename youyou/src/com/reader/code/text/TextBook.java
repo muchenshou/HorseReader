@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.util.Log;
 
@@ -120,7 +121,7 @@ public class TextBook extends Book {
 
 	@Override
 	public void pushIntoList(BlockingQueue<MarkupElement> elements,
-			List<Page> pages, LinkedList<AreaDraw> lines) {
+			CopyOnWriteArrayList<Page> pages, LinkedList<AreaDraw> lines) {
 		try {
 			InputStream in = new FileInputStream(this.bookFile);
 			InputStreamWithCount input = new InputStreamWithCount(in);

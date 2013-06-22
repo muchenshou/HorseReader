@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.util.Log;
@@ -26,17 +27,11 @@ public class BookModel {
 
 	private void pushIntoElementsList() {
 		mElements.clear();
-		//mBook.pushIntoList(mElements);
+		// mBook.pushIntoList(mElements);
 	}
 
-	public void pushIntoPagesList(List<Page> pages) {
+	public void pushIntoPagesList(CopyOnWriteArrayList<Page> pages) {
 		pushIntoElementsList();
-		mBook.pushIntoList(mElements,pages,mLines);
-//		Iterator<MarkupElement> iter = mElements.iterator();
-//		while (iter.hasNext()) {
-//			MarkupElement element = iter.next();
-//			element.pushIntoLines(mLines, pages);
-//		}
-		
+		mBook.pushIntoList(mElements, pages, mLines);
 	}
 }

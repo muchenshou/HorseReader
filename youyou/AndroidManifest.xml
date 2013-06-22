@@ -15,21 +15,8 @@
         android:name=".YouYouApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
-
-        <!--
         <activity
-            android:name=".SideBarActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        -->
-        <activity
-            android:name="com.reader.app.ReadingActivity"
+            android:name="com.reader.app.AdobeUiActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name" >
             <intent-filter>
@@ -38,8 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-      <!--   <activity android:name="com.reader.app.ReadingActivity" >
-        </activity> -->
+        <activity android:name="com.reader.app.ReadingActivity" >
+        </activity>
 
         <service
             android:name="com.reader.searchfile.service.SearchFileService"
