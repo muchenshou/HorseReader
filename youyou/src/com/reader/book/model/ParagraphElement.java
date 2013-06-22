@@ -20,7 +20,8 @@ import com.reader.code.umd.UmdBook.UmdInputStream;
 public class ParagraphElement extends MarkupElement {
 	char content[];
 	Charset charset;
-	public ParagraphElement(Book book,Charset charset) {
+
+	public ParagraphElement(Book book, Charset charset) {
 		mBook = book;
 		this.charset = charset;
 	}
@@ -37,36 +38,40 @@ public class ParagraphElement extends MarkupElement {
 	public void copy(char dest[], int off, int len) {
 		System.arraycopy(content, off, dest, 0, len);
 	}
+
 	@Override
 	public void fill() {
 		if (charset.displayName().equals("GBK")) {
 			fillByGbk();
-		} if (charset.displayName().equals("UTF-16")) {
+		}
+		if (charset.displayName().equals("UTF-16")) {
 			fillByUnicode();
 		}
 	}
-	private void fillByUnicode() {
+
+	private void fillByUnicode1() {
 		try {
-			BufferedInputStream input = new BufferedInputStream(new FileInputStream(mBook.bookFile));
-			//byte bytes[] = new byte[this.getElementCursor().getLength()+1];
+			BufferedInputStream input = new BufferedInputStream(
+					new FileInputStream(mBook.bookFile));
+			// byte bytes[] = new byte[this.getElementCursor().getLength()+1];
 			InputStreamReader reader = new InputStreamReader(input, charset);
 			List<Character> chars = new ArrayList<Character>();
 			input.read();
 			input.read();
-			//input.skip(this.getElementCursor().mRealFileStart);
-			//input.read(bytes);
+			// input.skip(this.getElementCursor().mRealFileStart);
+			// input.read(bytes);
 			int ch;
-			while((ch = reader.read())!= -1 ) {
+			while ((ch = reader.read()) != -1) {
 				int a = ch & 0xff;
 				a = a << 8;
 				int b = ch & 0xff00;
-				b = b>>>8;
+				b = b >>> 8;
 				ch = a | b;
-				chars.add((char)ch);
+				chars.add((char) ch);
 			}
-			
+
 			this.content = new char[chars.size()];
-			for (int i=0; i<chars.size(); i++) {
+			for (int i = 0; i < chars.size(); i++) {
 				content[i] = chars.get(i);
 			}
 			input.close();
@@ -76,29 +81,78 @@ public class ParagraphElement extends MarkupElement {
 			e.printStackTrace();
 		}
 	}
+
+	private void fillByUnicode() {
+		try {
+			BufferedInputStream input = new BufferedInputStream(
+					new FileInputStream(mBook.bookFile));
+			byte bytes[] = new byte[(int) mBook.bookFile.length()];
+			// InputStreamReader reader = new InputStreamReader(input, charset);
+			List<Character> chars = new ArrayList<Character>();
+			// input.read(bytes);
+			// input.skip(this.getElementCursor().mRealFileStart);
+			// input.read(bytes);
+			input.read();
+			input.read();
+			int ch;
+			while ((ch = input.read()) != -1) {
+				// int a = ch & 0xff;
+				// a = a << 8;
+				// int b = ch & 0xff00;
+				// b = b>>>8;
+				// ch = a | b;
+				if (ch < 0xD800 || ch > 0xDFFF) {
+					int a = input.read();
+					a = a << 8;
+					ch = a | ch;
+				} else {
+					byte word[] = new byte[4];
+					word[0] = (byte) ch;
+					word[1] = (byte) input.read();
+					word[2] = (byte) input.read();
+					word[3] = (byte) input.read();
+					ByteBuffer ww = ByteBuffer.wrap(word);
+					ch = (char) charset.decode(ww).get();
+				}
+				if (ch != 0x20 && ch != 0xA && ch!=0xFDFF)
+				chars.add((char) ch);
+			}
+
+			this.content = new char[chars.size()];
+			for (int i = 0; i < chars.size(); i++) {
+				content[i] = chars.get(i);
+			}
+			input.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void fillByGbk() {
 		try {
-			BufferedInputStream input = new BufferedInputStream(new FileInputStream(mBook.bookFile));
-			byte bytes[] = new byte[this.getElementCursor().getLength()+1];
+			BufferedInputStream input = new BufferedInputStream(
+					new FileInputStream(mBook.bookFile));
+			byte bytes[] = new byte[this.getElementCursor().getLength() + 1];
 			List<Character> chars = new ArrayList<Character>();
 			byte word[] = new byte[2];
 			input.skip(this.getElementCursor().mRealFileStart);
 			input.read(bytes);
 			int ch;
-			for(int i=0; i<bytes.length-1; i++) {
-				ch = bytes[i];
+			for (int i = 0; i < bytes.length - 1; ) {
+				ch = bytes[i++];
 				if (ch >= 0) {
 					chars.add((char) ch);
 					continue;
 				}
-				word[0] = (byte)ch;
-				word[1] = bytes[++i];
+				word[0] = (byte) ch;
+				word[1] = bytes[i++];
 				chars.add(charset.decode(ByteBuffer.wrap(word)).charAt(0));
 			}
-				
-			
+
 			this.content = new char[chars.size()];
-			for (int i=0; i<chars.size(); i++) {
+			for (int i = 0; i < chars.size(); i++) {
 				content[i] = chars.get(i);
 			}
 			input.close();
@@ -108,9 +162,11 @@ public class ParagraphElement extends MarkupElement {
 			e.printStackTrace();
 		}
 	}
+
 	private void fillUTF8() {
-		
+
 	}
+
 	public char charAt(int index) {
 		return content[index];
 	}

@@ -18,11 +18,15 @@ import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import android.util.Log;
 
+import com.reader.book.AreaDraw;
 import com.reader.book.Book;
+import com.reader.book.Page;
 import com.reader.book.model.MarkupElement;
 import com.reader.book.model.ParagraphElement;
 import com.reader.util.InputStreamWithCount;
@@ -93,47 +97,54 @@ public class TextBook extends Book {
 		return (int) bookFile.length();
 	}
 
+	Charset detectCharset() throws Exception {
+		InputStream in = new FileInputStream(this.bookFile);
+		InputStreamWithCount input = new InputStreamWithCount(in);
+		Charset charset = Charset.forName("gbk");
+		int ch = 0;
+		ch = input.read();
+		if (ch == 0xFF) {
+			ch = input.read();
+			if (ch == 0xFE)
+				charset = Charset.forName("Unicode");
+		}
+		if (ch == 0xEF) {
+			ch = input.read();
+			int ch1 = input.read();
+			if (ch == 0xBB && ch1 == 0xBF)
+				charset = Charset.forName("UTF-8");
+		}
+		input.close();
+		return charset;
+	}
+
 	@Override
-	public void pushIntoList(BlockingQueue<MarkupElement> elements) {
+	public void pushIntoList(BlockingQueue<MarkupElement> elements,
+			List<Page> pages, LinkedList<AreaDraw> lines) {
 		try {
-			InputStream in = new FileInputStream(
-					this.bookFile);
+			InputStream in = new FileInputStream(this.bookFile);
 			InputStreamWithCount input = new InputStreamWithCount(in);
 			Charset charset = Charset.forName("gbk");
 
 			int read = 0;
 			long size = bookFile.length();
 			int ch = 0;
-			ch = input.read();
-			read++;
-			if (ch == 0xFF) {
-				ch = input.read();
-				read++;
-				if (ch == 0xFE)
-					charset = Charset.forName("Unicode");
-			}
-			if (ch == 0xEF) {
-				ch = input.read();
-				read++;
-				int ch1 = input.read();
-				read++;
-				if (ch == 0xBB && ch1 == 0xBF)
-					charset = Charset.forName("UTF-8");
-			}
+			charset = detectCharset();
 			Log.i("hello", charset.displayName());
+			input.setCharset(charset);
 			if (charset.displayName().equals("UTF-16")) {
 				InputStreamReader reader = new InputStreamReader(input, charset);
 
 				MarkupElement element = new ParagraphElement(this, charset);
 				element.getElementCursor().setRealFileStart(read);
+				reader.read();
 				while ((ch = reader.read()) != -1) {
 					int a = ch & 0xff;
 					a = a << 8;
 					int b = ch & 0xff00;
-					b = b>>>8;
+					b = b >>> 8;
 					ch = a | b;
 					if (ch != 13) {
-						Log.i("hello", "" + (char)ch+"hex:"+Integer.toHexString(ch));
 						if (element == null) {
 							element = new ParagraphElement(this, charset);
 							Log.i("hello", "" + (input.getCount() - 2));
@@ -142,7 +153,7 @@ public class TextBook extends Book {
 						}
 						continue;
 					}
-					Log.i("hello","huanhang:"+input.getCount());
+					Log.i("hello", "huanhang:" + input.getCount());
 					if (element != null) {
 						element.getElementCursor().setRealFileLast(read - 2);
 						elements.add(element);
@@ -159,27 +170,31 @@ public class TextBook extends Book {
 			} else {
 				MarkupElement element = new ParagraphElement(this, charset);
 				element.getElementCursor().setRealFileStart(read);
-				while ((ch = input.read()) != -1) {
-					read++;
+				while ((ch = input.readChar()) != -1) {
+					// Log.i("hello",""+(char)ch+""+input.getCount());
+					// Log.i("hello",""+ch);
 					if (ch != 13) {
 						if (element == null) {
 							element = new ParagraphElement(this, charset);
-							element.getElementCursor().setRealFileStart(
-									read - 1);
+							element.getElementCursor()
+									.setRealFileStart(
+											(int) input.getCount()
+													- (ch > 127 ? 2 : 1));
 						}
 						continue;
 					}
 					if (element != null) {
-						element.getElementCursor().setRealFileLast(read - 2);
+						element.getElementCursor().setRealFileLast(
+								(int) input.getCount() - 2);
 						elements.add(element);
+						element.pushIntoLines(lines, pages);
 					}
 					element = null;
-					ch = input.read(); // ch should be equal to 10 here
-					read++;
 				}
 				if (element != null) {
 					element.getElementCursor().setRealFileLast((int) size - 1);
 					elements.add(element);
+					element.pushIntoLines(lines, pages);
 				}
 
 			}
@@ -188,6 +203,8 @@ public class TextBook extends Book {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

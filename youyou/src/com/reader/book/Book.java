@@ -9,6 +9,8 @@ package com.reader.book;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import com.reader.book.manager.BookPosition;
@@ -27,7 +29,7 @@ public abstract class Book {
 
 	public abstract int getContent(int start, ByteBuffer buffer);
 	
-	public abstract void pushIntoList(BlockingQueue<MarkupElement> elements);
+	public abstract void pushIntoList(BlockingQueue<MarkupElement> elements,List<Page> pages,LinkedList<AreaDraw> lines);
 
 	public abstract int size();
 

@@ -14,9 +14,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+import com.reader.book.AreaDraw;
 import com.reader.book.Book;
+import com.reader.book.Page;
 import com.reader.book.model.MarkupElement;
 import com.reader.book.model.UmdParagraphElement;
 
@@ -138,7 +142,7 @@ public class UmdBook extends Book {
 	}
 
 	@Override
-	public void pushIntoList(BlockingQueue<MarkupElement> elements) {
+	public void pushIntoList(BlockingQueue<MarkupElement> elements,List<Page> pages,LinkedList<AreaDraw> lines) {
 
 		try {
 			InputStream input = new BufferedInputStream(new UmdInputStream());
@@ -161,6 +165,7 @@ public class UmdBook extends Book {
 				if (element != null) {
 					element.getElementCursor().setRealFileLast(read - 2);
 					elements.add(element);
+					element.pushIntoLines(lines, pages);
 				}
 				element = null;
 				ch = input.read(); // ch should be equal to 0x29 here
@@ -170,6 +175,7 @@ public class UmdBook extends Book {
 			if (element != null) {
 				element.getElementCursor().setRealFileLast((int)size - 1);
 				elements.add(element);
+				element.pushIntoLines(lines, pages);
 			}
 			input.close();
 			

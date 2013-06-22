@@ -51,7 +51,7 @@ public class ReadingActivity extends Activity {
 			my.canWrite();
 			my.canRead();
 			OutputStream o = new FileOutputStream(my);
-			InputStream in = getResources().getAssets().open("bingfa.txt");
+			InputStream in = getResources().getAssets().open("suan.txt");
 			byte[] filedata = new byte[1024];
 			int num;
 			while ((num = in.read(filedata)) > 0) {

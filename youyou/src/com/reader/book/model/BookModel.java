@@ -26,16 +26,17 @@ public class BookModel {
 
 	private void pushIntoElementsList() {
 		mElements.clear();
-		mBook.pushIntoList(mElements);
+		//mBook.pushIntoList(mElements);
 	}
 
 	public void pushIntoPagesList(List<Page> pages) {
 		pushIntoElementsList();
-		Iterator<MarkupElement> iter = mElements.iterator();
-		while (iter.hasNext()) {
-			MarkupElement element = iter.next();
-			element.pushIntoLines(mLines, pages);
-		}
+		mBook.pushIntoList(mElements,pages,mLines);
+//		Iterator<MarkupElement> iter = mElements.iterator();
+//		while (iter.hasNext()) {
+//			MarkupElement element = iter.next();
+//			element.pushIntoLines(mLines, pages);
+//		}
 		
 	}
 }
