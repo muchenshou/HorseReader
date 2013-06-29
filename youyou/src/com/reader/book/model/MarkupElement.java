@@ -1,8 +1,6 @@
 package com.reader.book.model;
 
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.reader.book.AreaDraw;

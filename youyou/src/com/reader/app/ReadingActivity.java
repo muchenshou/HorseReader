@@ -19,7 +19,6 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.Window;
@@ -46,22 +45,22 @@ public class ReadingActivity extends Activity {
 
 		String bookName = getIntent().getStringExtra("bookname");
 		// ///// test
-//		try {
-//			File my = File.createTempFile("aaaa", ".txt");
-//			my.canWrite();
-//			my.canRead();
-//			OutputStream o = new FileOutputStream(my);
-//			InputStream in = getResources().getAssets().open("suan.txt");
-//			byte[] filedata = new byte[1024];
-//			int num;
-//			while ((num = in.read(filedata)) > 0) {
-//				o.write(filedata, 0, num);
-//			}
-//			o.close();
-//			bookName = my.getPath();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			File my = File.createTempFile("aaaa", ".txt");
+			my.canWrite();
+			my.canRead();
+			OutputStream o = new FileOutputStream(my);
+			InputStream in = getResources().getAssets().open("suan.txt");
+			byte[] filedata = new byte[1024];
+			int num;
+			while ((num = in.read(filedata)) > 0) {
+				o.write(filedata, 0, num);
+			}
+			o.close();
+			bookName = my.getPath();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		// test
 		this.mBookName = bookName;
 		BookPosition position = new BookPosition(0, 0, 0);
@@ -104,14 +103,6 @@ public class ReadingActivity extends Activity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// 按下键盘上返回按钮
-		// if (keyCode == KeyEvent.KEYCODE_BACK) {
-		// Intent intent = new Intent();
-		// intent.putExtra("BookReading",
-		// this.bookView.mBookContent.getCurPosition());
-		// setResult(RESULT_OK, intent);
-		// finish();
-		// }
 		return super.onKeyDown(keyCode, event);
 	}
 

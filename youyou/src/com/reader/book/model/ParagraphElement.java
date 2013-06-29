@@ -6,16 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 import com.reader.book.Book;
-import com.reader.code.umd.UmdBook;
-import com.reader.code.umd.UmdBook.UmdInputStream;
 
 public class ParagraphElement extends MarkupElement {
 	char content[];
