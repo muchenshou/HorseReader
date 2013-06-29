@@ -10,7 +10,6 @@ package com.reader.book;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -25,8 +24,6 @@ public abstract class Book {
 	public abstract void openBook();
 
 	public abstract void closeBook();
-
-	public abstract void excuteCmd(int cmd);
 
 	public abstract int getContent(int start, ByteBuffer buffer);
 

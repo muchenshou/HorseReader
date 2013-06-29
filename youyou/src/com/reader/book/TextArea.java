@@ -9,10 +9,10 @@ import com.reader.book.model.ParagraphElement;
 import com.reader.book.model.UmdParagraphElement;
 import com.reader.config.PageConfig;
 
-public class Line extends AreaDraw {
+public class TextArea extends AreaDraw {
 	private char str[];
 
-	public Line(int offset, MarkupElement element) {
+	public TextArea(int offset, MarkupElement element) {
 		this.offset = offset;
 		this.element = element;
 	}

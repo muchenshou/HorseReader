@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
-import com.reader.book.Line;
+import com.reader.book.TextArea;
 import com.reader.book.Page;
 import com.reader.book.manager.BookManager;
 
@@ -64,7 +64,7 @@ public abstract class MarkupElement {
 		int offset = 0;
 		fill();
 		do {
-			next = new Line(offset, this);
+			next = new TextArea(offset, this);
 			next.fill();
 			if ((next.offset + next.length) >= getLength()) {
 				lines.add(next);

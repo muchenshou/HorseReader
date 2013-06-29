@@ -7,7 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 public class Page extends AreaDraw {
-
+	
+	public static Page ENDPAGE = new Page();
+	
 	public Page() {
 	}
 

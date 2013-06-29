@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -44,58 +43,15 @@ public class ParagraphElement extends MarkupElement {
 		}
 	}
 
-	private void fillByUnicode1() {
-		try {
-			BufferedInputStream input = new BufferedInputStream(
-					new FileInputStream(mBook.bookFile));
-			// byte bytes[] = new byte[this.getElementCursor().getLength()+1];
-			InputStreamReader reader = new InputStreamReader(input, charset);
-			List<Character> chars = new ArrayList<Character>();
-			input.read();
-			input.read();
-			// input.skip(this.getElementCursor().mRealFileStart);
-			// input.read(bytes);
-			int ch;
-			while ((ch = reader.read()) != -1) {
-				int a = ch & 0xff;
-				a = a << 8;
-				int b = ch & 0xff00;
-				b = b >>> 8;
-				ch = a | b;
-				chars.add((char) ch);
-			}
-
-			this.content = new char[chars.size()];
-			for (int i = 0; i < chars.size(); i++) {
-				content[i] = chars.get(i);
-			}
-			input.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void fillByUnicode() {
 		try {
 			BufferedInputStream input = new BufferedInputStream(
 					new FileInputStream(mBook.bookFile));
-			byte bytes[] = new byte[(int) mBook.bookFile.length()];
-			// InputStreamReader reader = new InputStreamReader(input, charset);
 			List<Character> chars = new ArrayList<Character>();
-			// input.read(bytes);
-			// input.skip(this.getElementCursor().mRealFileStart);
-			// input.read(bytes);
 			input.read();
 			input.read();
 			int ch;
 			while ((ch = input.read()) != -1) {
-				// int a = ch & 0xff;
-				// a = a << 8;
-				// int b = ch & 0xff00;
-				// b = b>>>8;
-				// ch = a | b;
 				if (ch < 0xD800 || ch > 0xDFFF) {
 					int a = input.read();
 					a = a << 8;

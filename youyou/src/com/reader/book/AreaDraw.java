@@ -2,12 +2,11 @@ package com.reader.book;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Stack;
-
-import com.reader.book.model.MarkupElement;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+
+import com.reader.book.model.MarkupElement;
 
 public abstract class AreaDraw {
 	public MarkupElement element;
