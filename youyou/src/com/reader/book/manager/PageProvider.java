@@ -37,15 +37,6 @@ public class PageProvider {
 	public void update(int w, int h) {
 		pageHeight = h;
 		pageWidth = w;
-		new Thread() {
-			@Override
-			public void run() {
-				mBookModel.pushIntoPagesList(mPages);
-			}
-		}.start();
-
-		while (mPages.size() == 0)
-			;
 		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {

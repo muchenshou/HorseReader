@@ -55,7 +55,15 @@ public class TextBook extends Book {
 			e.printStackTrace();
 		}
 	}
-
+	@Override
+	public InputStream inputStream() {
+		try {
+			return new FileInputStream(bookFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	@Override
 	public void excuteCmd(int cmd) {
 

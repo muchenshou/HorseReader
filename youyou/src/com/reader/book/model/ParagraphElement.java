@@ -13,12 +13,14 @@ import java.util.List;
 
 import android.util.Log;
 
+import com.reader.book.AreaDraw;
 import com.reader.book.Book;
+import com.reader.book.ParagraphArea;
 import com.reader.code.umd.UmdBook;
 import com.reader.code.umd.UmdBook.UmdInputStream;
 
 public class ParagraphElement extends MarkupElement {
-	char content[];
+	public char content[];
 	Charset charset;
 
 	public ParagraphElement(Book book, Charset charset) {
@@ -114,8 +116,8 @@ public class ParagraphElement extends MarkupElement {
 					ByteBuffer ww = ByteBuffer.wrap(word);
 					ch = (char) charset.decode(ww).get();
 				}
-				if (ch != 0x20 && ch != 0xA && ch!=0xFDFF)
-				chars.add((char) ch);
+				if (ch != 0x20 && ch != 0xA && ch != 0xFDFF)
+					chars.add((char) ch);
 			}
 
 			this.content = new char[chars.size()];
@@ -140,7 +142,7 @@ public class ParagraphElement extends MarkupElement {
 			input.skip(this.getElementCursor().mRealFileStart);
 			input.read(bytes);
 			int ch;
-			for (int i = 0; i < bytes.length - 1; ) {
+			for (int i = 0; i < bytes.length - 1;) {
 				ch = bytes[i++];
 				if (ch >= 0) {
 					chars.add((char) ch);
@@ -163,9 +165,6 @@ public class ParagraphElement extends MarkupElement {
 		}
 	}
 
-	private void fillUTF8() {
-
-	}
 
 	public char charAt(int index) {
 		return content[index];
@@ -175,4 +174,12 @@ public class ParagraphElement extends MarkupElement {
 	public int getLength() {
 		return content.length;
 	}
+
+	@Override
+	AreaDraw toDrawArea() {
+		ParagraphArea area = new ParagraphArea(this);
+		area.fill();
+		return area;
+	}
+
 }

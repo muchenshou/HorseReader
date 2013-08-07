@@ -14,24 +14,34 @@ import com.reader.book.Book;
 import com.reader.book.Line;
 import com.reader.book.Page;
 import com.reader.book.manager.BookManager;
+import com.reader.code.text.GBKTextReader;
 import com.reader.config.PageConfig;
+import com.reader.util.InputStreamWithCount;
 
 public class BookModel {
 	public Book mBook;
-	BlockingQueue<MarkupElement> mElements = new LinkedBlockingQueue<MarkupElement>();
-	LinkedList<AreaDraw> mLines = new LinkedList<AreaDraw>();
 
 	public BookModel(Book book) {
 		mBook = book;
+		reader = new GBKTextReader(book.inputStream());
+		// -----------------------
+		// 需要解析，
+		// reader.close()
+		// -----------------------
 	}
 
-	private void pushIntoElementsList() {
-		mElements.clear();
-		// mBook.pushIntoList(mElements);
-	}
+	GBKTextReader reader;
+	// 每一页的位置存储在这里 ///
+	int pagePos[];
 
-	public void pushIntoPagesList(CopyOnWriteArrayList<Page> pages) {
-		pushIntoElementsList();
-		mBook.pushIntoList(mElements, pages, mLines);
+	public Page getPage(int index) {
+		reader = new GBKTextReader(mBook.inputStream());
+		Page page = new Page();
+		while (reader.hasNext()) {
+			AreaDraw area = reader.next().toDrawArea();
+			Line l = new Line();
+
+		}
+		return page;
 	}
 }
