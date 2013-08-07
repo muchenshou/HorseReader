@@ -26,8 +26,6 @@ public abstract class Book {
 
 	public abstract void closeBook();
 
-	public abstract void excuteCmd(int cmd);
-
 	public abstract int getContent(int start, ByteBuffer buffer);
 	@Deprecated
 	public abstract void pushIntoList(BlockingQueue<MarkupElement> elements,

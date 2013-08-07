@@ -1,17 +1,12 @@
 package com.reader.book.model;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import android.util.Log;
-
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
-import com.reader.book.Line;
 import com.reader.book.Page;
 import com.reader.book.manager.BookManager;
 import com.reader.code.text.GBKTextReader;
@@ -40,7 +35,6 @@ public class BookModel {
 		while (reader.hasNext()) {
 			AreaDraw area = reader.next().toDrawArea();
 			Line l = new Line();
-
 		}
 		return page;
 	}

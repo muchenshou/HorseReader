@@ -7,7 +7,6 @@
  * */
 package com.reader.code.text;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,11 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -64,11 +61,6 @@ public class TextBook extends Book {
 		}
 		return null;
 	}
-	@Override
-	public void excuteCmd(int cmd) {
-
-	}
-
 	@Override
 	public int getContent(int start, ByteBuffer buffer) {
 		int readlen = 0;
@@ -207,6 +199,7 @@ public class TextBook extends Book {
 				}
 
 			}
+			pages.add(Page.ENDPAGE);
 			input.close();
 
 		} catch (FileNotFoundException e) {

@@ -132,11 +132,6 @@ public class UmdBook extends Book {
 	}
 
 	@Override
-	public void excuteCmd(int cmd) {
-
-	}
-
-	@Override
 	public int size() {
 		// TODO Auto-generated method stub
 		return this.umdInfo.getSize();

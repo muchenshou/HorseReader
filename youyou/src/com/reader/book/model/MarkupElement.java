@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
-import com.reader.book.Line;
+import com.reader.book.TextArea;
 import com.reader.book.Page;
 import com.reader.book.manager.BookManager;
 
@@ -36,7 +36,6 @@ public abstract class MarkupElement {
 
 	public void pushIntoLines(List<AreaDraw> lines,
 			CopyOnWriteArrayList<Page> pages) {
-
 	}
 
 	abstract AreaDraw toDrawArea();
