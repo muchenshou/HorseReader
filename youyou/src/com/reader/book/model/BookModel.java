@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
+import com.reader.book.Line;
 import com.reader.book.Page;
 import com.reader.book.manager.BookManager;
 import com.reader.code.text.GBKTextReader;

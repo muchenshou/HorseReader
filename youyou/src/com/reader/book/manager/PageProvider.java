@@ -31,7 +31,6 @@ public class PageProvider {
 
 	public void update(int w, int h) {
 		pageHeight = h;
-		pageWidth = w;
 		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {

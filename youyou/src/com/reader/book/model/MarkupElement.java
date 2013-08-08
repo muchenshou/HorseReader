@@ -5,7 +5,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.reader.book.AreaDraw;
 import com.reader.book.Book;
-import com.reader.book.TextArea;
 import com.reader.book.Page;
 import com.reader.book.manager.BookManager;
 
