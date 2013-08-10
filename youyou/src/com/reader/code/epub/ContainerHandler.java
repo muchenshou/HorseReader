@@ -1,48 +1,48 @@
 package com.reader.code.epub;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import android.util.Log;
 
-public class ContainerHandler {
-	InputStream inputStream;
-
-	public ContainerHandler(InputStream in) {
-		inputStream = in;
+public class ContainerHandler extends DefaultHandler {
+	public String rootpath;
+	@Override
+	public void characters(char[] ch, int start, int length)
+			throws SAXException {
+		// TODO Auto-generated method stub
+		super.characters(ch, start, length);
 	}
 
-	public void handle() {
-		XmlPullParserFactory factory;
-		Log.i("hello","hh");
-		try {
-			factory = XmlPullParserFactory.newInstance();
-			XmlPullParser parser = factory.newPullParser();
-			parser.setInput(inputStream, "utf-8");
-			
-			int eventType = parser.getEventType();
-			while (eventType != XmlPullParser.END_DOCUMENT) {
-				switch (eventType) {
-				case XmlPullParser.START_DOCUMENT:
-					Log.i("hello", "start");
-					break;
-				case XmlPullParser.START_TAG:
-					Log.i("hello", parser.getName());
-					Log.i("hello", "" + parser.getAttributeCount());
-				}
-				eventType = parser.next();
-			}
-		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	@Override
+	public void endDocument() throws SAXException {
+		// TODO Auto-generated method stub
+		super.endDocument();
+	}
+
+	@Override
+	public void endElement(String uri, String localName, String qName)
+			throws SAXException {
+		super.endElement(uri, localName, qName);
+	}
+
+	@Override
+	public void startDocument() throws SAXException {
+		super.startDocument();
+	}
+
+	@Override
+	public void startElement(String uri, String localName, String qName,
+			Attributes attributes) throws SAXException {
+		// TODO Auto-generated method stub
+		if (qName.equals("rootfile")) {
+			Log.i("hello", attributes.getValue("full-path"));
+			rootpath = attributes.getValue("full-path");
 		}
-
+		super.startElement(uri, localName, qName, attributes);
 	}
+
 }

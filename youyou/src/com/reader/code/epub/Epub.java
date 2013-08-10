@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
@@ -28,14 +30,19 @@ public class Epub extends Book {
 		try {
 			ZipFile epub = new ZipFile(bookFile);
 			Enumeration<? extends ZipEntry> enumer = epub.entries();
+			Map<String, ZipEntry> m = new HashMap<String,ZipEntry>();
 			while (enumer.hasMoreElements()) {
 				ZipEntry zipentry = enumer.nextElement();
 				// System.out.println(zipentry.getName());
-				if (zipentry.getName().equals("META-INF/container.xml")) {
-					ContainerHandler handler = new ContainerHandler(
-							epub.getInputStream(zipentry));
-					handler.handle();
-				}
+				m.put(zipentry.getName(), zipentry);
+			}
+			ZipEntry zip;
+			if (( zip = m.get("META-INF/container.xml"))!=null) {
+//				ContainerHandler handler = new ContainerHandler(
+//						epub.getInputStream(zipentry));
+//				handler.handle();
+				ContainerHandler c = EpubXmlParserCreate.createContainerHandler(epub.getInputStream(zip));
+				EpubXmlParserCreate.createOPFHandler(epub.getInputStream(m.get(c.rootpath)));
 			}
 		} catch (ZipException e) {
 			e.printStackTrace();
