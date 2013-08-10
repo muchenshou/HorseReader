@@ -31,15 +31,12 @@ public class PageProvider {
 
 	public void update(int w, int h) {
 		pageHeight = h;
-		new Thread() {
-			@Override
-			public void run() {
-				mBookModel.pushIntoPagesList(mPages);
-			}
-		}.start();
-
-		while (mPages.size() <= 2)
-			;
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void update() {

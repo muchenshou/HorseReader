@@ -52,7 +52,15 @@ public class TextBook extends Book {
 			e.printStackTrace();
 		}
 	}
-
+	@Override
+	public InputStream inputStream() {
+		try {
+			return new FileInputStream(bookFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	@Override
 	public int getContent(int start, ByteBuffer buffer) {
 		int readlen = 0;

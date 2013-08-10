@@ -1,9 +1,10 @@
 package com.reader.book.model;
 
 public class Cursor {
-	int mRealFileStart = 0;
+	public int mRealFileStart = 0;
 	int mRealFileLast = 0;
 	int index;
+	public int len;
 	public int getIndex() {
 		return index;
 	}

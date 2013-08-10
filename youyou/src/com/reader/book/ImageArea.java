@@ -1,5 +1,7 @@
 package com.reader.book;
 
+import com.reader.book.model.MarkupElement;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
