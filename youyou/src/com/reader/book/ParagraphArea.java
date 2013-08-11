@@ -1,12 +1,10 @@
 package com.reader.book;
 
-import com.reader.book.model.ParagraphElement;
-import com.reader.config.PageConfig;
-
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Paint.FontMetrics;
-import android.sax.Element;
+
+import com.reader.book.model.ParagraphElement;
+import com.reader.config.PageConfig;
 
 public class ParagraphArea extends AreaDraw {
 	private ParagraphElement _element;

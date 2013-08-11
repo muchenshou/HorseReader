@@ -41,8 +41,8 @@ public class Epub extends Book {
 //				ContainerHandler handler = new ContainerHandler(
 //						epub.getInputStream(zipentry));
 //				handler.handle();
-				ContainerHandler c = EpubXmlParserCreate.createContainerHandler(epub.getInputStream(zip));
-				EpubXmlParserCreate.createOPFHandler(epub.getInputStream(m.get(c.rootpath)));
+//				ContainerHandler c = EpubXmlParserCreate.createContainerHandler(epub.getInputStream(zip));
+//				EpubXmlParserCreate.createOPFHandler(epub.getInputStream(m.get(c.rootpath)));
 			}
 		} catch (ZipException e) {
 			e.printStackTrace();
