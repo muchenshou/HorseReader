@@ -35,7 +35,6 @@ public class BookModel {
 		Page page = new Page();
 		while (reader.hasNext()) {
 			AreaDraw area = reader.next().toDrawArea();
-			Line l = new Line();
 		}
 		return page;
 	}
