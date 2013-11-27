@@ -4,5 +4,3 @@ project.properties
 */.settings/*
 */.classpath
 */.project
-*/obj/*
-
