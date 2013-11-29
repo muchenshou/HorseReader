@@ -219,9 +219,10 @@ ANTIWORD_SRC_FILES := \
     ../../thirdparty/antiword/wordwin.c \
     ../../thirdparty/antiword/xmalloc.c
 
-#JNI_SRC_FILES := \
+JNI_SRC_FILES := \
+	cr3java.cpp \
+	youyou.cpp
 #    cr3engine.cpp \
-#    cr3java.cpp \
 #    docview.cpp
 
 LOCAL_SRC_FILES := \

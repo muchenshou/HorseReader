@@ -14,7 +14,6 @@ import android.content.Context;
 
 import com.reader.book.Book;
 import com.reader.book.model.BookModel;
-import com.reader.code.text.TextBook;
 import com.reader.code.umd.UmdBook;
 import com.reader.view.GLView;
 
@@ -58,9 +57,6 @@ public class BookManager {
 				.substring(file.toString().lastIndexOf('.') + 1).toLowerCase();
 		if (str.equals("umd")) {
 			return new UmdBook(file);
-		}
-		if (str.equals("txt")) {
-			return new TextBook(file);
 		}
 		return null;
 	

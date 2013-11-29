@@ -15,7 +15,7 @@ import com.reader.fragment.HistoryListFragment;
 import com.reader.fragment.LocalFileListFragment;
 import com.reader.fragment.NetWorkListFragment;
 
-public class AdobeUiActivity extends SherlockFragmentActivity {
+public class YouYouActivity extends SherlockFragmentActivity {
 	ActionBar actionBar;
 	TabHost mTabHost;
 	TabManager mTabManager;
