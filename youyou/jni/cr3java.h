@@ -207,4 +207,35 @@ public:
 	~BitmapAccessor();
 };
 
+class JNICDRLogger : public CRLog
+{
+public:
+    JNICDRLogger()
+    {
+    	curr_level = CRLog::LL_DEBUG;
+    }
+protected:
+
+	virtual void log( const char * lvl, const char * msg, va_list args)
+	{
+	    #define MAX_LOG_MSG_SIZE 1024
+		static char buffer[MAX_LOG_MSG_SIZE+1];
+		vsnprintf(buffer, MAX_LOG_MSG_SIZE, msg, args);
+		int level = ANDROID_LOG_DEBUG;
+		//LOGD("CRLog::log is called with LEVEL %s, pattern %s", lvl, msg);
+		if ( !strcmp(lvl, "FATAL") )
+			level = ANDROID_LOG_FATAL;
+		else if ( !strcmp(lvl, "ERROR") )
+			level = ANDROID_LOG_ERROR;
+		else if ( !strcmp(lvl, "WARN") )
+			level = ANDROID_LOG_WARN;
+		else if ( !strcmp(lvl, "INFO") )
+			level = ANDROID_LOG_INFO;
+		else if ( !strcmp(lvl, "DEBUG") )
+			level = ANDROID_LOG_DEBUG;
+		else if ( !strcmp(lvl, "TRACE") )
+			level = ANDROID_LOG_VERBOSE;
+		__android_log_write(level, LOG_TAG, buffer);
+	}
+};
 #endif

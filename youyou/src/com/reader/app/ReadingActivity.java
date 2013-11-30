@@ -16,6 +16,9 @@ import java.io.OutputStream;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -26,6 +29,7 @@ import android.view.WindowManager;
 
 import com.reader.book.manager.BookManager;
 import com.reader.document.txt.TxtDocument;
+import com.reader.document.txt.TxtView;
 import com.reader.preference.ReadingSetting;
 import com.reader.record.BookHistory;
 import com.reader.view.GLView;
@@ -64,43 +68,43 @@ public class ReadingActivity extends Activity {
 		this.mBookName = bookName;
 		TxtDocument txt = new TxtDocument();
 		txt.loadDocument(bookName, 0, 0);
-		Log.i("hello","here");
-//		BookPosition position = new BookPosition(0, 0, 0);
-//		BookHistory history = new BookHistory(this);
-//		if (history.exist(bookName)) {
-//			position = history.getPosition(bookName);
-//		} else {
-//			history.storePosition(bookName, null);
-//		}
-//
-//		try {
-//			if (!new File(bookName).exists()) {
-//				Toast.makeText(this, "文件不存在", Toast.LENGTH_LONG).show();
-//				return;
-//			}
-//			bookmanager = new BookManager(ReadingActivity.this, new File(
-//					bookName));
-//			bookView = new GLView(this, bookmanager.openBook(position));
-//			bookView.setFocusable(true);
-//			this.bookView.setBgBitmap(BitmapFactory.decodeResource(
-//					getResources(), R.drawable.bg));
-//			setLookingBookView();
-//
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		Log.i("hello", "here");
+		TxtView v = new TxtView(this);
+		Bitmap b = Bitmap.createBitmap(this.getWindowManager()
+				.getDefaultDisplay().getWidth(), getWindowManager()
+				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
+		txt.getPage(b);
+		v.b = b;
+		setContentView(v);
+		// BookPosition position = new BookPosition(0, 0, 0);
+		// BookHistory history = new BookHistory(this);
+		// if (history.exist(bookName)) {
+		// position = history.getPosition(bookName);
+		// } else {
+		// history.storePosition(bookName, null);
+		// }
+		//
+		// try {
+		// if (!new File(bookName).exists()) {
+		// Toast.makeText(this, "文件不存在", Toast.LENGTH_LONG).show();
+		// return;
+		// }
+		// bookmanager = new BookManager(ReadingActivity.this, new File(
+		// bookName));
+		// bookView = new GLView(this, bookmanager.openBook(position));
+		// bookView.setFocusable(true);
+		// this.bookView.setBgBitmap(BitmapFactory.decodeResource(
+		// getResources(), R.drawable.bg));
+		// setLookingBookView();
+		//
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 	}
 
 	@Override
 	protected void onStop() {
-		BookHistory history = new BookHistory(this);
-		history.storePosition(this.mBookName,
-				this.bookView.mPageProvider.getCurPosition());
 		super.onStop();
-	}
-
-	private void setLookingBookView() {
-		setContentView(bookView);
 	}
 
 	@Override
