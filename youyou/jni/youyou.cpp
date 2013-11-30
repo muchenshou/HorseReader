@@ -1,9 +1,11 @@
 #include <jni.h>
 #include <com_reader_document_txt_TxtDocument.h>
+#include <vector>
 #include "lvstring.h"
 #include "lvstream.h"
 #include "cr3java.h"
 #include "crtxtenc.h"
+#define CP_AUTODETECT_BUF_SIZE 0x20000
 
 class JNICDRLogger : public CRLog
 {
@@ -37,36 +39,120 @@ protected:
 	}
 };
 
-class TxtNode {
+struct TxtNode {
 	long start;
 	long end;
 };
 
-class TxtPage {
+struct TxtPage {
 	TxtNode *startNode;
 	int startNodeOffset;
 	TxtNode *endNode;
 	int endNodeOffset;
 };
-
+static int charToHex( lUInt8 ch )
+{
+    if ( ch>='0' && ch<='9' )
+        return ch-'0';
+    if ( ch>='a' && ch<='f' )
+        return ch-'a'+10;
+    if ( ch>='A' && ch<='F' )
+        return ch-'A'+10;
+    return -1;
+}
 class TxtBook: public LVFileParserBase{
-	LVPtrVector<TxtNode> mNodes;
-	LVPtrVector<TxtPage> mPages;
-	LVStreamRef _bookpath;
+	std::vector<TxtNode> mNodes;
+	std::vector<TxtPage> mPages;
+	lString16 m_lang_name;
+    lString16 m_encoding_name;
 	char_encoding_type m_enc_type;
 	lChar16 * m_conv_table; // charset conversion table for 8-bit encodings
 public:
-	TxtBook(LVStreamRef& path):LVFileParserBase(path){
+	TxtBook(LVStreamRef& path):LVFileParserBase(path),m_enc_type(ce_unknown),
+	m_conv_table(NULL){
 	}
+	/// returns 8-bit charset conversion table (128 items, for codes 128..255)
+	virtual lChar16 * GetCharsetTable( ) { return m_conv_table; }
+	void SetCharset( const lChar16 * name )
+	{
+		m_encoding_name = lString16( name );
+		if ( m_encoding_name == "utf-8" ) {
+			m_enc_type = ce_utf8;
+			SetCharsetTable( NULL );
+		} else if ( m_encoding_name == "utf-16" ) {
+			m_enc_type = ce_utf16_le;
+			SetCharsetTable( NULL );
+	#if GBK_ENCODING_SUPPORT == 1
+		} else if ( m_encoding_name == "gbk" || m_encoding_name == "cp936" || m_encoding_name == "cp-936") {
+			m_enc_type = ce_gbk;
+			SetCharsetTable( NULL );
+	#endif
+	#if JIS_ENCODING_SUPPORT == 1
+		} else if ( m_encoding_name == "shift-jis" || m_encoding_name == "shift_jis" || m_encoding_name == "sjis" || m_encoding_name == "ms_kanji" || m_encoding_name == "csshiftjis" || m_encoding_name == "shift_jisx0213" || m_encoding_name == "shift_jis-2004" || m_encoding_name == "cp932") {
+			m_enc_type = ce_shift_jis;
+			SetCharsetTable( NULL );
+		} else if (m_encoding_name == "euc-jisx0213" ||  m_encoding_name == "euc-jis-2004" ||  m_encoding_name == "euc-jis" ||  m_encoding_name == "euc-jp" ||  m_encoding_name == "eucjp") {
+			m_enc_type = ce_euc_jis;
+			SetCharsetTable( NULL );
+	#endif
+	#if BIG5_ENCODING_SUPPORT == 1
+		} else if ( m_encoding_name == "big5" || m_encoding_name == "big5-2003" || m_encoding_name == "big-5" || m_encoding_name == "big-five" || m_encoding_name == "bigfive" || m_encoding_name == "cn-big5" || m_encoding_name == "csbig5" || m_encoding_name == "cp950") {
+			m_enc_type = ce_big5;
+			SetCharsetTable( NULL );
+	#endif
+	#if EUC_KR_ENCODING_SUPPORT == 1
+		} else if ( m_encoding_name == "euc_kr" || m_encoding_name == "euc-kr" || m_encoding_name == "euckr" || m_encoding_name == "cseuckr" || m_encoding_name == "cp51949" || m_encoding_name == "cp949") {
+			m_enc_type = ce_euc_kr;
+			SetCharsetTable( NULL );
+	#endif
+		} else if ( m_encoding_name == "utf-16le" ) {
+			m_enc_type = ce_utf16_le;
+			SetCharsetTable( NULL );
+		} else if ( m_encoding_name == "utf-16be" ) {
+			m_enc_type = ce_utf16_be;
+			SetCharsetTable( NULL );
+		} else if ( m_encoding_name == "utf-32" ) {
+			m_enc_type = ce_utf32_le;
+			SetCharsetTable( NULL );
+		} else if ( m_encoding_name == "utf-32le" ) {
+			m_enc_type = ce_utf32_le;
+			SetCharsetTable( NULL );
+		} else if ( m_encoding_name == "utf-32be" ) {
+			m_enc_type = ce_utf32_be;
+			SetCharsetTable( NULL );
+		} else {
+			m_enc_type = ce_8bit_cp;
+			//CRLog::trace("charset: %s", LCSTR(lString16(name)));
+			const lChar16 * table = GetCharsetByte2UnicodeTable( name );
+			if ( table )
+				SetCharsetTable( table );
+		}
+	}
+
+	void SetCharsetTable( const lChar16 * table )
+	{
+		if (!table)
+		{
+			if (m_conv_table)
+			{
+				delete[] m_conv_table;
+				m_conv_table = NULL;
+			}
+			return;
+		}
+		m_enc_type = ce_8bit_cp;
+		if (!m_conv_table)
+			m_conv_table = new lChar16[128];
+		lStr_memcpy( m_conv_table, table, 128 );
+	}
+
 	void checkEof()
 	{
 	    if ( m_buf_fpos+m_buf_len >= this->m_stream_size-4 )
 	        m_buf_pos = m_buf_len = m_stream_size - m_buf_fpos; //force eof
 	        //m_buf_pos = m_buf_len = m_stream_size - (m_buf_fpos+m_buf_len);
 	}
-	int ReadChar(lChar16& ch) {
-		const int maxsize = 1;
-		lChar16 * buf = &ch;
+	int ReadChars( lChar16 * buf, int maxsize) {
 	    if (m_buf_pos >= m_buf_len)
 	        return 0;
 	    int count = 0;
@@ -465,11 +551,214 @@ public:
 	    }
 
 	}
+	/// tries to autodetect text encoding
+	bool AutodetectEncoding( bool utfOnly )
+	{
+	    char enc_name[32];
+	    char lang_name[32];
+	    lvpos_t oldpos = m_stream->GetPos();
+	    unsigned sz = CP_AUTODETECT_BUF_SIZE;
+	    m_stream->SetPos( 0 );
+	    if ( sz>m_stream->GetSize() )
+	        sz = m_stream->GetSize();
+	    if ( sz < 16 )
+	        return false;
+	    unsigned char * buf = new unsigned char[ sz ];
+	    lvsize_t bytesRead = 0;
+	    if ( m_stream->Read( buf, sz, &bytesRead )!=LVERR_OK ) {
+	        delete[] buf;
+	        m_stream->SetPos( oldpos );
+	        return false;
+	    }
+
+	    int res = 0;
+	    bool hasTags = hasXmlTags(buf, sz);
+	    if ( utfOnly )
+	        res = AutodetectCodePageUtf(buf, sz, enc_name, lang_name);
+	    else
+	        res = AutodetectCodePage(buf, sz, enc_name, lang_name, hasTags);
+	    delete[] buf;
+	    m_stream->SetPos( oldpos );
+	    if ( res) {
+	        //CRLog::debug("Code page decoding results: encoding=%s, lang=%s", enc_name, lang_name);
+	        m_lang_name = lString16( lang_name );
+	        SetCharset( lString16( enc_name ).c_str() );
+	    }
+
+	    // restore state
+	    return res!=0  || utfOnly;
+	}
+	/// reads one character from buffer in RTF format
+	lChar16 ReadRtfChar( int, const lChar16 * conv_table )
+	{
+	    lChar16 ch = m_buf[m_buf_pos++];
+	    lChar16 ch2 = m_buf[m_buf_pos];
+	    if ( ch=='\\' && ch2!='\'' ) {
+	    } else if (ch=='\\' ) {
+	        m_buf_pos++;
+	        int digit1 = charToHex( m_buf[0] );
+	        int digit2 = charToHex( m_buf[1] );
+	        m_buf_pos+=2;
+	        if ( digit1>=0 && digit2>=0 ) {
+	            ch = ( (lChar8)((digit1 << 4) | digit2) );
+	            if ( ch&0x80 )
+	                return conv_table[ch&0x7F];
+	            else
+	                return ch;
+	        } else {
+	            return '?';
+	        }
+	    } else {
+	        if ( ch>=' ' ) {
+	            if ( ch&0x80 )
+	                return conv_table[ch&0x7F];
+	            else
+	                return ch;
+	        }
+	    }
+	    return ' ';
+	}
+
+	/// reads specified number of bytes, converts to characters and saves to buffer
+	int ReadTextBytes( lvpos_t pos, int bytesToRead, lChar16 * buf, int buf_size, int flags)
+	{
+	    if ( !Seek( pos, bytesToRead ) ) {
+	        CRLog::error("LVTextFileBase::ReadTextBytes seek error! cannot set pos to %d to read %d bytes", (int)pos, (int)bytesToRead);
+	        return 0;
+	    }
+	    int chcount = 0;
+	    int max_pos = m_buf_pos + bytesToRead;
+	    if ( max_pos > m_buf_len )
+	        max_pos = m_buf_len;
+	    if ( (flags & TXTFLG_RTF)!=0 ) {
+	        char_encoding_type enc_type = ce_utf8;
+	        lChar16 * conv_table = NULL;
+	        if ( flags & TXTFLG_ENCODING_MASK ) {
+	        // set new encoding
+	            int enc_id = (flags & TXTFLG_ENCODING_MASK) >> TXTFLG_ENCODING_SHIFT;
+	            if ( enc_id >= ce_8bit_cp ) {
+	                conv_table = (lChar16 *)GetCharsetByte2UnicodeTableById( enc_id );
+	                enc_type = ce_8bit_cp;
+	            } else {
+	                conv_table = NULL;
+	                enc_type = (char_encoding_type)enc_id;
+	            }
+	        }
+	        while ( m_buf_pos<max_pos && chcount < buf_size ) {
+	            *buf++ = ReadRtfChar(enc_type, conv_table);
+	            chcount++;
+	        }
+	    } else {
+	        return ReadChars( buf, buf_size );
+	    }
+	    return chcount;
+	}
+
+	bool CheckFormat()
+	{
+		LVFileParserBase::Reset();
+	    // encoding test
+	    if ( !AutodetectEncoding(false) )
+	        return false;
+	    #define TEXT_PARSER_DETECT_SIZE 16384
+	    LVFileParserBase::Reset();
+	    lChar16 * chbuf = new lChar16[TEXT_PARSER_DETECT_SIZE];
+	    FillBuffer( TEXT_PARSER_DETECT_SIZE );
+	    int charsDecoded = ReadTextBytes( 0, m_buf_len, chbuf, TEXT_PARSER_DETECT_SIZE-1, 0 );
+	    bool res = false;
+	    if ( charsDecoded > 16 ) {
+	        int illegal_char_count = 0;
+	        int crlf_count = 0;
+	        int space_count = 0;
+	        for ( int i=0; i<charsDecoded; i++ ) {
+	            if ( chbuf[i]<=32 ) {
+	                switch( chbuf[i] ) {
+	                case ' ':
+	                case '\t':
+	                    space_count++;
+	                    break;
+	                case 10:
+	                case 13:
+	                    crlf_count++;
+	                    break;
+	                case 12:
+	                //case 9:
+	                case 8:
+	                case 7:
+	                case 30:
+	                case 0x14:
+	                case 0x15:
+	                    break;
+	                default:
+	                    illegal_char_count++;
+	                }
+	            }
+	        }
+	        if ( illegal_char_count==0 && (space_count>=charsDecoded/16 || crlf_count>0) )
+	            res = true;
+	        if ( illegal_char_count>0 )
+	            CRLog::error("illegal characters detected: count=%d", illegal_char_count );
+	    }
+	    delete[] chbuf;
+	    LVFileParserBase::Reset();
+	    return res;
+	}
 	bool Parse() {
 //		_bookpath->Read(buf, count)
+		CheckFormat();
+		LVFileParserBase::Reset();
+		lChar16 buf[1024 * 16];
+		int pos = 0;
+		TxtNode node;
+		node.start = 0;
+
+		while (true) {
+
+			if (m_buf_len - m_buf_pos < 8) {
+				FillBuffer(4096);
+			}
+			if (ReadChars(&buf[pos], 1) > 0) {
+				if (buf[pos] == '\r' || buf[pos] == '\n') {
+					if (pos != 0) {
+						buf[pos] = 0;
+						CRLog::debug("song %d %d %s", m_buf_fpos + m_buf_pos,
+								pos, UnicodeToUtf8(lString16(buf)).c_str());
+						node.end = m_buf_fpos + m_buf_pos;
+						// mNodes;
+						mNodes.push_back(node);
+						node.start = m_buf_fpos + m_buf_pos + 1;
+						pos = 0;
+					}
+				} else {
+					pos++;
+				}
+			} else {
+				buf[pos] = 0;
+				if (pos != 0) {
+					buf[pos] = 0;
+					CRLog::debug("song %d %d %s", buf[pos], pos,
+							UnicodeToUtf8(lString16(buf)).c_str());
+
+					pos = 0;
+				}
+				break;
+			}
+		}
+		std::vector<TxtNode>::iterator it;
+
+		for (it = mNodes.begin(); it != mNodes.end();it++) {
+			CRLog::debug("song node start:%d end:%d", (*it).start,(*it).end);
+		}
+		// for ()
 		return false;
 	}
 
+};
+
+class TxtRender {
+	LVFont *font;
+	int mWidth;
+	int mHeight;
 };
 /*
  * Class:     com_reader_document_txt_TxtDocument
@@ -491,11 +780,11 @@ JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_loadDocument
 	CRJNIEnv env(e);
 	lString16 path = env.fromJavaString(bookPath);
 	LVStreamRef stream = LVOpenFileStream(path.c_str(), LVOM_READ);
-//	TxtBook book(stream);
+	TxtBook book(stream);
 	CRLog::setLogger( new JNICDRLogger() );
 	CRLog::setLogLevel( CRLog::LL_TRACE );
 	CRLog::debug("song loaddocument");
-
+	book.Parse();
 	return 0;
 }
 

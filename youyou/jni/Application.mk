@@ -6,3 +6,4 @@ APP_ABI := armeabi-v7a# armeabi mips x86
 #mips mips-r2
 #x86
 #armeabi-v7a
+APP_STL := stlport_static
