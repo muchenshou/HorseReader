@@ -26,10 +26,10 @@ JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_loadDocument
 /*
  * Class:     com_reader_document_txt_TxtDocument
  * Method:    getPage
- * Signature: (Landroid/graphics/Bitmap;)I
+ * Signature: (ILandroid/graphics/Bitmap;)I
  */
 JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_getPage
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jint,jobject);
 
 #ifdef __cplusplus
 }

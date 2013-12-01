@@ -67,13 +67,15 @@ public class ReadingActivity extends Activity {
 		// test
 		this.mBookName = bookName;
 		TxtDocument txt = new TxtDocument();
-		txt.loadDocument(bookName, 0, 0);
+		txt.loadDocument(bookName, getWindowManager()
+				.getDefaultDisplay().getWidth(), getWindowManager()
+				.getDefaultDisplay().getHeight());
 		Log.i("hello", "here");
 		TxtView v = new TxtView(this);
 		Bitmap b = Bitmap.createBitmap(this.getWindowManager()
 				.getDefaultDisplay().getWidth(), getWindowManager()
 				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
-		txt.getPage(b);
+		txt.getPage(1,b);
 		v.b = b;
 		setContentView(v);
 		// BookPosition position = new BookPosition(0, 0, 0);

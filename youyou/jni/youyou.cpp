@@ -41,26 +41,28 @@ class TxtRender {
 public:
 	TxtRender(int w, int h) :
 			mWidth(w), mHeight(h) {
-		mFontRef = fontMan->GetFont(60, 400, false, css_ff_sans_serif,
-				cs8("Roboto"));
+		mFontRef = fontMan->GetFont(1<<6, 400+70, false, css_ff_sans_serif,
+				cs8("Droid Sans Fallback"),0);
 		CRLog::debug("song txtrender %s", mFontRef->getTypeFace().c_str());
 	}
 	bool measureText(lString16& node) {
 		lUInt16 widths[1024 * 8];
 		lUInt8 flags[1024 * 8];
-		lUInt32 totalWidth = 0;
 		_lines.clear();
 		mFontRef->measureText(node.c_str(), node.length(), widths, flags,
 				0x7FFF, '?', 0, false);
+		int pre_index = -1;
+		int pre_width;
+		_lines.push_back(0);
 		for (int i = 0; i < node.length(); i++) {
-			if (totalWidth + widths[i] < mWidth) {
+			pre_width = pre_index == -1 ? 0:widths[pre_index];
+			if (widths[i] < mWidth - pre_width) {
 				continue;
 			} else {
 				_lines.push_back(i);
-				totalWidth = widths[i];
+				pre_index = i-1;
 			}
 		}
-		CRLog::debug("song measure %d", totalWidth);
 		return true;
 	}
 
@@ -789,21 +791,22 @@ public:
 				FillBuffer(4096);
 			}
 			if (ReadChars(&buf[pos], 1) > 0) {
-				if (buf[pos] == '\r' || buf[pos] == '\n') {
+				int ch = buf[pos];
+				if ((buf[pos] == '\r' || buf[pos] == '\n')) {
 					if (pos != 0) {
 						lString16 n(buf);
 						buf[pos] = 0;
-//						CRLog::debug("song %d %d %s", m_buf_fpos + m_buf_pos,
-//								pos, UnicodeToUtf8(n).c_str());
+
 						node.end = m_buf_fpos + m_buf_pos;
 						// mNodes;
 
 						mNodes.push_back(node);
-						node.start = m_buf_fpos + m_buf_pos + 1;
-						pos = 0;
+
 						// render
 						render(n, (lUInt32) (mNodes.size() - 1));
 					}
+					node.start = m_buf_fpos + m_buf_pos;
+					pos = 0;
 				} else {
 					pos++;
 				}
@@ -824,41 +827,106 @@ public:
 //		for (it = mNodes.begin(); it != mNodes.end();it++) {
 //			CRLog::debug("song node start:%d end:%d", (*it).start,(*it).end);
 //		}
-		std::vector<TxtPage>::iterator it;
-		CRLog::debug("song pages size:%d", mPages.size());
-		for (it = mPages.begin(); it != mPages.end(); it++) {
-			CRLog::debug("song node start:%d end:%d", (*it).startNode,
-					(*it).startNodeOffset);
-		}
+//		std::vector<TxtPage>::iterator it;
+//		CRLog::debug("song pages size:%d", mPages.size());
+//		for (it = mPages.begin(); it != mPages.end(); it++) {
+//			CRLog::debug("song node start:%d startoffset:%d end:%d endoffset:%d", (*it).startNode,
+//					(*it).startNodeOffset,(*it).endNode,(*it).endNodeOffset);
+//		}
 		return false;
 	}
-	int _linesInPage;
+	lUInt32 _linesInPage;
 	TxtPage _page;
 	void render(lString16& text, lUInt32 nodeid) {
 		lUInt32 screenLines = mRender.screenLines();
-		if (_linesInPage == 0) {
-			_page.startNode = nodeid;
-			_page.startNodeOffset = 0;
-		}
 
 		mRender.measureText(text);
-		CRLog::debug("song render %d", mRender.getLineCount());
-		if (screenLines - _linesInPage < mRender.getLineCount()) {
-			_page.endNode = nodeid;
-			_page.endNodeOffset = mRender.getLinePos(screenLines - _linesInPage)
-					- 1;
-			mPages.push_back(_page);
+		lUInt32 lineCount = 0;
+		CRLog::debug("song page %d ", mRender.getLineCount());
+		while(lineCount < mRender.getLineCount()) {
+			if (_linesInPage+1<=screenLines){
+				_linesInPage++;
+				lineCount++;
+			} else {
+				_page.endNode = nodeid;
+				_page.endNodeOffset = mRender.getLinePos(lineCount) - 1;
+				mPages.push_back(_page);
 
-			_page.startNode = nodeid;
-			_page.startNodeOffset = mRender.getLinePos(
-					screenLines - _linesInPage);
-		} else {
-			_linesInPage += mRender.getLineCount();
+				_page.startNode = nodeid;
+				_page.startNodeOffset = mRender.getLinePos(lineCount);
+				_linesInPage = 0;
+			}
+
 		}
 	}
 	TxtRender& getRender() {
 		return mRender;
 	}
+	lString16 readNode(lvpos_t pos, int len) {
+		Reset();
+
+		Seek(pos, len);
+		lChar16 buf[1024*8];
+		int count = ReadChars(buf, 1024*8);
+		CRLog::debug("song readnode %d %d %d", pos,len,count);
+		lString16 str;
+		str.clear();
+		for (int i=0; i<1024*8;i++) {
+			if (buf[i] == '\r' || buf[i] == '\n')
+				break;
+			str.append(1,buf[i]);
+		}
+		str.pack();
+		return str;
+	}
+	bool drawPage(LVDrawBuf* draw, lUInt32 index) {
+
+		lUInt32 start_node = mPages[index].startNode;
+		lUInt32 start_node_offset = mPages[index].startNodeOffset;
+		lUInt32 end_node = mPages[index].endNode;
+		lUInt32 end_node_offset = mPages[index].endNodeOffset;
+		LVFontRef font = mRender.getFont();
+		lUInt16 widths[1024*8];
+		lUInt8 flags[1024*8];
+		lChar16 buf[1024*8];
+		lUInt32 buf_pos = 0;
+		int y = 10;
+		for(lUInt32 i= start_node;i<=end_node;i++) {
+			// node
+			lString16 node = readNode(mNodes[i].start, mNodes[i].end-mNodes[i].start);
+			font->measureText(node.c_str(), node.length(), widths, flags,0x7FFF,'?',0);
+
+
+			const lChar16 *str = node.c_str();
+			CRLog::debug("song node %d %s", i,UnicodeToUtf8(node).c_str());
+			int pre = -1;
+			for(int j=0;j<node.length();j++) {
+				int prelen;
+				if (pre == -1) {
+					prelen = 0;
+				} else {
+					prelen = widths[pre];
+				}
+				// line
+				if (widths[j] > mRender.getWidth()+prelen) {
+					pre = pre == -1 ? 0 : pre;
+					font->DrawTextString(draw, 10, y,
+							str+pre,j-pre-1, L'?', NULL, false,  0);
+					pre = j -1;
+					y += font->getHeight();
+				}
+				if (j == node.length()-1) {
+					font->DrawTextString(draw, 10, y,
+												str+pre+1,j - pre, L'?', NULL, false,  0);
+
+					y += font->getHeight();
+				}
+			}
+		}
+
+		return false;
+	}
+protected:
 
 };
 
@@ -894,14 +962,13 @@ LVRef<TxtBook> txt_book;
  * Method:    getPage
  * Signature: (Landroid/graphics/Bitmap;)I
  */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_getPage(
-		JNIEnv *env, jobject self, jobject bitmap) {
+		JNIEnv *env, jobject self, jint index,jobject bitmap) {
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(env,
 			bitmap);
 	if (drawbuf != NULL) {
 		drawbuf->FillRect(0, 0, txt_book->getRender().getWidth(),
-				txt_book->getRender().getHeight(), 0x00ff0000);
-		txt_book->getRender().getFont()->DrawTextString(drawbuf, 10, 10,
-				L"my name is songzhentao", 22, L'?', NULL, false, 0);
+				txt_book->getRender().getHeight(), 0x00ffeeee);
+		txt_book->drawPage(drawbuf, index);
 		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
 		BitmapAccessorInterface::getInstance()->unlock(env, bitmap, drawbuf);
 	} else {
