@@ -2,8 +2,6 @@ package com.reader.view.curl;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import com.reader.view.BookScreenDisplay;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
