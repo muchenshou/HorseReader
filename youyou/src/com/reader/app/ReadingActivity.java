@@ -29,6 +29,7 @@ import android.view.WindowManager;
 
 import com.reader.book.manager.BookManager;
 import com.reader.document.txt.TxtDocument;
+import com.reader.document.txt.TxtPageProvider;
 import com.reader.document.txt.TxtView;
 import com.reader.preference.ReadingSetting;
 import com.reader.record.BookHistory;
@@ -66,18 +67,8 @@ public class ReadingActivity extends Activity {
 		}
 		// test
 		this.mBookName = bookName;
-		TxtDocument txt = new TxtDocument();
-		txt.loadDocument(bookName, getWindowManager()
-				.getDefaultDisplay().getWidth(), getWindowManager()
-				.getDefaultDisplay().getHeight());
-		Log.i("hello", "here");
-		TxtView v = new TxtView(this);
-		Bitmap b = Bitmap.createBitmap(this.getWindowManager()
-				.getDefaultDisplay().getWidth(), getWindowManager()
-				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
-		txt.getPage(1,b);
-		v.b = b;
-		setContentView(v);
+		TxtPageProvider provider = new TxtPageProvider(this, bookName);
+		provider.loadDocument();
 		// BookPosition position = new BookPosition(0, 0, 0);
 		// BookHistory history = new BookHistory(this);
 		// if (history.exist(bookName)) {
