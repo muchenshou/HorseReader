@@ -5,13 +5,13 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.code.umd;
+package com.reader.document.umd;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.reader.code.umd.UmdInfo.Chapter;
+import com.reader.document.umd.UmdInfo.Chapter;
 import com.reader.util.BytesTransfer;
 
 public class UmdParse {
@@ -41,10 +41,8 @@ public class UmdParse {
 	protected int bookNumChapters;
 	private UmdInfo umdinfo;
 	private RandomAccessFile mReadFile;
-	private UmdBook book;
-	public UmdParse(UmdBook book, String per) throws FileNotFoundException {
-		this.book = book;
-		mReadFile = new RandomAccessFile(book.bookFile, per);
+	public UmdParse( String per) throws FileNotFoundException {
+		mReadFile = new RandomAccessFile("", per);
 	}
 
 	private int getInt() throws IOException {
@@ -167,7 +165,6 @@ public class UmdParse {
 	}
 
 	public UmdInfo parseBook() throws IOException {
-		umdinfo = new UmdInfo(book);
 		int parsingType = 0;
 		if (mReadFile.readInt() != UmdParse.UMDFLAG) {
 			System.out.println("the book is not umd format!");

@@ -15,8 +15,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.reader.book.manager.BookPosition;
-
 public class BookHistory {
 	BookDatabaseHelper bookHelper;
 
@@ -45,30 +43,6 @@ public class BookHistory {
 
 	private SQLiteStatement myStorePositionStatement;
 
-	public void storePosition(String book, BookPosition position) {
-		if (position == null)
-			position = new BookPosition(0, 0, 0);
-		
-		if (exist(book)) {
-			SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-			db.execSQL(String
-					.format("update bookhistory set time=datetime('now','localtime'),paragraph=%d,char=%d,realpos=%d where fulldirname=\"%s\";",
-							position.mElementIndex, position.mOffset,
-							position.mRealBookPos, book));
-			db.close();
-			return;
-		}
-		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		if (myStorePositionStatement == null) {
-			myStorePositionStatement = db
-					.compileStatement("INSERT OR REPLACE INTO bookhistory (fulldirname,paragraph,char,realpos) VALUES (?,?,?,?)");
-		}
-		myStorePositionStatement.bindString(1, book);
-		myStorePositionStatement.bindLong(2, position.mElementIndex);
-		myStorePositionStatement.bindLong(3, position.mOffset);
-		myStorePositionStatement.bindLong(4, position.mRealBookPos);
-		myStorePositionStatement.execute();
-	}
 
 	public boolean exist(String book) {
 		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
@@ -81,21 +55,6 @@ public class BookHistory {
 		return exist;
 	}
 
-	public BookPosition getPosition(String book) {
-		SQLiteDatabase db = this.bookHelper.getReadableDatabase();
-		BookPosition position = new BookPosition(0, 0, 0);
-		Cursor cur = db.query(BookDatabaseHelper.TB_HISTORY,
-				BookDatabaseHelper.HISTORY_POSITION, "fulldirname=?",
-				new String[] { book }, null, null, null);
-		if (cur.moveToNext()) {
-			position.mElementIndex = cur.getInt(0);
-			position.mOffset = cur.getInt(1);
-			position.mRealBookPos = cur.getInt(2);
-		}
-		cur.close();
-		db.close();
-		return position;
-	}
 
 	// private void updatePos(String bookname, BookPosition pos) {
 	// SQLiteDatabase db = this.bookHelper.getWritableDatabase();

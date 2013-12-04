@@ -24,7 +24,6 @@ import android.opengl.GLU;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.reader.book.manager.BookManager;
 import com.reader.config.PageConfig;
 import com.reader.view.curl.BookViewAnimation;
 
@@ -49,7 +48,6 @@ public class GLView extends GLSurfaceView implements View.OnTouchListener,
 		this.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		getHolder().setFormat(PixelFormat.RGB_565);
 
-		BookManager.View = this;
 		setOnTouchListener(this);
 		mPaint = PageConfig.pagePaintFromConfig(false);
 

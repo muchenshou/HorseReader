@@ -16,28 +16,18 @@ import java.io.OutputStream;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.reader.book.manager.BookManager;
-import com.reader.document.txt.TxtDocument;
 import com.reader.document.txt.TxtPageProvider;
-import com.reader.document.txt.TxtView;
-import com.reader.preference.ReadingSetting;
-import com.reader.record.BookHistory;
 import com.reader.view.GLView;
 
 public class ReadingActivity extends Activity {
 	public GLView bookView;
-	public BookManager bookmanager;
 	private String mBookName;
 
 	@Override
@@ -113,12 +103,6 @@ public class ReadingActivity extends Activity {
 
 	public static int TURN_SETTING = 1;
 
-	@Override
-	public boolean onMenuOpened(int featureId, Menu menu) {
-		startActivityForResult(new Intent(this, ReadingSetting.class),
-				TURN_SETTING);
-		return false;// 返回为true 则显示系统menu
-	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

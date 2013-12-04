@@ -5,7 +5,7 @@
  * 
  * email:muchenshou@gmail.com
  * */
-package com.reader.code.umd;
+package com.reader.document.umd;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,9 +25,7 @@ public class UmdInfo {
 	protected LinkedList<Block> blockList;
 	protected LinkedList<Chapter> chapterList;
 	protected SparseArray<String> bookInfo;
-	protected UmdBook book;
-	public UmdInfo(UmdBook book) {
-		this.book = book;
+	public UmdInfo() {
 		blockList = new LinkedList<Block>();
 
 		chapterList = new LinkedList<Chapter>();
@@ -124,16 +122,7 @@ public class UmdInfo {
 		}
 
 		public byte[] content() {
-			byte []bytes = null;
-			if (content == null || content.get() == null) {
-				try {
-					bytes = getBlockData(book.getFile());
-					content = new WeakReference<byte[]>(getContentBlock(bytes));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			return content.get();
+			return null;
 		}
 
 		private byte[] getBlockData(File umdFile) throws IOException {
