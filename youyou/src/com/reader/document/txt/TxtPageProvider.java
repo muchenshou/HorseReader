@@ -1,8 +1,13 @@
 package com.reader.document.txt;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 public class TxtPageProvider {
