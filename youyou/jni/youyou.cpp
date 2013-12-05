@@ -6,6 +6,7 @@
 #include "cr3java.h"
 #include "crtxtenc.h"
 #include "cssdef.h"
+#include "lvthread.h"
 #define CP_AUTODETECT_BUF_SIZE 0x20000
 
 struct TxtNode {
@@ -100,7 +101,6 @@ public:
 	TxtBook(LVStreamRef& path, int w, int h) :
 			LVFileParserBase(path), m_enc_type(ce_unknown), m_conv_table(NULL), mRender(
 					TxtRender(w, h)), _linesInPage(0) {
-
 	}
 	/// returns 8-bit charset conversion table (128 items, for codes 128..255)
 	virtual lChar16 * GetCharsetTable() {
@@ -842,7 +842,6 @@ public:
 
 		mRender.measureText(text);
 		lUInt32 lineCount = 0;
-		CRLog::debug("song page %d ", mRender.getLineCount());
 		while(lineCount < mRender.getLineCount()) {
 			if (_linesInPage+1<=screenLines){
 				_linesInPage++;
@@ -868,7 +867,6 @@ public:
 		Seek(pos, len);
 		lChar16 buf[1024*8];
 		int count = ReadChars(buf, 1024*8);
-		CRLog::debug("song readnode %d %d %d", pos,len,count);
 		lString16 str;
 		str.clear();
 		for (int i=0; i<1024*8;i++) {
@@ -879,6 +877,7 @@ public:
 		str.pack();
 		return str;
 	}
+
 	bool drawPage(LVDrawBuf* draw, lUInt32 index) {
 
 		lUInt32 start_node = mPages[index].startNode;
@@ -956,13 +955,14 @@ LVRef<TxtBook> txt_book;
 	txt_book->Parse();
 	return 0;
 }
-
+ LVMutex _mutex;
 /*
  * Class:     com_reader_document_txt_TxtDocument
  * Method:    getPage
  * Signature: (Landroid/graphics/Bitmap;)I
  */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_getPage(
 		JNIEnv *env, jobject self, jint index,jobject bitmap) {
+	 LVLock lock(_mutex);
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(env,
 			bitmap);
 	if (drawbuf != NULL) {

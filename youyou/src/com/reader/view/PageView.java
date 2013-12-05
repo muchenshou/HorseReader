@@ -24,12 +24,11 @@ public class PageView extends ViewGroup implements IAnimation{
 
 	@Override
 	public int startAnimation(int flags) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public int endAnimation(int flags) {
+	public int endAnimation(DIR flags) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

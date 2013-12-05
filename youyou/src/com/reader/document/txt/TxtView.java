@@ -8,16 +8,39 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.View;
 
-public class TxtView extends PageView{
-	private Bitmap b;
-	public TxtView(Context context,TxtPageProvider provider) {
+public class TxtView extends PageView {
+	TxtPageProvider _provider;
+	int _pageindex = 2;
+
+	public TxtView(Context context, TxtPageProvider provider) {
 		super(context);
-		// TODO Auto-generated constructor stub
-		
+		_provider = provider;
+
 	}
 
 	public void setBitmap(Bitmap b) {
-		this._animationView.setBitmapArray(new Bitmap[]{b,b,b});
+		this._animationView.setBitmapArray(new Bitmap[] { b, b, b });
 		_animationView.postInvalidate();
+	}
+
+	@Override
+	public int startAnimation(int flags) {
+		// TODO Auto-generated method stub
+		return super.startAnimation(flags);
+	}
+
+	@Override
+	public int endAnimation(DIR flags) {
+		if (flags == DIR.NEXT) {
+			_pageindex++;
+		} else {
+			_pageindex--;
+		}
+		this._animationView.setBitmapArray(new Bitmap[] {
+				_provider.getPage(_pageindex - 1),
+				_provider.getPage(_pageindex),
+				_provider.getPage(_pageindex + 1) });
+		_animationView.postInvalidate();
+		return super.endAnimation(flags);
 	}
 }
