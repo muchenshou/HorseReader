@@ -10,5 +10,5 @@ public class TxtDocument {
 	public PageDrawable getPageDrawble() {
 		return null;
 	}
-	public native int getPage(int index, Bitmap b);
+	public synchronized native int getPage(int index, Bitmap b);
 }
