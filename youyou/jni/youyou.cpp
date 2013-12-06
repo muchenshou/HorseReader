@@ -1,9 +1,10 @@
 #include <jni.h>
 #include <com_reader_document_txt_TxtDocument.h>
 #include <vector>
+#include <assert.h>
+#include "cr3java.h"
 #include "lvstring.h"
 #include "lvstream.h"
-#include "cr3java.h"
 #include "crtxtenc.h"
 #include "cssdef.h"
 #include "lvthread.h"
@@ -45,6 +46,7 @@ public:
 		mFontRef = fontMan->GetFont(1<<6, 400+70, false, css_ff_sans_serif,
 				cs8("Droid Sans Fallback"),0);
 		CRLog::debug("song txtrender %s", mFontRef->getTypeFace().c_str());
+		mFontRef->setBitmapMode(false);
 	}
 	bool measureText(lString16& node) {
 		lUInt16 widths[1024 * 8];
@@ -53,11 +55,11 @@ public:
 		mFontRef->measureText(node.c_str(), node.length(), widths, flags,
 				0x7FFF, '?', 0, false);
 		int pre_index = -1;
-		int pre_width;
+		lUInt16 pre_width;
 		_lines.push_back(0);
 		for (int i = 0; i < node.length(); i++) {
 			pre_width = pre_index == -1 ? 0:widths[pre_index];
-			if (widths[i] < mWidth - pre_width) {
+			if ((widths[i] -  pre_width)< (lUInt32)mWidth ) {
 				continue;
 			} else {
 				_lines.push_back(i);
@@ -794,8 +796,8 @@ public:
 				int ch = buf[pos];
 				if ((buf[pos] == '\r' || buf[pos] == '\n')) {
 					if (pos != 0) {
-						lString16 n(buf);
 						buf[pos] = 0;
+						lString16 n(buf);
 
 						node.end = m_buf_fpos + m_buf_pos;
 						// mNodes;
@@ -838,24 +840,31 @@ public:
 	lUInt32 _linesInPage;
 	TxtPage _page;
 	void render(lString16& text, lUInt32 nodeid) {
+
 		lUInt32 screenLines = mRender.screenLines();
 
 		mRender.measureText(text);
+		CRLog::debug("song render node id %d lines %d",nodeid, mRender.getLineCount());
+		CRLog::debug("song render node text %s",UnicodeToUtf8(text).c_str());
 		lUInt32 lineCount = 0;
 		while(lineCount < mRender.getLineCount()) {
 			if (_linesInPage+1<=screenLines){
+				CRLog::debug("song render lines %d", _linesInPage);
+				if (_linesInPage == 0) {
+					_page.startNode = nodeid;
+					_page.startNodeOffset = mRender.getLinePos(lineCount);
+				}
 				_linesInPage++;
-				lineCount++;
+				if (_linesInPage == screenLines) {
+					_linesInPage = 0;
+					_page.endNode = nodeid;
+//					_page.endNodeOffset = 0;
+					this->mPages.push_back(_page);
+				}
 			} else {
-				_page.endNode = nodeid;
-				_page.endNodeOffset = mRender.getLinePos(lineCount) - 1;
-				mPages.push_back(_page);
-
-				_page.startNode = nodeid;
-				_page.startNodeOffset = mRender.getLinePos(lineCount);
-				_linesInPage = 0;
+				assert(false);
 			}
-
+			lineCount++;
 		}
 	}
 	TxtRender& getRender() {
@@ -885,11 +894,13 @@ public:
 		lUInt32 end_node = mPages[index].endNode;
 		lUInt32 end_node_offset = mPages[index].endNodeOffset;
 		LVFontRef font = mRender.getFont();
+
 		lUInt16 widths[1024*8];
 		lUInt8 flags[1024*8];
 		lChar16 buf[1024*8];
 		lUInt32 buf_pos = 0;
 		int y = 10;
+			CRLog::debug("song node drag page index %d",index);
 		for(lUInt32 i= start_node;i<=end_node;i++) {
 			// node
 			lString16 node = readNode(mNodes[i].start, mNodes[i].end-mNodes[i].start);
@@ -968,6 +979,7 @@ LVRef<TxtBook> txt_book;
 	if (drawbuf != NULL) {
 		drawbuf->FillRect(0, 0, txt_book->getRender().getWidth(),
 				txt_book->getRender().getHeight(), 0x00ffeeee);
+		drawbuf->SetTextColor( 0x00000000 );
 		txt_book->drawPage(drawbuf, index);
 		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
 		BitmapAccessorInterface::getInstance()->unlock(env, bitmap, drawbuf);

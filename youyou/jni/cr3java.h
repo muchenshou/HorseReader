@@ -7,7 +7,9 @@
 
 #include <jni.h>
 #include <android/log.h>
-
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #define  LOG_TAG    "cr3eng"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
@@ -215,7 +217,6 @@ public:
     	curr_level = CRLog::LL_DEBUG;
     }
 protected:
-
 	virtual void log( const char * lvl, const char * msg, va_list args)
 	{
 	    #define MAX_LOG_MSG_SIZE 1024

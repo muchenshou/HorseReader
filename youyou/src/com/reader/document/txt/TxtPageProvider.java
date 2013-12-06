@@ -61,11 +61,13 @@ public class TxtPageProvider {
 		_activity.setContentView(v);
 		
 	
-//		g_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
-//				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
-//				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
-//		_txtDocument.getPage(0, g_bitmap);
-		g_bitmap = getPage(0);
+		g_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
+				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
+				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
+		_txtDocument.getPage(0, g_bitmap);
+		_txtDocument.getPage(1, g_bitmap);
+		_txtDocument.getPage(2, g_bitmap);
+//		g_bitmap = getPage(0);
 		v.setBitmap(g_bitmap);
 		v.invalidate();
 		return true;
