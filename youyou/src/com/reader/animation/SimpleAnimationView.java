@@ -49,8 +49,8 @@ public class SimpleAnimationView extends AnimationView {
 	protected void onDraw(Canvas canvas) {
 		if (mAnimate) {
 			DrawFront(canvas);
-			// DrawBack(canvas);
-			// DrawShadow(canvas);
+			 DrawBack(canvas);
+			 DrawShadow(canvas);
 			animation();
 		} else {
 			if (_bitmaps[1] != null)
