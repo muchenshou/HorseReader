@@ -65,8 +65,8 @@ public class TxtPageProvider {
 				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
 				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
 		_txtDocument.getPage(0, g_bitmap);
-		_txtDocument.getPage(1, g_bitmap);
-		_txtDocument.getPage(2, g_bitmap);
+//		_txtDocument.getPage(1, g_bitmap);
+//		_txtDocument.getPage(2, g_bitmap);
 //		g_bitmap = getPage(0);
 		v.setBitmap(g_bitmap);
 		v.invalidate();
@@ -76,60 +76,56 @@ public class TxtPageProvider {
 	int a = 0;
 
 	public Bitmap getPage(final int index) {
-//		return g_bitmap;
 		Bitmap _bitmap;
-		Log.i("song","bitmap "+index);
-		if (_imageCache.get(index) != null) {
-			Log.i("song","hello world 1");
-			{
-				Log.i("song","hello world");
-				return _imageCache.get(index);
-			}
-		}
 		_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
-				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
-				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
+		.getDefaultDisplay().getWidth(), _activity.getWindowManager()
+		.getDefaultDisplay().getHeight(), Config.ARGB_8888);
 		_txtDocument.getPage(index, _bitmap);
-		_handle.post(new Runnable() {
-
-			@Override
-			public void run() {
-				Set<Entry<Integer, Bitmap>> set = _imageCache.entrySet();
-				Iterator<Entry<Integer, Bitmap>> iter = set.iterator();
-				while (iter.hasNext()) {
-					Entry<Integer,Bitmap> entry = iter.next();
-					Integer key = entry.getKey();
-					Bitmap value = entry.getValue();
-					if (key < index - 20  ||  key>index + 20) {
-						value.recycle();
-						_imageCache.remove(key);
-					}
-				}
-				int min = index - 20 >0 ?index -20:0;
-				// must fix in future
-				int max = index + 20;
-				for (int i = min; i<max;i++) {
-					if (_imageCache.get(i) == null) {
-						Bitmap b;
-						b = Bitmap.createBitmap(_activity.getWindowManager()
-								.getDefaultDisplay().getWidth(), _activity.getWindowManager()
-								.getDefaultDisplay().getHeight(), Config.ARGB_8888);
-						_txtDocument.getPage(i, b);
-						_imageCache.put(i, b);
-					}
-				}
-//				for (int i = 0; i < 20; i++) {
-//					Bitmap _bitmap;
-//					_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
-//							.getDefaultDisplay().getWidth(),
-//							_activity.getWindowManager().getDefaultDisplay()
-//									.getHeight(), Config.ARGB_8888);
-//					_txtDocument.getPage(i, _bitmap);
-//					_imageCache.put(i, _bitmap);
-//				}
-			}
-		});
 		return _bitmap;
+//		Bitmap _bitmap;
+//		Log.i("song","bitmap "+index);
+//		if (_imageCache.get(index) != null) {
+//			Log.i("song","hello world 1");
+//			{
+//				Log.i("song","hello world");
+//				return _imageCache.get(index);
+//			}
+//		}
+//		_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
+//				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
+//				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
+//		_txtDocument.getPage(index, _bitmap);
+//		_handle.post(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				Set<Entry<Integer, Bitmap>> set = _imageCache.entrySet();
+//				Iterator<Entry<Integer, Bitmap>> iter = set.iterator();
+//				while (iter.hasNext()) {
+//					Entry<Integer,Bitmap> entry = iter.next();
+//					Integer key = entry.getKey();
+//					Bitmap value = entry.getValue();
+//					if (key < index - 20  ||  key>index + 20) {
+//						value.recycle();
+//						_imageCache.remove(key);
+//					}
+//				}
+//				int min = index - 20 >0 ?index -20:0;
+//				// must fix in future
+//				int max = index + 20;
+//				for (int i = min; i<max;i++) {
+//					if (_imageCache.get(i) == null) {
+//						Bitmap b;
+//						b = Bitmap.createBitmap(_activity.getWindowManager()
+//								.getDefaultDisplay().getWidth(), _activity.getWindowManager()
+//								.getDefaultDisplay().getHeight(), Config.ARGB_8888);
+//						_txtDocument.getPage(i, b);
+//						_imageCache.put(i, b);
+//					}
+//				}
+//			}
+//		});
+//		return _bitmap;
 	}
 
 	public int getPageCount() {

@@ -40,30 +40,31 @@ class TxtRender {
 	lUInt32 mWidth;
 	lUInt32 mHeight;
 	std::vector<lUInt32> _lines;
+	lUInt32 mTextLen;
 public:
 	TxtRender(int w, int h) :
 			mWidth(w), mHeight(h) {
-		mFontRef = fontMan->GetFont(1<<6, 400+70, false, css_ff_sans_serif,
-				cs8("Droid Sans Fallback"),0);
-		CRLog::debug("song txtrender %s", mFontRef->getTypeFace().c_str());
+		mFontRef = fontMan->GetFont(1 << 6, 400 + 70, false, css_ff_sans_serif,
+				cs8("Droid Sans Fallback"), 0);
 		mFontRef->setBitmapMode(false);
 	}
 	bool measureText(lString16& node) {
 		lUInt16 widths[1024 * 8];
 		lUInt8 flags[1024 * 8];
 		_lines.clear();
+		mTextLen = node.length();
 		mFontRef->measureText(node.c_str(), node.length(), widths, flags,
 				0x7FFF, '?', 0, false);
 		int pre_index = -1;
 		lUInt16 pre_width;
 		_lines.push_back(0);
 		for (int i = 0; i < node.length(); i++) {
-			pre_width = pre_index == -1 ? 0:widths[pre_index];
-			if ((widths[i] -  pre_width)< (lUInt32)mWidth ) {
+			pre_width = pre_index == -1 ? 0 : widths[pre_index];
+			if ((widths[i] - pre_width) < (lUInt32) mWidth) {
 				continue;
 			} else {
 				_lines.push_back(i);
-				pre_index = i-1;
+				pre_index = i - 1;
 			}
 		}
 		return true;
@@ -77,6 +78,14 @@ public:
 		return _lines[index];
 	}
 
+	lUInt32 getLineLen(int index) {
+		assert(index <=0);
+		if ((lUInt32)index <_lines.size()-1) {
+			return _lines[index+1] - _lines[index];
+		} else {
+			return mTextLen - _lines[index];
+		}
+	}
 	lUInt32 screenLines() {
 		return mHeight / mFontRef->getHeight();
 	}
@@ -844,15 +853,16 @@ public:
 		lUInt32 screenLines = mRender.screenLines();
 
 		mRender.measureText(text);
-		CRLog::debug("song render node id %d lines %d",nodeid, mRender.getLineCount());
-		CRLog::debug("song render node text %s",UnicodeToUtf8(text).c_str());
+		CRLog::debug("song render node id %d lines %d", nodeid,
+				mRender.getLineCount());
+		CRLog::debug("song render node text %s", UnicodeToUtf8(text).c_str());
 		lUInt32 lineCount = 0;
-		while(lineCount < mRender.getLineCount()) {
-			if (_linesInPage+1<=screenLines){
+		while (lineCount < mRender.getLineCount()) {
+			if (_linesInPage + 1 <= screenLines) {
 				CRLog::debug("song render lines %d", _linesInPage);
 				if (_linesInPage == 0) {
 					_page.startNode = nodeid;
-					_page.startNodeOffset = mRender.getLinePos(lineCount);
+					_page.startNodeOffset = lineCount;
 				}
 				_linesInPage++;
 				if (_linesInPage == screenLines) {
@@ -874,14 +884,14 @@ public:
 		Reset();
 
 		Seek(pos, len);
-		lChar16 buf[1024*8];
-		int count = ReadChars(buf, 1024*8);
+		lChar16 buf[1024 * 8];
+		int count = ReadChars(buf, 1024 * 8);
 		lString16 str;
 		str.clear();
-		for (int i=0; i<1024*8;i++) {
+		for (int i = 0; i < 1024 * 8; i++) {
 			if (buf[i] == '\r' || buf[i] == '\n')
 				break;
-			str.append(1,buf[i]);
+			str.append(1, buf[i]);
 		}
 		str.pack();
 		return str;
@@ -895,42 +905,30 @@ public:
 		lUInt32 end_node_offset = mPages[index].endNodeOffset;
 		LVFontRef font = mRender.getFont();
 
-		lUInt16 widths[1024*8];
-		lUInt8 flags[1024*8];
-		lChar16 buf[1024*8];
+		lUInt16 widths[1024 * 8];
+		lUInt8 flags[1024 * 8];
+		lChar16 buf[1024 * 8];
 		lUInt32 buf_pos = 0;
-		int y = 10;
-			CRLog::debug("song node drag page index %d",index);
-		for(lUInt32 i= start_node;i<=end_node;i++) {
+		lUInt32 y = 10;
+		CRLog::debug("song node drag page index %d start_node_offset %d", index,
+				start_node_offset);
+		for (lUInt32 i = start_node; i <= end_node; i++) {
 			// node
-			lString16 node = readNode(mNodes[i].start, mNodes[i].end-mNodes[i].start);
-			font->measureText(node.c_str(), node.length(), widths, flags,0x7FFF,'?',0);
-
+			lString16 node = readNode(mNodes[i].start,
+					mNodes[i].end - mNodes[i].start);
+			font->measureText(node.c_str(), node.length(), widths, flags,
+					0x7FFF, '?', 0);
+			mRender.measureText(node);
 
 			const lChar16 *str = node.c_str();
-			CRLog::debug("song node %d %s", i,UnicodeToUtf8(node).c_str());
+//			CRLog::debug("song node %d %s", i,UnicodeToUtf8(node).c_str());
 			int pre = -1;
-			for(int j=0;j<node.length();j++) {
-				int prelen;
-				if (pre == -1) {
-					prelen = 0;
-				} else {
-					prelen = widths[pre];
-				}
-				// line
-				if (widths[j] > mRender.getWidth()+prelen) {
-					pre = pre == -1 ? 0 : pre;
-					font->DrawTextString(draw, 10, y,
-							str+pre,j-pre-1, L'?', NULL, false,  0);
-					pre = j -1;
-					y += font->getHeight();
-				}
-				if (j == node.length()-1) {
-					font->DrawTextString(draw, 10, y,
-												str+pre+1,j - pre, L'?', NULL, false,  0);
+			for (lUInt32 j = (i==start_node ? start_node_offset: 0); j < mRender.getLineCount() && y<mRender.getHeight(); j++) {
+				CRLog::debug("song jjjjj %d",j);
+				font->DrawTextString(draw, 0, y, str+mRender.getLinePos(j),mRender.getLineLen(j) , L'?',
+						NULL, false, 0);
 
-					y += font->getHeight();
-				}
+				y += font->getHeight();
 			}
 		}
 
@@ -966,20 +964,20 @@ LVRef<TxtBook> txt_book;
 	txt_book->Parse();
 	return 0;
 }
- LVMutex _mutex;
+LVMutex _mutex;
 /*
  * Class:     com_reader_document_txt_TxtDocument
  * Method:    getPage
  * Signature: (Landroid/graphics/Bitmap;)I
  */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_getPage(
-		JNIEnv *env, jobject self, jint index,jobject bitmap) {
-	 LVLock lock(_mutex);
+		JNIEnv *env, jobject self, jint index, jobject bitmap) {
+	LVLock lock(_mutex);
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(env,
 			bitmap);
 	if (drawbuf != NULL) {
 		drawbuf->FillRect(0, 0, txt_book->getRender().getWidth(),
 				txt_book->getRender().getHeight(), 0x00ffeeee);
-		drawbuf->SetTextColor( 0x00000000 );
+		drawbuf->SetTextColor(0x00000000);
 		txt_book->drawPage(drawbuf, index);
 		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
 		BitmapAccessorInterface::getInstance()->unlock(env, bitmap, drawbuf);

@@ -10,7 +10,7 @@ import android.view.View;
 
 public class TxtView extends PageView {
 	TxtPageProvider _provider;
-	int _pageindex = 2;
+	int _pageindex = 0;
 
 	public TxtView(Context context, TxtPageProvider provider) {
 		super(context);
@@ -37,9 +37,9 @@ public class TxtView extends PageView {
 			_pageindex--;
 		}
 		this._animationView.setBitmapArray(new Bitmap[] {
-				_provider.getPage(_pageindex - 1),
 				_provider.getPage(_pageindex),
-				_provider.getPage(_pageindex + 1) });
+				_provider.getPage(_pageindex),
+				_provider.getPage(_pageindex) });
 		_animationView.postInvalidate();
 		return super.endAnimation(flags);
 	}

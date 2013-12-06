@@ -33,7 +33,7 @@ JNIEXPORT jboolean JNICALL Java_com_reader_app_YouYouApplication_initInternal
 	CRLog::debug("registering fonts: %d fonts in list", len);
 	for ( int i=0; i<len; i++ ) {
 		lString8 fontName = UnicodeToUtf8(fonts[i]);
-		CRLog::debug("registering font %s", fontName.c_str());
+//		CRLog::debug("registering font %s", fontName.c_str());
 		if ( !fontMan->RegisterFont( fontName ) )
 			CRLog::error("cannot load font %s", fontName.c_str());
 	}
