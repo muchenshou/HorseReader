@@ -19,7 +19,8 @@ public class SimpleAnimationView extends AnimationView {
 	IAnimation.DIR _dir = IAnimation.DIR.NEXT;
 	int mWidth;
 	int[] mFrontShadowColors = new int[] { 0x80111111, 0x111111 };
-	int[] mShadowRColors = new int[] { 0x111111, 0x80111111 };
+	int[] mShadowRColors = new int[] { 0x000000, 0x80FFFFFF };
+//	int[] mShadowRColors = new int[] { 0x111111, 0x80111111 };
 	Context mContext;
 	Paint _paint = new Paint();
 	float mBoundLine = 0f;
@@ -48,9 +49,8 @@ public class SimpleAnimationView extends AnimationView {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		if (mAnimate) {
+			DrawBack(canvas);
 			DrawFront(canvas);
-			 DrawBack(canvas);
-			 DrawShadow(canvas);
 			animation();
 		} else {
 			if (_bitmaps[1] != null)
@@ -62,24 +62,15 @@ public class SimpleAnimationView extends AnimationView {
 		return _dir == IAnimation.DIR.PRE;
 	}
 
-	private void DrawShadow(Canvas canvas) {
-		if (isTurnToPre()) {
-			mShadowR.setBounds((int) mBoundLine + 20, 0, (int) mBoundLine,
+	private void DrawFront(Canvas canvas) {
+		int shadowW = 30;
+		canvas.save();
+		canvas.translate(mBoundLine - getWidth(), 0);
+		Bitmap b = isTurnToPre() ? _bitmaps[0] : _bitmaps[1];
+		if (b != null) {
+			mShadowR.setBounds((int) getWidth(), 0, (int) getWidth()+shadowW,
 					getHeight());
 			mShadowR.draw(canvas);
-		} else {
-			mShadowL.setBounds((int) mBoundLine, 0, (int) mBoundLine + 20,
-					getHeight());
-			mShadowL.draw(canvas);
-		}
-	}
-
-	private void DrawFront(Canvas canvas) {
-		canvas.save();
-		canvas.translate(isTurnToPre() ? mBoundLine - getWidth() : mBoundLine,
-				0);
-		Bitmap b = isTurnToPre() ? _bitmaps[0] : _bitmaps[2];
-		if (b != null) {
 			canvas.drawBitmap(b, 0, 0, _paint);
 		}
 		canvas.restore();
@@ -88,11 +79,11 @@ public class SimpleAnimationView extends AnimationView {
 	private void DrawBack(Canvas canvas) {
 		Path path = new Path();
 		path.reset();
-		if (isTurnToPre())
-			path.addRect(mBoundLine, 0, getHeight(), getHeight(),
-					Path.Direction.CCW);
-		else
-			path.addRect(0, 0, mBoundLine, getHeight(), Path.Direction.CCW);
+		// if (isTurnToPre())
+		path.addRect(mBoundLine, 0, getHeight(), getHeight(),
+				Path.Direction.CCW);
+		// else
+		// path.addRect(0, 0, mBoundLine, getHeight(), Path.Direction.CCW);
 
 		canvas.save();
 		canvas.clipPath(path);
@@ -126,15 +117,16 @@ public class SimpleAnimationView extends AnimationView {
 		mAnimate = true;
 		mStart = System.currentTimeMillis();
 		mEnd = mStart + animationtime;
+		invalidate();
 		if (isTurnToPre()) {
-			mStartX = 0;
+			mStartX = 0+10;
 			mEndX = getWidth();
 		} else {
-			mStartX = getWidth();
+			mStartX = getWidth()-10;
 			mEndX = 0;
 		}
 		mX = mEndX - mStartX;
-		postInvalidate();
+		mBoundLine = mStartX;
 		_animation.startAnimation(0);
 	}
 

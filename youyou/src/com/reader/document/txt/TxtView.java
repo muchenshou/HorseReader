@@ -37,9 +37,9 @@ public class TxtView extends PageView {
 			_pageindex--;
 		}
 		this._animationView.setBitmapArray(new Bitmap[] {
+				_provider.getPage(_pageindex-1),
 				_provider.getPage(_pageindex),
-				_provider.getPage(_pageindex),
-				_provider.getPage(_pageindex) });
+				_provider.getPage(_pageindex+1) });
 		_animationView.postInvalidate();
 		return super.endAnimation(flags);
 	}

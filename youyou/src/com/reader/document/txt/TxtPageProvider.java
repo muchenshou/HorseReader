@@ -19,7 +19,7 @@ public class TxtPageProvider {
 	TxtDocument _txtDocument;
 	Activity _activity;
 	String _path;
-	static Handler _handle;
+	public static Handler _handle;
 
 	Map<Integer, Bitmap> _imageCache = new HashMap<Integer, Bitmap>();
 
