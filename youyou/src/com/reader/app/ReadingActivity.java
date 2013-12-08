@@ -52,7 +52,7 @@ public class ReadingActivity extends Activity {
 			my.canRead();
 			OutputStream o = new FileOutputStream(my);
 			InputStream in = getResources().getAssets().open(
-					format == 0 ? "zhetian.epub" : "bingfa.txt");
+					format == 0 ? "zhetian.epub" : "suan.txt");
 			byte[] filedata = new byte[1024];
 			int num;
 			while ((num = in.read(filedata)) > 0) {

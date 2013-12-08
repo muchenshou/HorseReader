@@ -19,7 +19,7 @@ public class SimpleAnimationView extends AnimationView {
 	IAnimation.DIR _dir = IAnimation.DIR.NEXT;
 	int mWidth;
 	int[] mFrontShadowColors = new int[] { 0x80111111, 0x111111 };
-	int[] mShadowRColors = new int[] { 0x000000, 0x80FFFFFF };
+	int[] mShadowRColors = new int[] { 0xFF000000, 0x00000000 };
 	// int[] mShadowRColors = new int[] { 0x111111, 0x80111111 };
 	Context mContext;
 	Paint _paint = new Paint();
@@ -63,7 +63,7 @@ public class SimpleAnimationView extends AnimationView {
 	}
 
 	private void DrawFront(Canvas canvas) {
-		int shadowW = 30;
+		int shadowW = 50;
 		canvas.save();
 		canvas.translate(mBoundLine - getWidth(), 0);
 		Bitmap b = isTurnToPre() ? _bitmaps[0] : _bitmaps[1];

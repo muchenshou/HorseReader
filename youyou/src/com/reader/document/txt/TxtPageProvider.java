@@ -61,6 +61,7 @@ public class TxtPageProvider {
 				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
 		_txtDocument.getPage(getPageIndexHistory(), g_bitmap);
 		int index = getPageIndexHistory();
+		_txtView._pageindex = index;
 		_txtView.setBitmap(new Bitmap[] { getPage(index - 1), getPage(index),
 				getPage(index + 1) });
 		_txtView.invalidate();
