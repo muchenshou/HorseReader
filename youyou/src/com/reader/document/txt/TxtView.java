@@ -10,7 +10,7 @@ import android.view.View;
 
 public class TxtView extends PageView {
 	TxtPageProvider _provider;
-	int _pageindex = 0;
+	public int _pageindex = 0;
 
 	public TxtView(Context context, TxtPageProvider provider) {
 		super(context);
@@ -18,8 +18,8 @@ public class TxtView extends PageView {
 
 	}
 
-	public void setBitmap(Bitmap b) {
-		this._animationView.setBitmapArray(new Bitmap[] { b, b, b });
+	public void setBitmap(Bitmap b[]) {
+		this._animationView.setBitmapArray(new Bitmap[] { b[0], b[1], b[2] });
 		_animationView.postInvalidate();
 	}
 

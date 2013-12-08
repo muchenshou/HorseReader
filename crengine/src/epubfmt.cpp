@@ -1,6 +1,8 @@
 #include "../include/epubfmt.h"
-
-
+#include "lvstream.h"
+#include "lvdocview.h"
+#include "lvrend.h"
+#include "lvpagesplitter.h"
 class EpubItem {
 public:
     lString16 href;
@@ -931,8 +933,607 @@ bool ImportEpubDocument( LVStreamRef stream, ldomDocument * m_doc, LVDocViewCall
     }
 
     // save compound XML document, for testing:
-    //m_doc->saveToStream(LVOpenFileStream("/tmp/epub_dump.xml", LVOM_WRITE), NULL, true);
+    m_doc->saveToStream(LVOpenFileStream("/sdcard//epub_dump.xml", LVOM_WRITE), NULL, true);
 
     return true;
 
 }
+
+// song
+
+static const char * DEFAULT_FONT_NAME = "Droid Sans Fallback"; //Times New Roman";
+static const char * DEFAULT_STATUS_FONT_NAME =
+		"Droid Sans Fallback"; //Times New Roman";
+static css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
+EpubDocument::EpubDocument(){
+		m_doc = NULL;
+		m_dx = 0;
+		m_dy = 0;
+		m_font_size = 1<<6;
+		m_defaultFontFace=lString8(DEFAULT_FONT_NAME);
+		m_props = LVCreatePropsContainer();
+		m_doc_props =LVCreatePropsContainer();
+		m_is_rendered = false;
+		m_def_interline_space = 100;
+	}
+void EpubDocument::setRenderProps(int dx, int dy) {
+	if (!m_doc || m_doc->getRootNode() == NULL)
+		return;
+	m_dx = dx;
+	m_dy = dy;
+	updateLayout();
+
+	if (dx == 0)
+		dx = m_pageRects[0].width() - m_pageMargins.left - m_pageMargins.right;
+	if (dy == 0)
+		dy = m_pageRects[0].height() - m_pageMargins.top - m_pageMargins.bottom;
+
+	lString8 fontName = lString8(DEFAULT_FONT_NAME);
+	m_font = fontMan->GetFont(m_font_size, 400 + LVRendGetFontEmbolden(),
+			false, DEFAULT_FONT_FAMILY, m_defaultFontFace);
+	//m_font = LVCreateFontTransform( m_font, LVFONT_TRANSFORM_EMBOLDEN );
+	if (!m_font)
+		return;
+
+    updateDocStyleSheet();
+
+    m_doc->setRenderProps(dx, dy, false,  0, m_font, m_def_interline_space, m_props);
+    text_highlight_options_t h;
+    h.bookmarkHighlightMode = m_props->getIntDef(PROP_HIGHLIGHT_COMMENT_BOOKMARKS, highlight_mode_underline);
+    h.selectionColor = (m_props->getColorDef(PROP_HIGHLIGHT_SELECTION_COLOR, 0xC0C0C0) & 0xFFFFFF);
+    h.commentColor = (m_props->getColorDef(PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT, 0xA08000) & 0xFFFFFF);
+    h.correctionColor = (m_props->getColorDef(PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION, 0xA00000) & 0xFFFFFF);
+    m_doc->setHightlightOptions(h);
+}
+
+void EpubDocument::drawCoverTo(LVDrawBuf * drawBuf, lvRect & rc) {
+		if (rc.width() < 130 || rc.height() < 130)
+			return;
+		int base_font_size = 16;
+		int w = rc.width();
+		if (w < 200)
+			base_font_size = 16;
+		else if (w < 300)
+			base_font_size = 18;
+		else if (w < 500)
+			base_font_size = 20;
+		else if (w < 700)
+			base_font_size = 22;
+		else
+			base_font_size = 24;
+		//CRLog::trace("drawCoverTo() - loading fonts...");
+		LVFontRef author_fnt(fontMan->GetFont(base_font_size, 700, false,
+	            css_ff_serif, cs8("Times New Roman")));
+		LVFontRef title_fnt(fontMan->GetFont(base_font_size + 4, 700, false,
+	            css_ff_serif, cs8("Times New Roman")));
+		LVFontRef series_fnt(fontMan->GetFont(base_font_size - 3, 400, true,
+	            css_ff_serif, cs8("Times New Roman")));
+		lString16 authors = getAuthors();
+		lString16 title = getTitle();
+		lString16 series = getSeries();
+		if (title.empty())
+	        title = "no title";
+		LFormattedText txform;
+		if (!authors.empty())
+			txform.AddSourceLine(authors.c_str(), authors.length(), 0xFFFFFFFF,
+					0xFFFFFFFF, author_fnt.get(), LTEXT_ALIGN_CENTER, 18);
+		txform.AddSourceLine(title.c_str(), title.length(), 0xFFFFFFFF, 0xFFFFFFFF,
+				title_fnt.get(), LTEXT_ALIGN_CENTER, 18);
+		if (!series.empty())
+			txform.AddSourceLine(series.c_str(), series.length(), 0xFFFFFFFF,
+					0xFFFFFFFF, series_fnt.get(), LTEXT_ALIGN_CENTER, 18);
+		int title_w = rc.width() - rc.width() / 4;
+		int h = txform.Format((lUInt16)title_w, (lUInt16)rc.height());
+
+		lvRect imgrc = rc;
+
+		//CRLog::trace("drawCoverTo() - getting cover image");
+		LVImageSourceRef imgsrc = getCoverPageImage();
+		LVImageSourceRef defcover = getDefaultCover();
+		if (!imgsrc.isNull() && imgrc.height() > 30) {
+	#ifdef NO_TEXT_IN_COVERPAGE
+			h = 0;
+	#endif
+			if (h)
+				imgrc.bottom -= h + 16;
+			//fprintf( stderr, "Writing coverpage image...\n" );
+			int src_dx = imgsrc->GetWidth();
+			int src_dy = imgsrc->GetHeight();
+			int scale_x = imgrc.width() * 0x10000 / src_dx;
+			int scale_y = imgrc.height() * 0x10000 / src_dy;
+			if (scale_x < scale_y)
+				scale_y = scale_x;
+			else
+				scale_x = scale_y;
+			int dst_dx = (src_dx * scale_x) >> 16;
+			int dst_dy = (src_dy * scale_y) >> 16;
+	        if (dst_dx > rc.width() * 6 / 8)
+				dst_dx = imgrc.width();
+	        if (dst_dy > rc.height() * 6 / 8)
+				dst_dy = imgrc.height();
+			//CRLog::trace("drawCoverTo() - drawing image");
+	        LVColorDrawBuf buf2(src_dx, src_dy, 32);
+	        buf2.Draw(imgsrc, 0, 0, src_dx, src_dy, true);
+	        drawBuf->DrawRescaled(&buf2, imgrc.left + (imgrc.width() - dst_dx) / 2,
+	                imgrc.top + (imgrc.height() - dst_dy) / 2, dst_dx, dst_dy, 0);
+		} else if (!defcover.isNull()) {
+			if (h)
+				imgrc.bottom -= h + 16;
+			// draw default cover with title at center
+			imgrc = rc;
+			int src_dx = defcover->GetWidth();
+			int src_dy = defcover->GetHeight();
+			int scale_x = imgrc.width() * 0x10000 / src_dx;
+			int scale_y = imgrc.height() * 0x10000 / src_dy;
+			if (scale_x < scale_y)
+				scale_y = scale_x;
+			else
+				scale_x = scale_y;
+			int dst_dx = (src_dx * scale_x) >> 16;
+			int dst_dy = (src_dy * scale_y) >> 16;
+			if (dst_dx > rc.width() - 10)
+				dst_dx = imgrc.width();
+			if (dst_dy > rc.height() - 10)
+				dst_dy = imgrc.height();
+			//CRLog::trace("drawCoverTo() - drawing image");
+			drawBuf->Draw(defcover, imgrc.left + (imgrc.width() - dst_dx) / 2,
+					imgrc.top + (imgrc.height() - dst_dy) / 2, dst_dx, dst_dy);
+			//CRLog::trace("drawCoverTo() - drawing text");
+			txform.Draw(drawBuf, (rc.right + rc.left - title_w) / 2, (rc.bottom
+					+ rc.top - h) / 2, NULL);
+			//CRLog::trace("drawCoverTo() - done");
+			return;
+		} else {
+			imgrc.bottom = imgrc.top;
+		}
+		rc.top = imgrc.bottom;
+		//CRLog::trace("drawCoverTo() - drawing text");
+		if (h)
+			txform.Draw(drawBuf, (rc.right + rc.left - title_w) / 2, (rc.bottom
+					+ rc.top - h) / 2, NULL);
+		//CRLog::trace("drawCoverTo() - done");
+	}
+void EpubDocument::drawPageTo(LVDrawBuf * drawbuf, LVRendPageInfo & page,
+			lvRect * pageRect, int pageCount, int basePage) {
+		CRLog::debug("song epub drawpage %d %d %d %d %d %d",page.start,page.height, pageRect->width(),pageRect->height(), pageCount,basePage);
+		int start = page.start;
+		int height = page.height;
+		//CRLog::trace("drawPageTo(%d,%d)", start, height);
+		lvRect fullRect(0, 0, drawbuf->GetWidth(), drawbuf->GetHeight());
+		if (!pageRect)
+			pageRect = &fullRect;
+	    //drawbuf->setHidePartialGlyphs(getViewMode()==DVM_PAGES);
+		drawbuf->setHidePartialGlyphs(true);
+		//int offset = (pageRect->height() - m_pageMargins.top - m_pageMargins.bottom - height) / 3;
+		//if (offset>16)
+		//    offset = 16;
+		//if (offset<0)
+		//    offset = 0;
+		int offset = 0;
+		lvRect clip;
+		clip.left = pageRect->left + m_pageMargins.left;
+		clip.top = pageRect->top + m_pageMargins.top + offset;
+		clip.bottom = pageRect->top + m_pageMargins.top + height
+				+ offset;
+		clip.right = pageRect->left + pageRect->width() - m_pageMargins.right;
+		if (page.type == PAGE_TYPE_COVER)
+			clip.top = pageRect->top + m_pageMargins.top;
+
+		drawbuf->SetClipRect(&clip);
+		if (m_doc) {
+			if (page.type == PAGE_TYPE_COVER) {
+				lvRect rc = *pageRect;
+				drawbuf->SetClipRect(&rc);
+				//if ( m_pageMargins.bottom > m_pageMargins.top )
+				//    rc.bottom -= m_pageMargins.bottom - m_pageMargins.top;
+				/*
+				 rc.left += m_pageMargins.left / 2;
+				 rc.top += m_pageMargins.bottom / 2;
+				 rc.right -= m_pageMargins.right / 2;
+				 rc.bottom -= m_pageMargins.bottom / 2;
+				 */
+				//CRLog::trace("Entering drawCoverTo()");
+				drawCoverTo(drawbuf, rc);
+			} else {
+				// draw main page text
+				//CRLog::trace("Entering DrawDocument()");
+				if (page.height)
+					DrawDocument(*drawbuf, m_doc->getRootNode(), pageRect->left
+							+ m_pageMargins.left, clip.top, pageRect->width()
+							- m_pageMargins.left - m_pageMargins.right, height, 0,
+	                                                -start + offset, m_dy, NULL, NULL);
+				//CRLog::trace("Done DrawDocument() for main text");
+				// draw footnotes
+	#define FOOTNOTE_MARGIN 8
+				int fny = clip.top + (page.height ? page.height + FOOTNOTE_MARGIN
+						: FOOTNOTE_MARGIN);
+				int fy = fny;
+				bool footnoteDrawed = false;
+				for (int fn = 0; fn < page.footnotes.length(); fn++) {
+					int fstart = page.footnotes[fn].start;
+					int fheight = page.footnotes[fn].height;
+					clip.top = fy + offset;
+					clip.left = pageRect->left + m_pageMargins.left;
+					clip.right = pageRect->right - m_pageMargins.right;
+					clip.bottom = fy + offset + fheight;
+					drawbuf->SetClipRect(&clip);
+					DrawDocument(*drawbuf, m_doc->getRootNode(), pageRect->left
+							+ m_pageMargins.left, fy + offset, pageRect->width()
+							- m_pageMargins.left - m_pageMargins.right, fheight, 0,
+							-fstart + offset, m_dy, NULL);
+					footnoteDrawed = true;
+					fy += fheight;
+				}
+				if (footnoteDrawed) { // && page.height
+					fny -= FOOTNOTE_MARGIN / 2;
+					drawbuf->SetClipRect(NULL);
+	                lUInt32 cl = drawbuf->GetTextColor();
+	                cl = (cl & 0xFFFFFF) | (0x55000000);
+					drawbuf->FillRect(pageRect->left + m_pageMargins.left, fny,
+							pageRect->right - m_pageMargins.right, fny + 1,
+	                        cl);
+				}
+			}
+		}
+		drawbuf->SetClipRect(NULL);
+	#ifdef SHOW_PAGE_RECT
+		drawbuf->FillRect(pageRect->left, pageRect->top, pageRect->left+1, pageRect->bottom, 0xAAAAAA);
+		drawbuf->FillRect(pageRect->left, pageRect->top, pageRect->right, pageRect->top+1, 0xAAAAAA);
+		drawbuf->FillRect(pageRect->right-1, pageRect->top, pageRect->right, pageRect->bottom, 0xAAAAAA);
+		drawbuf->FillRect(pageRect->left, pageRect->bottom-1, pageRect->right, pageRect->bottom, 0xAAAAAA);
+		drawbuf->FillRect(pageRect->left+m_pageMargins.left, pageRect->top+m_pageMargins.top+headerHeight, pageRect->left+1+m_pageMargins.left, pageRect->bottom-m_pageMargins.bottom, 0x555555);
+		drawbuf->FillRect(pageRect->left+m_pageMargins.left, pageRect->top+m_pageMargins.top+headerHeight, pageRect->right-m_pageMargins.right, pageRect->top+1+m_pageMargins.top+headerHeight, 0x555555);
+		drawbuf->FillRect(pageRect->right-1-m_pageMargins.right, pageRect->top+m_pageMargins.top+headerHeight, pageRect->right-m_pageMargins.right, pageRect->bottom-m_pageMargins.bottom, 0x555555);
+		drawbuf->FillRect(pageRect->left+m_pageMargins.left, pageRect->bottom-1-m_pageMargins.bottom, pageRect->right-m_pageMargins.right, pageRect->bottom-m_pageMargins.bottom, 0x555555);
+	#endif
+
+	#if 0
+		lString16 pagenum = lString16::itoa( page.index+1 );
+		m_font->DrawTextString(drawbuf, 5, 0 , pagenum.c_str(), pagenum.length(), '?', NULL, false); //drawbuf->GetHeight()-m_font->getHeight()
+	#endif
+	}
+void EpubDocument::Render( int dx, int dy, LVRendPageList * pages ) {
+
+    	LVLock lock(getMutex());
+    	{	CRLog::debug("song epub render1");
+    		if (!m_doc || m_doc->getRootNode() == NULL)
+    			return;
+    		CRLog::debug("song epub render2");
+    		if (dx == 0)
+    			dx = m_pageRects[0].width() - m_pageMargins.left
+    					- m_pageMargins.right;
+    		if (dy == 0)
+    			dy = m_pageRects[0].height() - m_pageMargins.top
+    					- m_pageMargins.bottom;
+    		CRLog::debug("song epub render3 %d %d",dx,dy);
+    		setRenderProps(dx, dy);
+    		CRLog::debug("song epub render4");
+    		if (pages == NULL)
+    			pages = &m_pages;
+    		CRLog::debug("song epub render5");
+    		if (!m_font)
+    			return;
+    		CRLog::debug("song epub render6");
+    		CRLog::debug("Render(width=%d, height=%d, fontSize=%d)", dx, dy,
+    				m_font_size);
+    		//CRLog::trace("calling render() for document %08X font=%08X", (unsigned int)m_doc, (unsigned int)m_font.get() );
+    		CRLog::debug("song epub render height %d",m_doc->render(pages, NULL, dx, dy,
+                    false, 0,
+                    m_font, m_def_interline_space, m_props));
+
+    #if 0
+    		FILE * f = fopen("/sdcard/pagelist.log", "wt");
+    		if (f) {
+    			for (int i=0; i<m_pages.length(); i++)
+    			{
+    				fprintf(f, "%4d:   %7d .. %-7d [%d]\n", i, m_pages[i].start, m_pages[i].start+m_pages[i].height, m_pages[i].height);
+    			}
+    			fclose(f);
+    		}
+    #endif
+    		fontMan->gc();
+    		m_is_rendered = true;
+    		//CRLog::debug("Making TOC...");
+    		//makeToc();
+    		CRLog::debug("Updating selections...");
+//    		updateSelections();
+    		CRLog::debug("Render is finished %d",m_pages.size());
+
+    	}
+
+    }
+void EpubDocument::loadDocument(LVStreamRef stream) {
+
+        LVContainerRef arc = LVOpenArchieve( stream );
+        if ( arc.isNull() )
+            return; // not a ZIP archive
+
+        // check root media type
+        lString16 rootfilePath = EpubGetRootFilePath(arc);
+        if ( rootfilePath.empty() )
+        	return;
+
+        EncryptedDataContainer * decryptor = new EncryptedDataContainer(arc);
+        if (decryptor->open()) {
+            CRLog::debug("EPUB: encrypted items detected");
+        }
+
+        LVContainerRef m_arc = LVContainerRef(decryptor);
+        m_doc = new ldomDocument();
+        if (decryptor->hasUnsupportedEncryption()) {
+            // DRM!!!
+            createEncryptedEpubWarningDocument(m_doc);
+            return;
+        }
+        m_doc->setContainer(m_arc);
+
+        // read content.opf
+        EpubItems epubItems;
+        //EpubItem * epubToc = NULL; //TODO
+        LVArray<EpubItem*> spineItems;
+        lString16 codeBase;
+        //lString16 css;
+
+        //
+        {
+            codeBase=LVExtractPath(rootfilePath, false);
+            CRLog::trace("codeBase=%s", LCSTR(codeBase));
+        }
+
+        LVStreamRef content_stream = m_arc->OpenStream(rootfilePath.c_str(), LVOM_READ);
+        if ( content_stream.isNull() )
+            return;
+
+
+        lString16 ncxHref;
+        lString16 coverId;
+
+        LVEmbeddedFontList fontList;
+        EmbeddedFontStyleParser styleParser(fontList);
+
+        // reading content stream
+        {
+            ldomDocument * doc = LVParseXMLStream( content_stream );
+            if ( !doc )
+                return ;
+
+    //        // for debug
+    //        {
+    //            LVStreamRef out = LVOpenFileStream("/tmp/content.xml", LVOM_WRITE);
+    //            doc->saveToStream(out, NULL, true);
+    //        }
+
+            m_doc_props = m_doc->getProps();
+            lString16 author = doc->textFromXPath( cs16("package/metadata/creator"));
+            lString16 title = doc->textFromXPath( cs16("package/metadata/title"));
+            lString16 language = doc->textFromXPath( cs16("package/metadata/language"));
+            m_doc_props->setString(DOC_PROP_TITLE, title);
+            m_doc_props->setString(DOC_PROP_LANGUAGE, language);
+            m_doc_props->setString(DOC_PROP_AUTHORS, author );
+
+            for ( int i=1; i<50; i++ ) {
+                ldomNode * item = doc->nodeFromXPath(lString16("package/metadata/identifier[") << fmt::decimal(i) << "]");
+                if (!item)
+                    break;
+                lString16 key = item->getText();
+                if (decryptor->setManglingKey(key)) {
+                    CRLog::debug("Using font mangling key %s", LCSTR(key));
+                    break;
+                }
+            }
+
+            CRLog::info("Author: %s Title: %s", LCSTR(author), LCSTR(title));
+            for ( int i=1; i<20; i++ ) {
+                ldomNode * item = doc->nodeFromXPath(lString16("package/metadata/meta[") << fmt::decimal(i) << "]");
+                if ( !item )
+                    break;
+                lString16 name = item->getAttributeValue("name");
+                lString16 content = item->getAttributeValue("content");
+                if (name == "cover")
+                    coverId = content;
+                else if (name == "calibre:series")
+                    m_doc_props->setString(DOC_PROP_SERIES_NAME, content );
+                else if (name == "calibre:series_index")
+                    m_doc_props->setInt(DOC_PROP_SERIES_NUMBER, content.atoi() );
+            }
+
+            // items
+            for ( int i=1; i<50000; i++ ) {
+                ldomNode * item = doc->nodeFromXPath(lString16("package/manifest/item[") << fmt::decimal(i) << "]");
+                if ( !item )
+                    break;
+                lString16 href = item->getAttributeValue("href");
+                lString16 mediaType = item->getAttributeValue("media-type");
+                lString16 id = item->getAttributeValue("id");
+                if ( !href.empty() && !id.empty() ) {
+                    href = DecodeHTMLUrlString(href);
+                    if ( id==coverId ) {
+                        // coverpage file
+                        lString16 coverFileName = codeBase + href;
+                        CRLog::info("EPUB coverpage file: %s", LCSTR(coverFileName));
+                        LVStreamRef stream = m_arc->OpenStream(coverFileName.c_str(), LVOM_READ);
+                        if ( !stream.isNull() ) {
+                            LVImageSourceRef img = LVCreateStreamImageSource(stream);
+                            if ( !img.isNull() ) {
+                                CRLog::info("EPUB coverpage image is correct: %d x %d", img->GetWidth(), img->GetHeight() );
+                                m_doc_props->setString(DOC_PROP_COVER_FILE, coverFileName);
+                            }
+                        }
+                    }
+                    EpubItem * epubItem = new EpubItem;
+                    epubItem->href = href;
+                    epubItem->id = id;
+                    epubItem->mediaType = mediaType;
+                    epubItems.add( epubItem );
+
+    //                // register embedded document fonts
+    //                if (mediaType == L"application/vnd.ms-opentype"
+    //                        || mediaType == L"application/x-font-otf"
+    //                        || mediaType == L"application/x-font-ttf") { // TODO: more media types?
+    //                    // TODO:
+    //                    fontList.add(codeBase + href);
+    //                }
+                }
+                if (mediaType == "text/css") {
+                    lString16 name = LVCombinePaths(codeBase, href);
+                    LVStreamRef cssStream = m_arc->OpenStream(name.c_str(), LVOM_READ);
+                    if (!cssStream.isNull()) {
+                        lString8 cssFile = UnicodeToUtf8(LVReadTextFile(cssStream));
+                        lString16 base = name;
+                        LVExtractLastPathElement(base);
+                        //CRLog::trace("style: %s", cssFile.c_str());
+                        styleParser.parse(base, cssFile);
+                    }
+                }
+            }
+
+            // spine == itemrefs
+            if ( epubItems.length()>0 ) {
+                ldomNode * spine = doc->nodeFromXPath( cs16("package/spine") );
+                if ( spine ) {
+
+                    EpubItem * ncx = epubItems.findById( spine->getAttributeValue("toc") ); //TODO
+                    //EpubItem * ncx = epubItems.findById(cs16("ncx"));
+                    if ( ncx!=NULL )
+                        ncxHref = codeBase + ncx->href;
+
+                    for ( int i=1; i<50000; i++ ) {
+                        ldomNode * item = doc->nodeFromXPath(lString16("package/spine/itemref[") << fmt::decimal(i) << "]");
+                        if ( !item )
+                            break;
+                        EpubItem * epubItem = epubItems.findById( item->getAttributeValue("idref") );
+                        if ( epubItem ) {
+                            // TODO: add to document
+                            spineItems.add( epubItem );
+                        }
+                    }
+                }
+            }
+            delete doc;
+        }
+
+        if ( spineItems.length()==0 )
+            return;
+
+        lUInt32 saveFlags = m_doc->getDocFlags();
+        m_doc->setDocFlags( saveFlags );
+        m_doc->setContainer( m_arc );
+
+        ldomDocumentWriter writer(m_doc);
+    #if 0
+        m_doc->setNodeTypes( fb2_elem_table );
+        m_doc->setAttributeTypes( fb2_attr_table );
+        m_doc->setNameSpaceTypes( fb2_ns_table );
+    #endif
+        //m_doc->setCodeBase( codeBase );
+
+        ldomDocumentFragmentWriter appender(&writer, cs16("body"), cs16("DocFragment"), lString16::empty_str );
+        writer.OnStart(NULL);
+        writer.OnTagOpenNoAttr(L"", L"body");
+        int fragmentCount = 0;
+        for ( int i=0; i<spineItems.length(); i++ ) {
+            if (spineItems[i]->mediaType == "application/xhtml+xml") {
+                lString16 name = codeBase + spineItems[i]->href;
+                lString16 subst = cs16("_doc_fragment_") + fmt::decimal(i);
+                appender.addPathSubstitution( name, subst );
+                //CRLog::trace("subst: %s => %s", LCSTR(name), LCSTR(subst));
+            }
+        }
+        for ( int i=0; i<spineItems.length(); i++ ) {
+        	if (i>100)
+        		break;
+            if (spineItems[i]->mediaType == "application/xhtml+xml") {
+                lString16 name = codeBase + spineItems[i]->href;
+                {
+                    CRLog::debug("Checking fragment: %s", LCSTR(name));
+                    LVStreamRef stream = m_arc->OpenStream(name.c_str(), LVOM_READ);
+                    if ( !stream.isNull() ) {
+                        appender.setCodeBase( name );
+                        lString16 base = name;
+                        LVExtractLastPathElement(base);
+                        //CRLog::trace("base: %s", LCSTR(base));
+                        //LVXMLParser
+                        LVHTMLParser parser(stream, &appender);
+                        if ( parser.CheckFormat() && parser.Parse() ) {
+                            // valid
+                            fragmentCount++;
+                            lString8 headCss = appender.getHeadStyleText();
+                            //CRLog::trace("style: %s", headCss.c_str());
+                            styleParser.parse(base, headCss);
+                        } else {
+                            CRLog::error("Document type is not XML/XHTML for fragment %s", LCSTR(name));
+                        }
+                    }
+                }
+            }
+        }
+
+        if ( !ncxHref.empty() ) {
+            LVStreamRef stream = m_arc->OpenStream(ncxHref.c_str(), LVOM_READ);
+            lString16 codeBase = LVExtractPath( ncxHref );
+            if ( codeBase.length()>0 && codeBase.lastChar()!='/' )
+                codeBase.append(1, L'/');
+            appender.setCodeBase(codeBase);
+            if ( !stream.isNull() ) {
+                ldomDocument * ncxdoc = LVParseXMLStream( stream );
+                if ( ncxdoc!=NULL ) {
+                    ldomNode * navMap = ncxdoc->nodeFromXPath( cs16("ncx/navMap"));
+                    if ( navMap!=NULL )
+                        ReadEpubToc( m_doc, navMap, m_doc->getToc(), appender );
+                    delete ncxdoc;
+                }
+            }
+        }
+
+        writer.OnTagClose(L"", L"body");
+        writer.OnStop();
+        CRLog::debug("EPUB: %d documents merged", fragmentCount);
+
+        if (!fontList.empty()) {
+            // set document font list, and register fonts
+            m_doc->getEmbeddedFontList().set(fontList);
+            m_doc->registerEmbeddedFonts();
+            m_doc->forceReinitStyles();
+        }
+
+        if ( fragmentCount==0 )
+            return;
+
+    #if 0
+        // set stylesheet
+        //m_doc->getStyleSheet()->clear();
+        m_doc->setStyleSheet( NULL, true );
+        //m_doc->getStyleSheet()->parse(m_stylesheet.c_str());
+        if ( !css.empty() && m_doc->getDocFlag(DOC_FLAG_ENABLE_INTERNAL_STYLES) ) {
+
+            m_doc->setStyleSheet( "p.p { text-align: justify }\n"
+                "svg { text-align: center }\n"
+                "i { display: inline; font-style: italic }\n"
+                "b { display: inline; font-weight: bold }\n"
+                "abbr { display: inline }\n"
+                "acronym { display: inline }\n"
+                "address { display: inline }\n"
+                "p.title-p { hyphenate: none }\n"
+    //abbr, acronym, address, blockquote, br, cite, code, dfn, div, em, h1, h2, h3, h4, h5, h6, kbd, p, pre, q, samp, span, strong, var
+            , false);
+            m_doc->setStyleSheet( UnicodeToUtf8(css).c_str(), false );
+            //m_doc->getStyleSheet()->parse(UnicodeToUtf8(css).c_str());
+        } else {
+            //m_doc->getStyleSheet()->parse(m_stylesheet.c_str());
+            //m_doc->setStyleSheet( m_stylesheet.c_str(), false );
+        }
+    #endif
+    #if 0
+        LVStreamRef out = LVOpenFileStream( L"c:\\doc.xml" , LVOM_WRITE );
+        if ( !out.isNull() )
+            m_doc->saveToStream( out, "utf-8" );
+    #endif
+
+        // save compound XML document, for testing:
+        m_doc->saveToStream(LVOpenFileStream("/sdcard//epub_dump.xml", LVOM_WRITE), NULL, true);
+
+        return;
+
+
+    }
+void testEpub(LVStreamRef stream,LVDrawBuf& drawbuf) {}

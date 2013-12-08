@@ -2475,13 +2475,13 @@ public:
             bool charset = checkCharSet( face );
             //bool monospaced = isMonoSpaced( face );
             if ( !scal || !charset ) {
-    //#if (DEBUG_FONT_MAN==1)
-     //           if ( _log ) {
+    #if (DEBUG_FONT_MAN==1)
+                if ( _log ) {
                 CRLog::debug("    won't register font %s: %s",
                     name.c_str(), !charset?"no mandatory characters in charset" : "font is not scalable"
                     );
-    //            }
-    //#endif
+                }
+    #endif
                 if ( face ) {
                     FT_Done_Face( face );
                     face = NULL;

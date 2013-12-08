@@ -83,9 +83,9 @@ const char
 					"body[name=\"notes\"]  section[id] empty-line { display: inline }\n"
 					"code, pre { display: block; white-space: pre; font-family: \"Courier New\", monospace }\n";
 
-static const char * DEFAULT_FONT_NAME = "Arial, DejaVu Sans"; //Times New Roman";
+static const char * DEFAULT_FONT_NAME = "Droid Sans Fallback"; //Times New Roman";
 static const char * DEFAULT_STATUS_FONT_NAME =
-		"Arial Narrow, Arial, DejaVu Sans"; //Times New Roman";
+		"Droid Sans Fallback"; //Times New Roman";
 static css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 //    css_ff_serif,
 //    css_ff_sans_serif,
@@ -123,7 +123,7 @@ LVDocView::LVDocView(int bitsPerPixel) :
 #elif defined(__SYMBIAN32__)
 			, m_font_size(30)
 #else
-			, m_font_size(24)
+			, m_font_size(33)
 #endif
 			, m_status_font_size(INFO_FONT_SIZE),
 			m_def_interline_space(100),
@@ -666,10 +666,12 @@ void LVDocView::Draw(LVDrawBuf & drawbuf, bool autoResize) {
 	int offset = -1;
 	int p = -1;
 	if (isPageMode()) {
+		CRLog::debug("song draw pagemode %d %d",_page,m_pages.length());
 		p = _page;
 		if (p < 0 || p >= m_pages.length())
 			return;
 	} else {
+		CRLog::debug("song draw scroll mode");
 		offset = _pos;
 	}
 	//CRLog::trace("Draw() : calling Draw(buf(%d x %d), %d, %d, false)",
@@ -1780,10 +1782,9 @@ void LVDocView::drawPageTo(LVDrawBuf * drawbuf, LVRendPageInfo & page,
 			}
 		}
 		lvRect info;
-		getPageHeaderRectangle(page.index, info);
-		drawPageHeader(drawbuf, info, page.index - 1 + basePage, phi, pageCount
-				- 1 + basePage);
-		//clip.top = info.bottom;
+//		getPageHeaderRectangle(page.index, info);
+//		drawPageHeader(drawbuf, info, page.index - 1 + basePage, phi, pageCount
+//				- 1 + basePage);
 	}
 	drawbuf->SetClipRect(&clip);
 	if (m_doc) {
@@ -4069,12 +4070,14 @@ bool LVDocView::ParseDocument() {
 
 		/// HTML format
 		if (parser == NULL) {
+			CRLog::debug("song doc format html");
 			setDocFormat( doc_format_html);
 			parser = new LVHTMLParser(m_stream, &writerFilter);
 			if (!parser->CheckFormat()) {
 				delete parser;
 				parser = NULL;
 			} else {
+				CRLog::debug("song doc format html1");
 			}
 		}
 		///cool reader bookmark in txt format

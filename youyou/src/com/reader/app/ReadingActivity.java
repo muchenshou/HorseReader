@@ -16,13 +16,18 @@ import java.io.OutputStream;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
+import com.reader.document.epub.EpubDocument;
+import com.reader.document.epub.EpubPageProvider;
 import com.reader.document.txt.TxtPageProvider;
 import com.reader.view.GLView;
 
@@ -44,7 +49,7 @@ public class ReadingActivity extends Activity {
 			my.canWrite();
 			my.canRead();
 			OutputStream o = new FileOutputStream(my);
-			InputStream in = getResources().getAssets().open("suan.txt");
+			InputStream in = getResources().getAssets().open("zhetian.epub");
 			byte[] filedata = new byte[1024];
 			int num;
 			while ((num = in.read(filedata)) > 0) {
@@ -55,34 +60,14 @@ public class ReadingActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// test
+
 		this.mBookName = bookName;
-		TxtPageProvider provider = new TxtPageProvider(this, bookName);
-		provider.loadDocument();
-		// BookPosition position = new BookPosition(0, 0, 0);
-		// BookHistory history = new BookHistory(this);
-		// if (history.exist(bookName)) {
-		// position = history.getPosition(bookName);
-		// } else {
-		// history.storePosition(bookName, null);
-		// }
-		//
-		// try {
-		// if (!new File(bookName).exists()) {
-		// Toast.makeText(this, "文件不存在", Toast.LENGTH_LONG).show();
-		// return;
-		// }
-		// bookmanager = new BookManager(ReadingActivity.this, new File(
-		// bookName));
-		// bookView = new GLView(this, bookmanager.openBook(position));
-		// bookView.setFocusable(true);
-		// this.bookView.setBgBitmap(BitmapFactory.decodeResource(
-		// getResources(), R.drawable.bg));
-		// setLookingBookView();
-		//
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
+		// test txt
+		// TxtPageProvider provider = new TxtPageProvider(this, bookName);
+		// provider.loadDocument();
+		// test epub
+		EpubPageProvider provider = new EpubPageProvider(this, bookName);
+		 provider.loadDocument();
 	}
 
 	@Override
@@ -102,7 +87,6 @@ public class ReadingActivity extends Activity {
 	}
 
 	public static int TURN_SETTING = 1;
-
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

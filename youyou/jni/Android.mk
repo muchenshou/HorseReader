@@ -221,8 +221,9 @@ ANTIWORD_SRC_FILES := \
 
 JNI_SRC_FILES := \
 	cr3java.cpp \
-	youyou.cpp \
-	YouYouApp.cpp
+	txtdocument.cpp \
+	epubdocument.cpp \
+	YouYouApp.cpp 
 #    cr3engine.cpp \
 #    docview.cpp
 
