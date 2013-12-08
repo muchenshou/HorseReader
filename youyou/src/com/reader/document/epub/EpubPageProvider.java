@@ -58,7 +58,6 @@ public class EpubPageProvider {
 		_txtDocument.loadDocument(_path, _activity.getWindowManager()
 				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
 				.getDefaultDisplay().getHeight());
-		Log.i("hello", "here");
 		_txtView = new EpubView(_activity, this);
 		new BitmapThread().start();
 		while (_handle == null) {

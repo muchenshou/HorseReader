@@ -44,12 +44,15 @@ public class ReadingActivity extends Activity {
 
 		String bookName = getIntent().getStringExtra("bookname");
 		// ///// test
+		int format = 1;
 		try {
-			File my = File.createTempFile("aaaa", ".txt");
+
+			File my = File.createTempFile("aaaa", "txt");
 			my.canWrite();
 			my.canRead();
 			OutputStream o = new FileOutputStream(my);
-			InputStream in = getResources().getAssets().open("zhetian.epub");
+			InputStream in = getResources().getAssets().open(
+					format == 0 ? "zhetian.epub" : "bingfa.txt");
 			byte[] filedata = new byte[1024];
 			int num;
 			while ((num = in.read(filedata)) > 0) {
@@ -63,11 +66,15 @@ public class ReadingActivity extends Activity {
 
 		this.mBookName = bookName;
 		// test txt
-		// TxtPageProvider provider = new TxtPageProvider(this, bookName);
-		// provider.loadDocument();
-		// test epub
-		EpubPageProvider provider = new EpubPageProvider(this, bookName);
-		 provider.loadDocument();
+		if (format == 0) {
+			// test epub
+			EpubPageProvider provider = new EpubPageProvider(this, bookName);
+			provider.loadDocument();
+
+		} else {
+			TxtPageProvider provider = new TxtPageProvider(this, bookName);
+			provider.loadDocument();
+		}
 	}
 
 	@Override

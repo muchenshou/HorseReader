@@ -80,8 +80,8 @@ public:
 
 	lUInt32 getLineLen(int index) {
 		assert(index <=0);
-		if ((lUInt32)index <_lines.size()-1) {
-			return _lines[index+1] - _lines[index];
+		if ((lUInt32) index < _lines.size() - 1) {
+			return _lines[index + 1] - _lines[index];
 		} else {
 			return mTextLen - _lines[index];
 		}
@@ -108,6 +108,7 @@ class TxtBook: public LVFileParserBase {
 	char_encoding_type m_enc_type;
 	lChar16 * m_conv_table; // charset conversion table for 8-bit encodings
 	TxtRender mRender;
+	LVMutex _mutex;
 public:
 	TxtBook(LVStreamRef& path, int w, int h) :
 			LVFileParserBase(path), m_enc_type(ce_unknown), m_conv_table(NULL), mRender(
@@ -746,7 +747,7 @@ public:
 		lChar16 * chbuf = new lChar16[TEXT_PARSER_DETECT_SIZE];
 		FillBuffer(TEXT_PARSER_DETECT_SIZE);
 		int charsDecoded = ReadTextBytes(0, m_buf_len, chbuf,
-				TEXT_PARSER_DETECT_SIZE - 1, 0);
+		TEXT_PARSER_DETECT_SIZE - 1, 0);
 		bool res = false;
 		if (charsDecoded > 16) {
 			int illegal_char_count = 0;
@@ -809,7 +810,6 @@ public:
 						lString16 n(buf);
 
 						node.end = m_buf_fpos + m_buf_pos;
-						// mNodes;
 
 						mNodes.push_back(node);
 
@@ -833,6 +833,8 @@ public:
 				break;
 			}
 		}
+		lString16 n("");
+		render(n, (lUInt32) (mNodes.size() - 1),true);
 //		std::vector<TxtNode>::iterator it;
 //
 //		for (it = mNodes.begin(); it != mNodes.end();it++) {
@@ -842,20 +844,28 @@ public:
 //		CRLog::debug("song pages size:%d", mPages.size());
 //		for (it = mPages.begin(); it != mPages.end(); it++) {
 //			CRLog::debug("song node start:%d startoffset:%d end:%d endoffset:%d", (*it).startNode,
-//					(*it).startNodeOffset,(*it).endNode,(*it).endNodeOffset);
+//					(*it).startLineNum,(*it).endNode,(*it).endNodeLineNum);
 //		}
 		return false;
 	}
+private:
 	lUInt32 _linesInPage;
 	TxtPage _page;
-	void render(lString16& text, lUInt32 nodeid) {
-
+public:
+	int getPagesCount() {
+		return mPages.size();
+	}
+	void render(lString16& text, lUInt32 nodeid,bool end = false) {
+		LVLock lock(_mutex);
+		if (end) {
+			_page.endNode = nodeid;
+			this->mPages.push_back(_page);
+			CRLog::debug("song render page %d", mPages.size());
+			return;
+		}
 		lUInt32 screenLines = mRender.screenLines();
 
 		mRender.measureText(text);
-		CRLog::debug("song render node id %d lines %d", nodeid,
-				mRender.getLineCount());
-		CRLog::debug("song render node text %s", UnicodeToUtf8(text).c_str());
 		lUInt32 lineCount = 0;
 		while (lineCount < mRender.getLineCount()) {
 			if (_linesInPage + 1 <= screenLines) {
@@ -876,6 +886,8 @@ public:
 			}
 			lineCount++;
 		}
+		CRLog::debug("song renddd %d %d",nodeid, mNodes.size());
+
 	}
 	TxtRender& getRender() {
 		return mRender;
@@ -898,7 +910,7 @@ public:
 	}
 
 	bool drawPage(LVDrawBuf* draw, lUInt32 index) {
-
+		LVLock lock(_mutex);
 		lUInt32 start_node = mPages[index].startNode;
 		lUInt32 start_node_offset = mPages[index].startLineNum;
 		lUInt32 end_node = mPages[index].endNode;
@@ -909,8 +921,9 @@ public:
 		lChar16 buf[1024 * 8];
 		lUInt32 buf_pos = 0;
 		lUInt32 y = 10;
-		CRLog::debug("song node drag page index %d start_node_l %d", index,
-				start_node_offset);
+		CRLog::debug(
+				"song node drag page index %d start_node %d start_node_offset %d",
+				index, start_node, start_node_offset);
 		for (lUInt32 i = start_node; i <= end_node; i++) {
 			// node
 			lString16 node = readNode(mNodes[i].start,
@@ -920,10 +933,12 @@ public:
 			mRender.measureText(node);
 
 			const lChar16 *str = node.c_str();
-//			CRLog::debug("song node %d %s", i,UnicodeToUtf8(node).c_str());
 			int pre = -1;
-			for (lUInt32 j = (i==start_node ? start_node_offset: 0); j < mRender.getLineCount() && y<mRender.getHeight(); j++) {
-				font->DrawTextString(draw, 0, y, str+mRender.getLinePos(j),mRender.getLineLen(j) , L'?',
+			for (lUInt32 j = (i == start_node ? start_node_offset : 0);
+					j < mRender.getLineCount() && y < mRender.getHeight();
+					j++) {
+				font->DrawTextString(draw, 0, y, str + mRender.getLinePos(j),
+						mRender.getLineLen(j), L'?',
 						NULL, false, 0);
 
 				y += font->getHeight();
@@ -932,20 +947,18 @@ public:
 
 		return false;
 	}
-protected:
-
 };
-
+LVRef<TxtBook> txt_book;
 /*
  * Class:     com_reader_document_txt_TxtDocument
  * Method:    pageCount
  * Signature: ()I
- */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_pageCount(
+ */
+JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_pageCount(
 		JNIEnv *, jobject) {
-	return 0;
+	return txt_book->getPagesCount();
 }
 
-LVRef<TxtBook> txt_book;
 /*
  * Class:     com_reader_document_txt_TxtDocument
  * Method:    loadDocument
@@ -962,14 +975,13 @@ LVRef<TxtBook> txt_book;
 	txt_book->Parse();
 	return 0;
 }
-LVMutex _mutex;
+
 /*
  * Class:     com_reader_document_txt_TxtDocument
  * Method:    getPage
  * Signature: (Landroid/graphics/Bitmap;)I
  */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_getPage(
 		JNIEnv *env, jobject self, jint index, jobject bitmap) {
-	LVLock lock(_mutex);
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(env,
 			bitmap);
 	if (drawbuf != NULL) {
