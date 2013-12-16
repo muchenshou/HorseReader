@@ -44,9 +44,10 @@ class TxtRender {
 public:
 	TxtRender(int w, int h) :
 			mWidth(w), mHeight(h) {
-		mFontRef = fontMan->GetFont(1 << 6, 400 + 70, false, css_ff_sans_serif,
+		mFontRef = fontMan->GetFont(20, 400 + 70, false, css_ff_sans_serif,
 				cs8("Droid Sans Fallback"), 0);
 		mFontRef->setBitmapMode(false);
+		mTextLen = 0;
 	}
 	bool measureText(lString16& node) {
 		lUInt16 widths[1024 * 8];
@@ -788,6 +789,7 @@ public:
 		LVFileParserBase::Reset();
 		return res;
 	}
+
 	bool Parse() {
 //		_bookpath->Read(buf, count)
 		CheckFormat();
