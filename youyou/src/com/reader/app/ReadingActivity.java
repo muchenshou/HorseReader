@@ -16,20 +16,16 @@ import java.io.OutputStream;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
-import com.reader.document.epub.EpubDocument;
+import com.reader.animation.GLView;
 import com.reader.document.epub.EpubPageProvider;
 import com.reader.document.txt.TxtPageProvider;
-import com.reader.view.GLView;
 
 public class ReadingActivity extends Activity {
 	public GLView bookView;

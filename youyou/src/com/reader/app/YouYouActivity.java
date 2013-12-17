@@ -5,18 +5,17 @@ import java.util.HashMap;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TabHost;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+
 import com.reader.fragment.About;
 import com.reader.fragment.HistoryListFragment;
 import com.reader.fragment.LocalFileListFragment;
 import com.reader.fragment.NetWorkListFragment;
 
-public class YouYouActivity extends SherlockFragmentActivity {
-	ActionBar actionBar;
+public class YouYouActivity extends FragmentActivity {
 	TabHost mTabHost;
 	TabManager mTabManager;
 	/**
@@ -31,10 +30,6 @@ public class YouYouActivity extends SherlockFragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.rightview);
 
-		// set up action bar
-		actionBar = this.getSupportActionBar();
-		actionBar.setTitle(getResources().getString(TITLES[0]));
-		actionBar.setHomeButtonEnabled(true);
 		String[] strTitles = new String[4];
 		for (int i = 0; i < 4; i++) {
 			strTitles[i] = getResources().getString(TITLES[i]);
@@ -63,11 +58,6 @@ public class YouYouActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString("tab", mTabHost.getCurrentTabTag());
-	}
 
 	/**
 	 * This is a helper class that implements a generic mechanism for
@@ -81,7 +71,7 @@ public class YouYouActivity extends SherlockFragmentActivity {
 	 * the selected tab changes.
 	 */
 	public static class TabManager implements TabHost.OnTabChangeListener {
-		private final SherlockFragmentActivity mActivity;
+		private final FragmentActivity mActivity;
 		private final TabHost mTabHost;
 		private final int mContainerId;
 		private final HashMap<String, TabInfo> mTabs = new HashMap<String, TabInfo>();
@@ -116,7 +106,7 @@ public class YouYouActivity extends SherlockFragmentActivity {
 			}
 		}
 
-		public TabManager(SherlockFragmentActivity activity, TabHost tabHost,
+		public TabManager(FragmentActivity activity, TabHost tabHost,
 				int containerId) {
 			mActivity = activity;
 			mTabHost = tabHost;
@@ -165,7 +155,6 @@ public class YouYouActivity extends SherlockFragmentActivity {
 					} else {
 						ft.attach(newTab.fragment);
 					}
-					mActivity.getSupportActionBar().setTitle(newTab.tag);
 				}
 
 				mLastTab = newTab;

@@ -1,4 +1,4 @@
-package com.reader.view;
+package com.reader.animation;
 
 import static javax.microedition.khronos.opengles.GL10.GL_DEPTH_TEST;
 import static javax.microedition.khronos.opengles.GL10.GL_LEQUAL;

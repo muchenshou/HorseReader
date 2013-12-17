@@ -11,7 +11,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,10 +23,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.reader.app.R;
 import com.reader.app.ReadingActivity;
 import com.reader.searchfile.FileListAdapter;
@@ -31,7 +31,7 @@ import com.reader.searchfile.SearchFile.FindOneBehavior;
 import com.reader.searchfile.SearchFileWithMultiThread;
 import com.reader.util.FilenameExtFilter;
 
-public class LocalFileListFragment extends SherlockFragment implements
+public class LocalFileListFragment extends Fragment implements
 		View.OnClickListener, OnItemClickListener {
 	ListView mListView;
 	FileListAdapter mFileListAdapter;
@@ -149,17 +149,6 @@ public class LocalFileListFragment extends SherlockFragment implements
 		mProgAlert.setCanceledOnTouchOutside(false);
 		mProgAlert.setCancelable(false);
 		mProgAlert.setMessage("ËÑË÷ÖÐ...");
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		menu.add("fresh").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		onClick(item.getActionView());
-		return super.onOptionsItemSelected(item);
 	}
 
 }
