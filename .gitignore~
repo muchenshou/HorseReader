@@ -4,3 +4,7 @@ project.properties
 */.settings/*
 */.classpath
 */.project
+*/obj/*
+*/.cproject
+*/.DS_Store
+*/*.so

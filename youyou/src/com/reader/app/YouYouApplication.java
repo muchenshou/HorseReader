@@ -117,13 +117,11 @@ public class YouYouApplication extends Application {
 		return fontPaths.toArray(new String[] {});
 	}
 	private native static boolean initInternal(String[] fontList);
-	static {
-		System.loadLibrary("cr3engine-3-1-0");
-	}
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		Instance = this;
+		System.loadLibrary("cr3engine-3-1-0");
 		File dir = new File(configDir);
 		if (!dir.exists()) {
 			dir.mkdir();

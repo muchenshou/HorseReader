@@ -18,10 +18,10 @@ JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_pageCount
 /*
  * Class:     com_reader_document_txt_TxtDocument
  * Method:    loadDocument
- * Signature: (Ljava/lang/String;II)I
+ * Signature: (Ljava/lang/String;III)I
  */
 JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_loadDocument
-  (JNIEnv *, jobject, jstring, jint, jint);
+  (JNIEnv *, jobject, jstring, jint, jint, jint);
 
 /*
  * Class:     com_reader_document_txt_TxtDocument
@@ -29,7 +29,15 @@ JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_loadDocument
  * Signature: (ILandroid/graphics/Bitmap;)I
  */
 JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_getPage
-  (JNIEnv *, jobject, jint,jobject);
+  (JNIEnv *, jobject, jint, jobject);
+
+/*
+ * Class:     com_reader_document_txt_TxtDocument
+ * Method:    setBg
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_setBg
+  (JNIEnv *, jobject, jbyteArray);
 
 #ifdef __cplusplus
 }

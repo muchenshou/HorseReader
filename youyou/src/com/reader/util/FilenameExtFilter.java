@@ -50,6 +50,10 @@ public class FilenameExtFilter implements FileFilter {
 		if (dotPosition != -1) {
 			String ext = (String) filename.subSequence(dotPosition + 1,
 					filename.length());
+			File f = new File(filename);
+			if (f.length()<1024*50) {
+				return false;
+			}
 			return contains(ext.toLowerCase());
 		}
 		return false;

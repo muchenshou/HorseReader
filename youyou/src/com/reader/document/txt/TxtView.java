@@ -1,21 +1,17 @@
 package com.reader.document.txt;
 
-import com.reader.view.PageView;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.view.View;
+
+import com.reader.app.R;
+import com.reader.view.PageView;
 
 public class TxtView extends PageView {
 	TxtPageProvider _provider;
-	public int _pageindex = 0;
-
+	
 	public TxtView(Context context, TxtPageProvider provider) {
 		super(context);
 		_provider = provider;
-
 	}
 
 	public void setBitmap(Bitmap b[]) {

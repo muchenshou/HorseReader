@@ -48,6 +48,7 @@ public class LocalFileListFragment extends Fragment implements
 		if (mFileListAdapter == null)
 			mFileListAdapter = new FileListAdapter(getActivity());
 		mListView.setAdapter(mFileListAdapter);
+		searchBook();
 		return tv;
 	}
 
@@ -104,7 +105,7 @@ public class LocalFileListFragment extends Fragment implements
 		 * @param cl
 		 */
 		public SearchFileTask(Context context) {
-			String exts[] = { "txt", "umd" };
+			String exts[] = { "txt", "umd","epub" };
 			FileFilter fef = new FilenameExtFilter(exts);
 			mContext = context;
 			mSearchFile = new SearchFileWithMultiThread(mSearchFileCallBack,

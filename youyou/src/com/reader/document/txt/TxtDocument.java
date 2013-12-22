@@ -6,9 +6,10 @@ import android.graphics.Bitmap;
 public class TxtDocument {
 	
 	public native int pageCount();
-	public native int loadDocument(String bookPath, int width, int height);
+	public native int loadDocument(String bookPath, int width, int height, int defalut_font_size);
 	public PageDrawable getPageDrawble() {
 		return null;
 	}
 	public synchronized native int getPage(int index, Bitmap b);
+	public synchronized native int setBg(byte[] imageBytes);
 }

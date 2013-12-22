@@ -39,26 +39,33 @@ public class ReadingActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		String bookName = getIntent().getStringExtra("bookname");
-		// ///// test
+		
 		int format = 1;
-		try {
-
-			File my = File.createTempFile("aaaa", "txt");
-			my.canWrite();
-			my.canRead();
-			OutputStream o = new FileOutputStream(my);
-			InputStream in = getResources().getAssets().open(
-					format == 0 ? "zhetian.epub" : "suan.txt");
-			byte[] filedata = new byte[1024];
-			int num;
-			while ((num = in.read(filedata)) > 0) {
-				o.write(filedata, 0, num);
-			}
-			o.close();
-			bookName = my.getPath();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (bookName.endsWith("txt")) {
+			format = 1;
 		}
+		if (bookName.endsWith("epub")) {
+			format = 0;
+		}
+		// ///// test
+//		try {
+//
+//			File my = File.createTempFile("aaaa", "txt");
+//			my.canWrite();
+//			my.canRead();
+//			OutputStream o = new FileOutputStream(my);
+//			InputStream in = getResources().getAssets().open(
+//					format == 0 ? "zhetian.epub" : "suan.txt");
+//			byte[] filedata = new byte[1024];
+//			int num;
+//			while ((num = in.read(filedata)) > 0) {
+//				o.write(filedata, 0, num);
+//			}
+//			o.close();
+//			bookName = my.getPath();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
 		this.mBookName = bookName;
 		// test txt

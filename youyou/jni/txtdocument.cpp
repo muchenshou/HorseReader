@@ -42,9 +42,9 @@ class TxtRender {
 	std::vector<lUInt32> _lines;
 	lUInt32 mTextLen;
 public:
-	TxtRender(int w, int h) :
+	TxtRender(int w, int h, int font_size) :
 			mWidth(w), mHeight(h) {
-		mFontRef = fontMan->GetFont(20, 400 + 70, false, css_ff_sans_serif,
+		mFontRef = fontMan->GetFont(font_size, 400 + 70, false, css_ff_sans_serif,
 				cs8("Droid Sans Fallback"), 0);
 		mFontRef->setBitmapMode(false);
 		mTextLen = 0;
@@ -110,10 +110,19 @@ class TxtBook: public LVFileParserBase {
 	lChar16 * m_conv_table; // charset conversion table for 8-bit encodings
 	TxtRender mRender;
 	LVMutex _mutex;
+	int _left_margin;
+	int _right_margin;
 public:
-	TxtBook(LVStreamRef& path, int w, int h) :
+	int view_width;
+	int view_height;
+	TxtBook(LVStreamRef& path, int w, int h, int font_size) :
 			LVFileParserBase(path), m_enc_type(ce_unknown), m_conv_table(NULL), mRender(
-					TxtRender(w, h)), _linesInPage(0) {
+					TxtRender(0, 0,60)), _linesInPage(0) {
+		view_width = w;
+		view_height = h;
+		_left_margin = 30;
+		_right_margin = 30;
+		mRender = TxtRender(w - _left_margin-_right_margin, h - 100,font_size);
 	}
 	/// returns 8-bit charset conversion table (128 items, for codes 128..255)
 	virtual lChar16 * GetCharsetTable() {
@@ -748,7 +757,7 @@ public:
 		lChar16 * chbuf = new lChar16[TEXT_PARSER_DETECT_SIZE];
 		FillBuffer(TEXT_PARSER_DETECT_SIZE);
 		int charsDecoded = ReadTextBytes(0, m_buf_len, chbuf,
-		TEXT_PARSER_DETECT_SIZE - 1, 0);
+				TEXT_PARSER_DETECT_SIZE - 1, 0);
 		bool res = false;
 		if (charsDecoded > 16) {
 			int illegal_char_count = 0;
@@ -836,7 +845,7 @@ public:
 			}
 		}
 		lString16 n("");
-		render(n, (lUInt32) (mNodes.size() - 1),true);
+		render(n, (lUInt32) (mNodes.size() - 1), true);
 //		std::vector<TxtNode>::iterator it;
 //
 //		for (it = mNodes.begin(); it != mNodes.end();it++) {
@@ -857,7 +866,7 @@ public:
 	int getPagesCount() {
 		return mPages.size();
 	}
-	void render(lString16& text, lUInt32 nodeid,bool end = false) {
+	void render(lString16& text, lUInt32 nodeid, bool end = false) {
 		LVLock lock(_mutex);
 		if (end) {
 			_page.endNode = nodeid;
@@ -888,7 +897,7 @@ public:
 			}
 			lineCount++;
 		}
-		CRLog::debug("song renddd %d %d",nodeid, mNodes.size());
+		CRLog::debug("song renddd %d %d", nodeid, mNodes.size());
 
 	}
 	TxtRender& getRender() {
@@ -922,7 +931,7 @@ public:
 		lUInt8 flags[1024 * 8];
 		lChar16 buf[1024 * 8];
 		lUInt32 buf_pos = 0;
-		lUInt32 y = 10;
+		lUInt32 y = 50;
 		CRLog::debug(
 				"song node drag page index %d start_node %d start_node_offset %d",
 				index, start_node, start_node_offset);
@@ -939,9 +948,8 @@ public:
 			for (lUInt32 j = (i == start_node ? start_node_offset : 0);
 					j < mRender.getLineCount() && y < mRender.getHeight();
 					j++) {
-				font->DrawTextString(draw, 0, y, str + mRender.getLinePos(j),
-						mRender.getLineLen(j), L'?',
-						NULL, false, 0);
+				font->DrawTextString(draw, 30, y, str + mRender.getLinePos(j),
+						mRender.getLineLen(j), L'?', NULL, false, 0);
 
 				y += font->getHeight();
 			}
@@ -951,12 +959,30 @@ public:
 	}
 };
 LVRef<TxtBook> txt_book;
+LVImageSourceRef _currentImage; //bg
+
+/*
+ * Class:     com_reader_document_txt_TxtDocument
+ * Method:    setBg
+ * Signature: ([B)I
+ */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_setBg(
+		JNIEnv *_env, jobject self, jbyteArray jdata) {
+	CRJNIEnv env(_env);
+	LVImageSourceRef img;
+	if (jdata != NULL) {
+		LVStreamRef stream = env.jbyteArrayToStream(jdata);
+		if (!stream.isNull()) {
+			img = LVCreateStreamImageSource(stream);
+		}
+	}
+	_currentImage = img;
+	return 0;
+}
 /*
  * Class:     com_reader_document_txt_TxtDocument
  * Method:    pageCount
  * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_pageCount(
+ */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_pageCount(
 		JNIEnv *, jobject) {
 	return txt_book->getPagesCount();
 }
@@ -966,11 +992,11 @@ JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_pageCount(
  * Method:    loadDocument
  * Signature: (Ljava/lang/String;II)I
  */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_loadDocument(
-		JNIEnv *e, jobject self, jstring bookPath, jint width, jint height) {
+		JNIEnv *e, jobject self, jstring bookPath, jint width, jint height,jint font_size) {
 	CRJNIEnv env(e);
 	lString16 path = env.fromJavaString(bookPath);
 	LVStreamRef stream = LVOpenFileStream(path.c_str(), LVOM_READ);
-	txt_book = new TxtBook(stream, width, height);
+	txt_book = new TxtBook(stream, width, height,font_size);
 	CRLog::setLogger(new JNICDRLogger());
 	CRLog::setLogLevel(CRLog::LL_TRACE);
 	CRLog::debug("song loaddocument");
@@ -987,8 +1013,13 @@ JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_pageCount(
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(env,
 			bitmap);
 	if (drawbuf != NULL) {
-		drawbuf->FillRect(0, 0, txt_book->getRender().getWidth(),
-				txt_book->getRender().getHeight(), 0x00ffeeee);
+//		drawbuf->FillRect(0, 0, txt_book->getRender().getWidth(),
+//				txt_book->getRender().getHeight(), 0x00ffeeee);
+//		drawbuf->Clear(0xFF000000);
+		if (_currentImage.get() != NULL) {
+			drawbuf->Draw(_currentImage, 0, 0, txt_book->view_width,
+					txt_book->view_height);
+		}
 		drawbuf->SetTextColor(0x00000000);
 		txt_book->drawPage(drawbuf, index);
 		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
