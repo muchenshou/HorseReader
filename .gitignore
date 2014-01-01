@@ -7,4 +7,5 @@ project.properties
 */obj/*
 */.cproject
 */.DS_Store
-**/*.so
+*/libs/armeabi/*.so
+*/libs/armeabi-v7a/*.so

@@ -67,6 +67,10 @@ public class FileListAdapter extends BaseAdapter {
 			b.mBookImage = mContext.getResources().getDrawable(
 					com.reader.app.R.drawable.txt);
 		}
+		if (str.equals("epub")) {
+			b.mBookImage = mContext.getResources().getDrawable(
+					com.reader.app.R.drawable.cover_epub);
+		}
 		mBookInfoList.add(b);
 	}
 

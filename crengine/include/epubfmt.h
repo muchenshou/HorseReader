@@ -5,8 +5,9 @@
 #include "../include/lvtinydom.h"
 #include "lvthread.h"
 #include "lvpagesplitter.h"
+#include <vector>
 bool DetectEpubFormat( LVStreamRef stream );
-bool ImportEpubDocument( LVStreamRef stream, ldomDocument * doc, LVDocViewCallback * progressCallback, CacheLoadingCallback * formatCallback );
+bool ImportEpubDocument( LVStreamRef stream,ldomDocument * m_doc, LVDocViewCallback * progressCallback, CacheLoadingCallback * formatCallback );
 lString16 EpubGetRootFilePath( LVContainerRef m_arc );
 LVStreamRef GetEpubCoverpage(LVContainerRef arc);
 void testEpub(LVStreamRef stream,LVDrawBuf& drawbuf);
@@ -14,10 +15,16 @@ void testEpub(LVStreamRef stream,LVDrawBuf& drawbuf);
 
 extern lString16 mergeCssMacros(CRPropRef props);
 extern lString8 substituteCssMacros(lString8 src, CRPropRef props);
-
-class EpubDocument{
+struct DocumentPage {
 	LVRendPageList m_pages;
 	ldomDocument *m_doc;
+	int start;
+};
+class EpubDocument{
+	//LVRendPageList m_pages;
+	//ldomDocument *m_doc;
+	typedef std::vector<DocumentPage> DocPagesContainer;
+	DocPagesContainer mDocumentPages;
 	LVMutex _mutex;
 	lvRect m_pageRects[2];
 	lvRect m_pageMargins;
@@ -46,7 +53,7 @@ public:
 	}
 	void updateDocStyleSheet() {
 	    CRPropRef p = m_props->getSubProps("styles.");
-	    m_doc->setStyleSheet(substituteCssMacros(m_stylesheet, p).c_str(), true);
+	    //m_doc->setStyleSheet(substituteCssMacros(m_stylesheet, p).c_str(), true);
 	}
 	void setRenderProps(int dx, int dy);
 	/// returns book title
@@ -91,15 +98,19 @@ public :
 	}
 	/// draws coverpage to image buffer
 	void drawCoverTo(LVDrawBuf * drawBuf, lvRect & rc) ;
-	void drawPageTo(LVDrawBuf * drawbuf, LVRendPageInfo & page,
+	void drawPageTo(LVDrawBuf * drawbuf, ldomDocument * m_doc,LVRendPageInfo & page,
 			lvRect * pageRect, int pageCount, int basePage) ;
 
 	void Draw(LVDrawBuf & drawbuf, int page) {
-		drawPageTo(&drawbuf, *m_pages[page], &m_pageRects[0],
-							m_pages.length(), 1);
+		CRLog::debug("song epub Draw1 %d %d %d",mDocumentPages.size(),page,mDocumentPages[0].m_pages.length());
+		LVRendPageInfo *pageinfo = mDocumentPages[0].m_pages[0];
+		CRLog::debug("song epub Draw2");
+		drawPageTo(&drawbuf, mDocumentPages[0].m_doc,*pageinfo, &m_pageRects[0],
+				mDocumentPages[0].m_pages.length(), 1);
+		CRLog::debug("song epub Draw3");
 	}
 	/// render (format) document
-    void Render( int dx=0, int dy=0, LVRendPageList * pages=NULL );
+    void Render( int dx=0, int dy=0, ldomDocument *m_doc=NULL,LVRendPageList * pages=NULL );
     void loadDocument(LVStreamRef stream);
     inline int getWidth() {return m_dx;}
     inline int getHeight() {return m_dy;}
