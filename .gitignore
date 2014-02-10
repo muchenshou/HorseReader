@@ -9,3 +9,4 @@ project.properties
 */.DS_Store
 */libs/armeabi/*.so
 */libs/armeabi-v7a/*.so
+*/da.txt
