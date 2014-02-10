@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.view.Window;
 import android.widget.TabHost;
 
 import com.reader.fragment.About;
@@ -39,19 +40,18 @@ public class YouYouActivity extends FragmentActivity {
 		mTabHost.setup();
 
 		mTabManager = new TabManager(this, mTabHost, R.id.realtabcontent);
-
 		mTabManager.addTab(
 				mTabHost.newTabSpec(strTitles[0]).setIndicator(strTitles[0]),
 				HistoryListFragment.class, null);
 		mTabManager.addTab(
 				mTabHost.newTabSpec(strTitles[1]).setIndicator(strTitles[1]),
 				LocalFileListFragment.class, null);
-		mTabManager.addTab(
-				mTabHost.newTabSpec(strTitles[2]).setIndicator(strTitles[2]),
-				NetWorkListFragment.class, null);
-		mTabManager.addTab(
-				mTabHost.newTabSpec(strTitles[3]).setIndicator(strTitles[3]),
-				About.class, null);
+//		mTabManager.addTab(
+//				mTabHost.newTabSpec(strTitles[2]).setIndicator(strTitles[2]),
+//				NetWorkListFragment.class, null);
+//		mTabManager.addTab(
+//				mTabHost.newTabSpec(strTitles[3]).setIndicator(strTitles[3]),
+//				About.class, null);
 
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
