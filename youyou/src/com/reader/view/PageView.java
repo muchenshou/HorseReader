@@ -1,5 +1,8 @@
 package com.reader.view;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,11 +36,10 @@ public class PageView extends ViewGroup implements IAnimation{
 
 				@Override
 				public void run() {
-					Time t = new Time();
-					t.set(System.currentTimeMillis());
-					Log.i("song","timer shechedul");
-					_timeView.setText(t.format2445());
+					SimpleDateFormat f = new SimpleDateFormat("HH:mm",Locale.CHINA);
 					
+					_timeView.setText(f.format(new Date()));
+					Log.i("song","hello:"+f.format(new Date()));
 				}
 				
 			});
@@ -52,12 +54,14 @@ public class PageView extends ViewGroup implements IAnimation{
 		_textView = new TextView(context);
 		_textView.setTextColor(Color.BLACK);
 		_textView.setGravity(Gravity.LEFT);
+		_textView.setPadding(20, 0, 0, 0);
 		_textView.setText(""+_pageindex);
 		
 		_timeView = new TextView(context);
 		
 		_timeView.setTextColor(Color.BLACK);
 		_timeView.setGravity(Gravity.RIGHT);
+		_timeView.setPadding(0, 0, 20, 0);
 		_timer = new Timer();
 		_timer.schedule(new TimeViewTimerTask(), 1000,2000);
 		
@@ -70,7 +74,7 @@ public class PageView extends ViewGroup implements IAnimation{
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		_animationView.layout(l, t, r, b);
 		_textView.layout(l,b-50, r, b);
-		_textView.layout(l,b-50, r, b);
+		_timeView.layout(l,b-50, r, b);
 	}
 
 	@Override

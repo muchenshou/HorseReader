@@ -11,3 +11,4 @@ project.properties
 */libs/armeabi-v7a/*.so
 */da.txt
 */suan.txt
+*.so
