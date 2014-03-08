@@ -102,12 +102,25 @@ public :
 			lvRect * pageRect, int pageCount, int basePage) ;
 
 	void Draw(LVDrawBuf & drawbuf, int page) {
-		CRLog::debug("song epub Draw1 %d %d %d",mDocumentPages.size(),page,mDocumentPages[0].m_pages.length());
-		LVRendPageInfo *pageinfo = mDocumentPages[0].m_pages[0];
-		CRLog::debug("song epub Draw2");
-		drawPageTo(&drawbuf, mDocumentPages[0].m_doc,*pageinfo, &m_pageRects[0],
-				mDocumentPages[0].m_pages.length(), 1);
-		CRLog::debug("song epub Draw3");
+		getMutex().lock();
+		std::vector<DocumentPage>::iterator it;
+		for (it = mDocumentPages.begin(); it!=mDocumentPages.end();it++) {
+			DocumentPage &p = *it;
+			if (p.start <= page && page<p.start+p.m_pages.length()) {
+				LVRendPageInfo *pageinfo = p.m_pages[page-p.start];
+				CRLog::debug("song epub Draw2");
+				drawPageTo(&drawbuf, p.m_doc,*pageinfo, &m_pageRects[0],
+						p.m_pages.length(), 1);
+				CRLog::debug("song epub Draw3");
+				getMutex().unlock();
+				return;
+			}
+		}
+		getMutex().unlock();
+		CRLog::debug("EpubDocument no draw");
+	}
+	int getPageCount() {
+		return mDocumentPages.back().start +mDocumentPages.back().m_pages.length();
 	}
 	/// render (format) document
     void Render( int dx=0, int dy=0, ldomDocument *m_doc=NULL,LVRendPageList * pages=NULL );

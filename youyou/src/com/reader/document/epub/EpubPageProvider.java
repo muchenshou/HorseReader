@@ -21,7 +21,7 @@ import com.reader.document.txt.TxtDocument;
 import com.reader.document.txt.TxtView;
 
 public class EpubPageProvider {
-	EpubDocument _txtDocument;
+	EpubDocument _epubDocument;
 	Activity _activity;
 	String _path;
 	EpubView _txtView;
@@ -54,8 +54,8 @@ public class EpubPageProvider {
 	}
 
 	public boolean loadDocument() {
-		_txtDocument = new EpubDocument();
-		_txtDocument.loadDocument(_path, _activity.getWindowManager()
+		_epubDocument = new EpubDocument();
+		_epubDocument.loadDocument(_path, _activity.getWindowManager()
 				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
 				.getDefaultDisplay().getHeight());
 		_txtView = new EpubView(_activity, this);
@@ -69,11 +69,11 @@ public class EpubPageProvider {
 		g_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
 				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
 				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
-		_txtDocument.getPage(getPageIndexHistory(), g_bitmap);
+		_epubDocument.getPage(getPageIndexHistory(), g_bitmap);
 		///_txtDocument.getPage(1, g_bitmap);
 		// _txtDocument.getPage(2, g_bitmap);
 		// g_bitmap = getPage(0);
-		_txtView.setBitmap(new Bitmap[]{getPage(0),getPage(0),getPage(1)});
+		_txtView.setBitmap(new Bitmap[]{getPage(0),getPage(0),getPage(0)});
 		_txtView.invalidate();
 		return true;
 	}
@@ -82,11 +82,14 @@ public class EpubPageProvider {
 	int a = 0;
 
 	public Bitmap getPage(final int index) {
+		final int local_index = index >= getPageCount() ? getPageCount()-1:index;
+		
 		_handle.post(new Runnable() {
 
 			@Override
 			public void run() {
 				synchronized (_imageCache) {
+					
 					savePageIndexHistory();
 					Log.i("song", "thread id " + Thread.currentThread().getId());
 					System.gc();
@@ -98,7 +101,7 @@ public class EpubPageProvider {
 						Entry<Integer, Bitmap> entry = iter.next();
 						Integer key = entry.getKey();
 						Bitmap value = entry.getValue();
-						if (key < index - count || key > index + count) {
+						if (key < local_index - count || key > local_index + count) {
 							value.recycle();
 							list.add(key);
 						}
@@ -106,9 +109,9 @@ public class EpubPageProvider {
 					for (Integer i : list) {
 						_imageCache.remove(i);
 					}
-					int min = index - count > 0 ? index - count : 0;
+					int min = local_index - count > 0 ? local_index - count : 0;
 					// must fix in future
-					int max = index + count;
+					int max = local_index + count;
 					for (int i = min; i < max; i++) {
 						if (_imageCache.get(i) == null) {
 							Bitmap b;
@@ -117,7 +120,7 @@ public class EpubPageProvider {
 									.getWidth(), _activity.getWindowManager()
 									.getDefaultDisplay().getHeight(),
 									Config.RGB_565);
-							_txtDocument.getPage(i, b);
+							_epubDocument.getPage(i, b);
 							_imageCache.put(i, b);
 						}
 					}
@@ -125,24 +128,25 @@ public class EpubPageProvider {
 			}
 		});
 		Bitmap _bitmap;
-		Log.i("song", "bitmap " + index);
-		if (_imageCache.get(index) != null) {
+		Log.i("song", "bitmap " + local_index);
+		if (_imageCache.get(local_index) != null) {
 			Log.i("song", "hello world 1");
 			{
 				Log.i("song", "hello world");
-				return _imageCache.get(index);
+				return _imageCache.get(local_index);
 			}
 		}
 		_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
 				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
 				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
-		_txtDocument.getPage(index, _bitmap);
+		_epubDocument.getPage(local_index, _bitmap);
 		
 		return _bitmap;
 	}
 
 	public int getPageCount() {
-		return _txtDocument.pageCount();
+		Log.i("song","getpagecount:"+_epubDocument.pageCount());
+		return _epubDocument.pageCount();
 	}
 	
 	int getPageIndexHistory() {

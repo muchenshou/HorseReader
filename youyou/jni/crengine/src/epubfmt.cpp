@@ -1265,52 +1265,58 @@ void EpubDocument::Render(int dx, int dy, ldomDocument *m_doc,
 
 	LVLock lock(getMutex());
 	{
-		CRLog::debug("song epub render1");
-		if (m_doc == NULL)
-					m_doc = mDocumentPages[0].m_doc;
-		CRLog::debug("song epub render11");
-		if (!m_doc || m_doc->getRootNode() == NULL)
-			return;
-		CRLog::debug("song epub render2");
-		if (dx == 0)
-			dx = m_pageRects[0].width() - m_pageMargins.left
-					- m_pageMargins.right;
-		if (dy == 0)
-			dy = m_pageRects[0].height() - m_pageMargins.top
-					- m_pageMargins.bottom;
-		CRLog::debug("song epub render3 %d %d", dx, dy);
-		setRenderProps(dx, dy);
-		CRLog::debug("song epub render4");
+		int count = 0;
+		DocPagesContainer::iterator it;
+		for (it = mDocumentPages.begin(); it != mDocumentPages.end(); it++) {
+			CRLog::debug("song epub render1");
+			DocumentPage &p = *it;
+			p.start = count;
+				m_doc = p.m_doc;
+				pages = &p.m_pages;
+			CRLog::debug("song epub render11");
+			if (!m_doc || m_doc->getRootNode() == NULL)
+				return;
+			CRLog::debug("song epub render2");
+			if (dx == 0)
+				dx = m_pageRects[0].width() - m_pageMargins.left
+						- m_pageMargins.right;
+			if (dy == 0)
+				dy = m_pageRects[0].height() - m_pageMargins.top
+						- m_pageMargins.bottom;
+			CRLog::debug("song epub render3 %d %d", dx, dy);
+			setRenderProps(dx, dy);
+			CRLog::debug("song epub render4");
 
-		if (pages == NULL)
-		    pages = &mDocumentPages[0].m_pages;
-		CRLog::debug("song epub render5");
-		if (!m_font)
-			return;
-		CRLog::debug("song epub render6");
-		CRLog::debug("Render(width=%d, height=%d, fontSize=%d)", dx, dy,
-				m_font_size);
-		//CRLog::trace("calling render() for document %08X font=%08X", (unsigned int)m_doc, (unsigned int)m_font.get() );
-		m_doc->render(pages,  NULL, dx, dy,
-		                false,  0,
-		                m_font, m_def_interline_space, m_props);
-		CRLog::trace("song render pages %d", pages->length());
+			if (pages == NULL)
+				pages = &mDocumentPages[0].m_pages;
+			CRLog::debug("song epub render5");
+			if (!m_font)
+				return;
+			CRLog::debug("song epub render6");
+			CRLog::debug("Render(width=%d, height=%d, fontSize=%d)", dx, dy,
+					m_font_size);
+			//CRLog::trace("calling render() for document %08X font=%08X", (unsigned int)m_doc, (unsigned int)m_font.get() );
+			m_doc->render(pages, NULL, dx, dy, false, 0, m_font,
+					m_def_interline_space, m_props);
+			CRLog::trace("song render pages %d", pages->length());
+			count += pages->length();
 #if 0
-		FILE * f = fopen("/sdcard/pagelist.log", "wt");
-		if (f) {
-			for (int i=0; i<m_pages.length(); i++)
-			{
-				fprintf(f, "%4d:   %7d .. %-7d [%d]\n", i, m_pages[i].start, m_pages[i].start+m_pages[i].height, m_pages[i].height);
+			FILE * f = fopen("/sdcard/pagelist.log", "wt");
+			if (f) {
+				for (int i=0; i<m_pages.length(); i++)
+				{
+					fprintf(f, "%4d:   %7d .. %-7d [%d]\n", i, m_pages[i].start, m_pages[i].start+m_pages[i].height, m_pages[i].height);
+				}
+				fclose(f);
 			}
-			fclose(f);
-		}
 #endif
-		fontMan->gc();
-		m_is_rendered = true;
-		//CRLog::debug("Making TOC...");
-		//makeToc();
-		CRLog::debug("Updating selections...");
- //   		updateSelections();
+			fontMan->gc();
+			m_is_rendered = true;
+			//CRLog::debug("Making TOC...");
+			//makeToc();
+			CRLog::debug("Updating selections...");
+			//   		updateSelections();
+		}
 
 	}
 
@@ -1585,8 +1591,10 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 
 			writer.OnTagClose(L"", L"body");
 			writer.OnStop();
-			page.m_doc->saveToStream(LVOpenFileStream("/sdcard//epub_dump.xml", LVOM_WRITE),
-						NULL, true);
+			char xml_name[256];
+			sprintf(xml_name, "/sdcard//epub_dump%d.xml", i);
+			page.m_doc->saveToStream(LVOpenFileStream(xml_name, LVOM_WRITE),
+					NULL, true);
 			mDocumentPages.push_back(page);
 		}
 	}
@@ -1635,7 +1643,7 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 
 	// save compound XML document, for testing:
 	//m_doc->saveToStream(LVOpenFileStream("/sdcard//epub_dump.xml", LVOM_WRITE),
-		//	NULL, true);
+	//	NULL, true);
 
 	return;
 

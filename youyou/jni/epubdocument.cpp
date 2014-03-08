@@ -16,15 +16,17 @@
 #include "cssdef.h"
 #include "lvthread.h"
 #include "epubfmt.h"
-
+EpubDocument epub;
 /*
  * Class:     com_reader_document_epub_EpubDocument
  * Method:    pageCount
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_pageCount(
-		JNIEnv *env, jobject self);
-EpubDocument epub;
+		JNIEnv *env, jobject self) {
+	return epub.getPageCount();
+}
+
 /*
  * Class:     com_reader_document_epub_EpubDocument
  * Method:    loadDocument
