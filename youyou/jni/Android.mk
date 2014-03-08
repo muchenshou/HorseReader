@@ -23,7 +23,8 @@ LOCAL_C_INCLUDES := \
     -I $(CR3_ROOT)/thirdparty/freetype/include \
     -I $(CR3_ROOT)/thirdparty/libjpeg \
     -I $(CR3_ROOT)/thirdparty/antiword \
-    -I $(CR3_ROOT)/thirdparty/chmlib/src
+    -I $(CR3_ROOT)/thirdparty/chmlib/src \
+    -I $(CR3_ROOT)/epub
 
 
 LOCAL_CFLAGS += $(CRFLAGS) $(CRENGINE_INCLUDES) -Wno-psabi -Wno-unused-variable -Wno-sign-compare -Wno-write-strings -Wno-main -Wno-unused-but-set-variable -Wno-unused-function -Werror -Wall
@@ -42,7 +43,6 @@ CRENGINE_SRC_FILES := \
     crengine/src/lvstream.cpp \
     crengine/src/lvxml.cpp \
     crengine/src/chmfmt.cpp \
-    crengine/src/epubfmt.cpp \
     crengine/src/pdbfmt.cpp \
     crengine/src/wordfmt.cpp \
     crengine/src/lvstsheet.cpp \
@@ -223,7 +223,8 @@ JNI_SRC_FILES := \
 	cr3java.cpp \
 	txtdocument.cpp \
 	epubdocument.cpp \
-	YouYouApp.cpp 
+	YouYouApp.cpp \
+	epub/epubfmt.cpp
 #    cr3engine.cpp \
 #    docview.cpp
 

@@ -23,7 +23,7 @@
 #include "../include/wolutil.h"
 #include "../include/crtxtenc.h"
 #include "../include/crtrace.h"
-#include "../include/epubfmt.h"
+#include "epubfmt.h"
 #include "../include/chmfmt.h"
 #include "../include/wordfmt.h"
 #include "../include/pdbfmt.h"

@@ -1,4 +1,4 @@
-#include "../include/epubfmt.h"
+#include "epubfmt.h"
 #include "lvstream.h"
 #include "lvdocview.h"
 #include "lvrend.h"
