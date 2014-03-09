@@ -26,10 +26,26 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_loadDocument
 /*
  * Class:     com_reader_document_epub_EpubDocument
  * Method:    getPage
- * Signature: (ILandroid/graphics/Bitmap;)I
+ * Signature: (Lcom/reader/document/epub/EpubPageAddr;Landroid/graphics/Bitmap;)I
  */
 JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
-  (JNIEnv *, jobject, jint, jobject);
+  (JNIEnv *, jobject, jobject, jobject);
+
+/*
+ * Class:     com_reader_document_epub_EpubDocument
+ * Method:    nextPageAddr
+ * Signature: (Lcom/reader/document/epub/EpubPageAddr;)Lcom/reader/document/epub/EpubPageAddr;
+ */
+JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAddr
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_reader_document_epub_EpubDocument
+ * Method:    prevPageAddr
+ * Signature: (Lcom/reader/document/epub/EpubPageAddr;)Lcom/reader/document/epub/EpubPageAddr;
+ */
+JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_prevPageAddr
+  (JNIEnv *, jobject, jobject);
 
 #ifdef __cplusplus
 }

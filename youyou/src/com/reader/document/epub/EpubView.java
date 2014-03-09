@@ -10,12 +10,14 @@ import android.view.View;
 
 public class EpubView extends PageView {
 	EpubPageProvider _provider;
-	public int _pageindex = 0;
+	public EpubPageAddr _pageindex ;
 
 	public EpubView(Context context, EpubPageProvider provider) {
 		super(context);
 		_provider = provider;
-
+		_pageindex = new EpubPageAddr(_provider._epubDocument);
+		_pageindex._chapter_index = 0;
+		_pageindex._page_index = 0;
 	}
 
 	public void setBitmap(Bitmap b[]) {
@@ -32,14 +34,15 @@ public class EpubView extends PageView {
 	@Override
 	public int endAnimation(DIR flags) {
 		if (flags == DIR.NEXT) {
-			_pageindex++;
+			_pageindex = _pageindex.next();
 		} else {
-			_pageindex--;
+			_pageindex = _pageindex.pre();
 		}
+		
 		this._animationView.setBitmapArray(new Bitmap[] {
-				_provider.getPage(_pageindex-1),
+				_provider.getPage(_pageindex.pre()),
 				_provider.getPage(_pageindex),
-				_provider.getPage(_pageindex+1) });
+				_provider.getPage(_pageindex.next()) });
 		_animationView.postInvalidate();
 		return super.endAnimation(flags);
 	}

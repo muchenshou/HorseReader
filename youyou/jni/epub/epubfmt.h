@@ -6,12 +6,13 @@
 #include "lvthread.h"
 #include "lvpagesplitter.h"
 #include <vector>
-bool DetectEpubFormat( LVStreamRef stream );
-bool ImportEpubDocument( LVStreamRef stream,ldomDocument * m_doc, LVDocViewCallback * progressCallback, CacheLoadingCallback * formatCallback );
-lString16 EpubGetRootFilePath( LVContainerRef m_arc );
+bool DetectEpubFormat(LVStreamRef stream);
+bool ImportEpubDocument(LVStreamRef stream, ldomDocument * m_doc,
+		LVDocViewCallback * progressCallback,
+		CacheLoadingCallback * formatCallback);
+lString16 EpubGetRootFilePath(LVContainerRef m_arc);
 LVStreamRef GetEpubCoverpage(LVContainerRef arc);
-void testEpub(LVStreamRef stream,LVDrawBuf& drawbuf);
-
+void testEpub(LVStreamRef stream, LVDrawBuf& drawbuf);
 
 extern lString16 mergeCssMacros(CRPropRef props);
 extern lString8 substituteCssMacros(lString8 src, CRPropRef props);
@@ -20,18 +21,20 @@ struct DocumentPage {
 	ldomDocument *m_doc;
 	int start;
 };
-class EpubDocument{
+class EpubDocument {
 	//LVRendPageList m_pages;
 	//ldomDocument *m_doc;
+public:
 	typedef std::vector<DocumentPage> DocPagesContainer;
 	DocPagesContainer mDocumentPages;
+protected:
 	LVMutex _mutex;
 	lvRect m_pageRects[2];
 	lvRect m_pageMargins;
 	int m_dx;
 	int m_dy;
 
-	font_ref_t     m_font;
+	font_ref_t m_font;
 	int m_font_size;
 	lString8 m_defaultFontFace;
 
@@ -45,15 +48,17 @@ class EpubDocument{
 public:
 	EpubDocument();
 	/// return view mutex
-	LVMutex & getMutex() { return _mutex; }
+	LVMutex & getMutex() {
+		return _mutex;
+	}
 	void updateLayout() {
 		lvRect rc(0, 0, m_dx, m_dy);
 		m_pageRects[0] = rc;
 		m_pageRects[1] = rc;
 	}
 	void updateDocStyleSheet() {
-	    CRPropRef p = m_props->getSubProps("styles.");
-	    //m_doc->setStyleSheet(substituteCssMacros(m_stylesheet, p).c_str(), true);
+		CRPropRef p = m_props->getSubProps("styles.");
+		//m_doc->setStyleSheet(substituteCssMacros(m_stylesheet, p).c_str(), true);
 	}
 	void setRenderProps(int dx, int dy);
 	/// returns book title
@@ -76,9 +81,11 @@ public:
 			name << " #" << number;
 		return name;
 	}
-public :
+public:
 	/// get current default cover image
-	    LVImageSourceRef getDefaultCover() const { return m_defaultCover; }
+	LVImageSourceRef getDefaultCover() const {
+		return m_defaultCover;
+	}
 	/// returns cover page image source, if any
 	LVImageSourceRef getCoverPageImage() {
 
@@ -97,35 +104,36 @@ public :
 		return LVImageSourceRef(); // not found: return NULL ref
 	}
 	/// draws coverpage to image buffer
-	void drawCoverTo(LVDrawBuf * drawBuf, lvRect & rc) ;
-	void drawPageTo(LVDrawBuf * drawbuf, ldomDocument * m_doc,LVRendPageInfo & page,
-			lvRect * pageRect, int pageCount, int basePage) ;
+	void drawCoverTo(LVDrawBuf * drawBuf, lvRect & rc);
+	void drawPageTo(LVDrawBuf * drawbuf, ldomDocument * m_doc,
+			LVRendPageInfo & page, lvRect * pageRect, int pageCount,
+			int basePage);
 
-	void Draw(LVDrawBuf & drawbuf, int page) {
+	void Draw(LVDrawBuf & drawbuf, int chapterindex, int page) {
 		getMutex().lock();
 		std::vector<DocumentPage>::iterator it;
-		for (it = mDocumentPages.begin(); it!=mDocumentPages.end();it++) {
-			DocumentPage &p = *it;
-			if (p.start <= page && page<p.start+p.m_pages.length()) {
-				LVRendPageInfo *pageinfo = p.m_pages[page-p.start];
-				CRLog::debug("song epub Draw2");
-				drawPageTo(&drawbuf, p.m_doc,*pageinfo, &m_pageRects[0],
-						p.m_pages.length(), 1);
-				CRLog::debug("song epub Draw3");
-				getMutex().unlock();
-				return;
-			}
-		}
+		DocumentPage &p = mDocumentPages[chapterindex];
+		LVRendPageInfo *pageinfo = p.m_pages[page];
+		CRLog::debug("song epub Draw2");
+		drawPageTo(&drawbuf, p.m_doc, *pageinfo, &m_pageRects[0],
+				p.m_pages.length(), 1);
+		CRLog::debug("song epub Draw3");
 		getMutex().unlock();
-		CRLog::debug("EpubDocument no draw");
+		return;
 	}
 	int getPageCount() {
-		return mDocumentPages.back().start +mDocumentPages.back().m_pages.length();
+		return mDocumentPages.back().start
+				+ mDocumentPages.back().m_pages.length();
 	}
 	/// render (format) document
-    void Render( int dx=0, int dy=0, ldomDocument *m_doc=NULL,LVRendPageList * pages=NULL );
-    void loadDocument(LVStreamRef stream);
-    inline int getWidth() {return m_dx;}
-    inline int getHeight() {return m_dy;}
+	void Render(int dx = 0, int dy = 0, ldomDocument *m_doc = NULL,
+			LVRendPageList * pages = NULL);
+	void loadDocument(LVStreamRef stream);
+	inline int getWidth() {
+		return m_dx;
+	}
+	inline int getHeight() {
+		return m_dy;
+	}
 };
 #endif // EPUBFMT_H

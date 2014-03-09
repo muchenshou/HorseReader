@@ -73,7 +73,8 @@ public class EpubPageProvider {
 		///_txtDocument.getPage(1, g_bitmap);
 		// _txtDocument.getPage(2, g_bitmap);
 		// g_bitmap = getPage(0);
-		_txtView.setBitmap(new Bitmap[]{getPage(0),getPage(0),getPage(0)});
+		EpubPageAddr addr = new EpubPageAddr(_epubDocument);
+		_txtView.setBitmap(new Bitmap[]{getPage(addr),getPage(addr),getPage(addr)});
 		_txtView.invalidate();
 		return true;
 	}
@@ -81,52 +82,52 @@ public class EpubPageProvider {
 	Bitmap g_bitmap;
 	int a = 0;
 
-	public Bitmap getPage(final int index) {
-		final int local_index = index >= getPageCount() ? getPageCount()-1:index;
+	public Bitmap getPage(final EpubPageAddr index) {
+		final EpubPageAddr local_index = index;// >= getPageCount() ? getPageCount()-1:index;
 		
-		_handle.post(new Runnable() {
-
-			@Override
-			public void run() {
-				synchronized (_imageCache) {
-					
-					savePageIndexHistory();
-					Log.i("song", "thread id " + Thread.currentThread().getId());
-					System.gc();
-					List<Integer> list = new ArrayList<Integer>();
-					final int count = 5;
-					Set<Entry<Integer, Bitmap>> set = _imageCache.entrySet();
-					Iterator<Entry<Integer, Bitmap>> iter = set.iterator();
-					while (iter.hasNext()) {
-						Entry<Integer, Bitmap> entry = iter.next();
-						Integer key = entry.getKey();
-						Bitmap value = entry.getValue();
-						if (key < local_index - count || key > local_index + count) {
-							value.recycle();
-							list.add(key);
-						}
-					}
-					for (Integer i : list) {
-						_imageCache.remove(i);
-					}
-					int min = local_index - count > 0 ? local_index - count : 0;
-					// must fix in future
-					int max = local_index + count;
-					for (int i = min; i < max; i++) {
-						if (_imageCache.get(i) == null) {
-							Bitmap b;
-							b = Bitmap.createBitmap(_activity
-									.getWindowManager().getDefaultDisplay()
-									.getWidth(), _activity.getWindowManager()
-									.getDefaultDisplay().getHeight(),
-									Config.RGB_565);
-							_epubDocument.getPage(i, b);
-							_imageCache.put(i, b);
-						}
-					}
-				}
-			}
-		});
+//		_handle.post(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				synchronized (_imageCache) {
+//					
+//					savePageIndexHistory();
+//					Log.i("song", "thread id " + Thread.currentThread().getId());
+//					System.gc();
+//					List<Integer> list = new ArrayList<Integer>();
+//					final int count = 5;
+//					Set<Entry<Integer, Bitmap>> set = _imageCache.entrySet();
+//					Iterator<Entry<Integer, Bitmap>> iter = set.iterator();
+//					while (iter.hasNext()) {
+//						Entry<Integer, Bitmap> entry = iter.next();
+//						Integer key = entry.getKey();
+//						Bitmap value = entry.getValue();
+//						if (key < local_index - count || key > local_index + count) {
+//							value.recycle();
+//							list.add(key);
+//						}
+//					}
+//					for (Integer i : list) {
+//						_imageCache.remove(i);
+//					}
+//					int min = local_index - count > 0 ? local_index - count : 0;
+//					// must fix in future
+//					int max = local_index + count;
+//					for (int i = min; i < max; i++) {
+//						if (_imageCache.get(i) == null) {
+//							Bitmap b;
+//							b = Bitmap.createBitmap(_activity
+//									.getWindowManager().getDefaultDisplay()
+//									.getWidth(), _activity.getWindowManager()
+//									.getDefaultDisplay().getHeight(),
+//									Config.RGB_565);
+//							_epubDocument.getPage(i, b);
+//							_imageCache.put(i, b);
+//						}
+//					}
+//				}
+//			}
+//		});
 		Bitmap _bitmap;
 		Log.i("song", "bitmap " + local_index);
 		if (_imageCache.get(local_index) != null) {
@@ -149,10 +150,13 @@ public class EpubPageProvider {
 		return _epubDocument.pageCount();
 	}
 	
-	int getPageIndexHistory() {
+	EpubPageAddr getPageIndexHistory() {
 		SharedPreferences sp = _activity.getSharedPreferences("txt_history", Activity.MODE_PRIVATE);
 		String s = sp.getString("epub", "0");
-		return Integer.decode(s);
+		EpubPageAddr addr = new EpubPageAddr(_epubDocument);
+		addr._chapter_index = 0;
+		addr._page_index = 0;
+		return addr;
 	}
 	void savePageIndexHistory() {
 //		SharedPreferences sp = _activity.getSharedPreferences("txt_history", Activity.MODE_PRIVATE);
