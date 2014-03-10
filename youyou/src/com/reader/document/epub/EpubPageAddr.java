@@ -1,6 +1,8 @@
 package com.reader.document.epub;
 
-public class EpubPageAddr implements Comparable<EpubPageAddr>{
+import android.util.Log;
+
+public class EpubPageAddr{
 	int _chapter_index;
 	int _page_index;
 	EpubDocument _epub;
@@ -15,11 +17,21 @@ public class EpubPageAddr implements Comparable<EpubPageAddr>{
 	EpubPageAddr pre() {
 		return _epub.prevPageAddr(this);
 	}
+
 	@Override
-	public int compareTo(EpubPageAddr another) {
+	public boolean equals(Object o) {
+		Log.i("song", "song  equals epubaddr");
+		EpubPageAddr another = (EpubPageAddr)o;
 		if (_chapter_index == another._chapter_index &&
 				_page_index == another._page_index)
-		return 0;
-		return 1;
+			return true;
+		return false;
 	}
+	@Override
+	public int hashCode() {
+		Log.i("song", "song  hashCode epubaddr");
+		return _chapter_index<<16+_page_index;
+	}
+	
+	
 }

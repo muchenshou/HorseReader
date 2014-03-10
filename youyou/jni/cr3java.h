@@ -239,4 +239,8 @@ protected:
 		__android_log_write(level, LOG_TAG, buffer);
 	}
 };
+
+
+void SET_ENV(JNIEnv* env);
+JNIEnv *GET_ENV();
 #endif

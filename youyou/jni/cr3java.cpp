@@ -1,7 +1,8 @@
 #include "cr3java.h"
 
 #include <dlfcn.h>
-
+#include <pthread.h>
+#include <map>
 lString16 CRJNIEnv::fromJavaString( jstring str )
 {
 	if ( !str )
@@ -420,3 +421,23 @@ BitmapAccessorInterface * BitmapAccessorInterface::getInstance()
 	}
 	return _bitmapAccessorInstance;
 } 
+
+
+static std::map<pthread_t, JNIEnv*> env_map;
+void SET_ENV(JNIEnv* env) {
+	pthread_t pt = pthread_self();
+	std::map<pthread_t, JNIEnv*>::iterator itr =env_map.find(pt);
+	if (itr != env_map.end()) {
+		env_map.insert(std::map<pthread_t,JNIEnv*>::value_type(pt, env));
+	}
+	env_map[pt] = env;
+}
+
+JNIEnv *GET_ENV() {
+	pthread_t pt = pthread_self();
+	std::map<pthread_t, JNIEnv*>::iterator itr =env_map.find(pt);
+	if (itr != env_map.end()) {
+		return env_map[pt];
+	}
+	return NULL;
+}

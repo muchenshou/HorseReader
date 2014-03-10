@@ -17,7 +17,6 @@
 #include "lvthread.h"
 #include "epubfmt.h"
 EpubDocument epub;
-JNIEnv *g_env;
 class C_EpubAddr {
 	jobject _java_obj;
 public:
@@ -25,34 +24,34 @@ public:
 
 	}
 	jobject EpubDocument() {
-		jclass cls = g_env->FindClass("com/reader/document/epub/EpubPageAddr");
-		jfieldID field =g_env->GetFieldID(cls,"_epub","Lcom/reader/document/epub/EpubDocument;");
-		return g_env->GetObjectField(_java_obj,field);
+		jclass cls = GET_ENV()->FindClass("com/reader/document/epub/EpubPageAddr");
+		jfieldID field =GET_ENV()->GetFieldID(cls,"_epub","Lcom/reader/document/epub/EpubDocument;");
+		return GET_ENV()->GetObjectField(_java_obj,field);
 	}
 	int chapterIndex() {
-		jclass cls = g_env->FindClass("com/reader/document/epub/EpubPageAddr");
-		jfieldID field =g_env->GetFieldID(cls,"_chapter_index","I");
-		return g_env->GetIntField(_java_obj,field);
+		jclass cls = GET_ENV()->FindClass("com/reader/document/epub/EpubPageAddr");
+		jfieldID field =GET_ENV()->GetFieldID(cls,"_chapter_index","I");
+		return GET_ENV()->GetIntField(_java_obj,field);
 	}
 	int pageIndex() {
-		jclass cls = g_env->FindClass("com/reader/document/epub/EpubPageAddr");
-		jfieldID field =g_env->GetFieldID(cls,"_page_index","I");
-		return g_env->GetIntField(_java_obj,field);
+		jclass cls = GET_ENV()->FindClass("com/reader/document/epub/EpubPageAddr");
+		jfieldID field =GET_ENV()->GetFieldID(cls,"_page_index","I");
+		return GET_ENV()->GetIntField(_java_obj,field);
 	}
 	void setChapterIndex(int index) {
-		jclass cls = g_env->FindClass("com/reader/document/epub/EpubPageAddr");
-		jfieldID field =g_env->GetFieldID(cls,"_chapter_index","I");
-		g_env->SetIntField(_java_obj,field,index);
+		jclass cls = GET_ENV()->FindClass("com/reader/document/epub/EpubPageAddr");
+		jfieldID field =GET_ENV()->GetFieldID(cls,"_chapter_index","I");
+		GET_ENV()->SetIntField(_java_obj,field,index);
 	}
 	void setPageIndex(int index) {
-		jclass cls = g_env->FindClass("com/reader/document/epub/EpubPageAddr");
-		jfieldID field =g_env->GetFieldID(cls,"_page_index","I");
-		g_env->SetIntField(_java_obj,field,index);
+		jclass cls = GET_ENV()->FindClass("com/reader/document/epub/EpubPageAddr");
+		jfieldID field =GET_ENV()->GetFieldID(cls,"_page_index","I");
+		GET_ENV()->SetIntField(_java_obj,field,index);
 	}
 	static jobject NewObject(jobject epubdocument) {
-		jclass cls = g_env->FindClass("com/reader/document/epub/EpubPageAddr");
-		jmethodID method = g_env->GetMethodID(cls,"<init>","(Lcom/reader/document/epub/EpubDocument;)V");
-		return g_env->NewObject(cls,method,epubdocument);
+		jclass cls = GET_ENV()->FindClass("com/reader/document/epub/EpubPageAddr");
+		jmethodID method = GET_ENV()->GetMethodID(cls,"<init>","(Lcom/reader/document/epub/EpubDocument;)V");
+		return GET_ENV()->NewObject(cls,method,epubdocument);
 	}
 };
 /*
@@ -91,7 +90,7 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_loadDocument(
 JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
   (JNIEnv *e, jobject self, jobject jEpubAddr, jobject bitmap)
 {
-	g_env = e;
+	SET_ENV(e);
 	C_EpubAddr addr(jEpubAddr);
 	CRJNIEnv env(e);
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(e,
@@ -115,7 +114,7 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
  */
 JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAddr
   (JNIEnv *e, jobject self, jobject jCur) {
-	g_env = e;
+	SET_ENV(e);
 	C_EpubAddr c_cur(jCur);
 	jobject jNext = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_next(jNext);

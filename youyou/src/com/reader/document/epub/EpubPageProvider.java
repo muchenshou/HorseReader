@@ -27,7 +27,7 @@ public class EpubPageProvider {
 	EpubView _txtView;
 	public static Handler _handle;
 
-	Map<Integer, Bitmap> _imageCache = new HashMap<Integer, Bitmap>();
+	Map<EpubPageAddr, Bitmap> _imageCache = new HashMap<EpubPageAddr, Bitmap>();
 
 	class BitmapThread extends Thread {
 
@@ -85,55 +85,68 @@ public class EpubPageProvider {
 	public Bitmap getPage(final EpubPageAddr index) {
 		final EpubPageAddr local_index = index;// >= getPageCount() ? getPageCount()-1:index;
 		
-//		_handle.post(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				synchronized (_imageCache) {
-//					
-//					savePageIndexHistory();
-//					Log.i("song", "thread id " + Thread.currentThread().getId());
-//					System.gc();
-//					List<Integer> list = new ArrayList<Integer>();
-//					final int count = 5;
-//					Set<Entry<Integer, Bitmap>> set = _imageCache.entrySet();
-//					Iterator<Entry<Integer, Bitmap>> iter = set.iterator();
-//					while (iter.hasNext()) {
-//						Entry<Integer, Bitmap> entry = iter.next();
-//						Integer key = entry.getKey();
-//						Bitmap value = entry.getValue();
-//						if (key < local_index - count || key > local_index + count) {
-//							value.recycle();
-//							list.add(key);
-//						}
-//					}
-//					for (Integer i : list) {
-//						_imageCache.remove(i);
-//					}
-//					int min = local_index - count > 0 ? local_index - count : 0;
-//					// must fix in future
-//					int max = local_index + count;
-//					for (int i = min; i < max; i++) {
-//						if (_imageCache.get(i) == null) {
-//							Bitmap b;
-//							b = Bitmap.createBitmap(_activity
-//									.getWindowManager().getDefaultDisplay()
-//									.getWidth(), _activity.getWindowManager()
-//									.getDefaultDisplay().getHeight(),
-//									Config.RGB_565);
-//							_epubDocument.getPage(i, b);
-//							_imageCache.put(i, b);
-//						}
-//					}
-//				}
-//			}
-//		});
+		_handle.post(new Runnable() {
+
+			@Override
+			public void run() {
+				synchronized (_imageCache) {
+					
+					savePageIndexHistory();
+					Log.i("song", "thread id " + Thread.currentThread().getId());
+					System.gc();
+					List<EpubPageAddr> needInCachePages = new ArrayList<EpubPageAddr>();
+					needInCachePages.add(local_index);
+					final int count = 5;
+					EpubPageAddr pre = local_index.pre();
+					for (int i=0; i<count/2;i++) {
+						needInCachePages.add(pre);
+						pre = pre.pre();
+					}
+					EpubPageAddr next = local_index.next();
+					for (int i=0; i<count/2; i++) {
+						needInCachePages.add(next);
+						next = next.next();
+					}
+					List<EpubPageAddr> remove_pages = new ArrayList<EpubPageAddr>();
+					
+					Set<Entry<EpubPageAddr, Bitmap>> set = _imageCache.entrySet();
+					Iterator<Entry<EpubPageAddr, Bitmap>> iter = set.iterator();
+					Log.i("song","song epub remove bimtap");
+					while (iter.hasNext()) {
+						Entry<EpubPageAddr, Bitmap> entry = iter.next();
+						EpubPageAddr key = entry.getKey();
+						Bitmap value = entry.getValue();
+						if (!needInCachePages.contains(key)) {
+							value.recycle();
+							remove_pages.add(key);
+						}
+					}
+					Log.i("song","song epub remove bimtap end");
+					Log.i("song","song epub remove bimtap11111111 "+remove_pages.size());
+					for (EpubPageAddr i : remove_pages) {
+						_imageCache.remove(i);
+					}
+					Log.i("song","song epub remove bimtap11111111 end "+remove_pages.size());
+					Log.i("song","song epub add bimtap 11111 "+_imageCache.size());
+					for (EpubPageAddr a: needInCachePages) {
+						if (!_imageCache.containsKey(a) ) {
+							Bitmap b;
+							b = Bitmap.createBitmap(_activity
+									.getWindowManager().getDefaultDisplay()
+									.getWidth(), _activity.getWindowManager()
+									.getDefaultDisplay().getHeight(),
+									Config.RGB_565);
+							_epubDocument.getPage(a, b);
+							_imageCache.put(a, b);
+						}
+					}
+					Log.i("song","song epub add bimtap 1111 "+_imageCache.size());
+				}
+			}
+		});
 		Bitmap _bitmap;
-		Log.i("song", "bitmap " + local_index);
 		if (_imageCache.get(local_index) != null) {
-			Log.i("song", "hello world 1");
 			{
-				Log.i("song", "hello world");
 				return _imageCache.get(local_index);
 			}
 		}
