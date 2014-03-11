@@ -3,6 +3,7 @@ package com.reader.document.epub;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class EpubPageProvider {
 					savePageIndexHistory();
 					Log.i("song", "thread id " + Thread.currentThread().getId());
 					System.gc();
-					List<EpubPageAddr> needInCachePages = new ArrayList<EpubPageAddr>();
+					Set<EpubPageAddr> needInCachePages = new HashSet<EpubPageAddr>();
 					needInCachePages.add(local_index);
 					final int count = 5;
 					EpubPageAddr pre = local_index.pre();
@@ -117,26 +118,18 @@ public class EpubPageProvider {
 					Set<Entry<EpubPageAddr, Bitmap>> set = _imageCache
 							.entrySet();
 					Iterator<Entry<EpubPageAddr, Bitmap>> iter = set.iterator();
-					Log.i("song", "song epub remove bimtap");
 					while (iter.hasNext()) {
 						Entry<EpubPageAddr, Bitmap> entry = iter.next();
 						EpubPageAddr key = entry.getKey();
 						Bitmap value = entry.getValue();
-						if (!needInCachePages.contains(key)) {
+						if (!needInCachePages.contains(key))
 							value.recycle();
 							remove_pages.add(key);
-						}
 					}
-					Log.i("song", "song epub remove bimtap end");
-					Log.i("song", "song epub remove bimtap11111111 "
-							+ remove_pages.size());
+
 					for (EpubPageAddr i : remove_pages) {
 						_imageCache.remove(i);
 					}
-					Log.i("song", "song epub remove bimtap11111111 end "
-							+ remove_pages.size());
-					Log.i("song",
-							"song epub add bimtap 11111 " + _imageCache.size());
 					for (EpubPageAddr a : needInCachePages) {
 						if (!_imageCache.containsKey(a)) {
 							Bitmap b;
@@ -149,12 +142,11 @@ public class EpubPageProvider {
 							_imageCache.put(a, b);
 						}
 					}
-					Log.i("song",
-							"song epub add bimtap 1111 " + _imageCache.size());
 				}
 			}
 		});
 		Bitmap _bitmap;
+
 		if (_imageCache.get(local_index) != null) {
 			{
 				return _imageCache.get(local_index);
@@ -199,5 +191,6 @@ public class EpubPageProvider {
 			Log.e("youyou", "cannot load resource");
 			return null;
 		}
+
 	}
 }
