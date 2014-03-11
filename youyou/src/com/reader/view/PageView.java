@@ -39,7 +39,6 @@ public class PageView extends ViewGroup implements IAnimation{
 					SimpleDateFormat f = new SimpleDateFormat("HH:mm",Locale.CHINA);
 					
 					_timeView.setText(f.format(new Date()));
-					Log.i("song","hello:"+f.format(new Date()));
 				}
 				
 			});

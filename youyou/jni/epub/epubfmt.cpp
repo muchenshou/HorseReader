@@ -1265,6 +1265,7 @@ void EpubDocument::Render(int dx, int dy, ldomDocument *m_doc,
 
 	LVLock lock(getMutex());
 	{
+
 		int count = 0;
 		DocPagesContainer::iterator it;
 		for (it = mDocumentPages.begin(); it != mDocumentPages.end(); it++) {
@@ -1277,6 +1278,7 @@ void EpubDocument::Render(int dx, int dy, ldomDocument *m_doc,
 			if (!m_doc || m_doc->getRootNode() == NULL)
 				return;
 			CRLog::debug("song epub render2");
+
 			if (dx == 0)
 				dx = m_pageRects[0].width() - m_pageMargins.left
 						- m_pageMargins.right;

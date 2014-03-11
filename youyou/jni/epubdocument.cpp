@@ -124,6 +124,7 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 		}
 		drawbuf->SetTextColor(0x00000000);
 		//		txt_book->drawPage(drawbuf, index);
+		CRLog::debug(" no no %d %d",addr.chapterIndex(),addr.pageIndex());
 		epub.Draw(*drawbuf, addr.chapterIndex(),addr.pageIndex());
 		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
 		BitmapAccessorInterface::getInstance()->unlock(e, bitmap, drawbuf);
@@ -148,7 +149,7 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAdd
 		c_next.setChapterIndex(c_cur.chapterIndex());
 		c_next.setPageIndex(c_cur.pageIndex()+1);
 	} else {
-		if (((unsigned int)c_cur.chapterIndex()+1) < epub.mDocumentPages.size()) {
+		if ((c_cur.chapterIndex()+1) < (int)epub.mDocumentPages.size()) {
 			c_next.setChapterIndex(c_cur.chapterIndex()+1);
 			c_next.setPageIndex(0);
 		} else {
@@ -167,5 +168,22 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAdd
 JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_prevPageAddr
   (JNIEnv *env, jobject self, jobject jCur)
 {
-return jCur;
+	SET_ENV(env);
+	C_EpubAddr c_cur(jCur);
+	jobject jPre = C_EpubAddr::NewObject(c_cur.EpubDocument());
+	C_EpubAddr c_pre(jPre);
+	DocumentPage &p = epub.mDocumentPages[c_cur.chapterIndex()-1>0?c_cur.chapterIndex()-1:0];
+	if (c_cur.pageIndex() > 0) {
+		c_pre.setChapterIndex(c_cur.chapterIndex());
+		c_pre.setPageIndex(c_cur.pageIndex()-1);
+	} else {
+		if ((c_cur.chapterIndex()-1) > 0) {
+			c_pre.setChapterIndex(c_cur.chapterIndex()-1);
+			c_pre.setPageIndex(p.m_pages.length()-1);
+		} else {
+			c_pre.setChapterIndex(0);
+			c_pre.setPageIndex(0);
+		}
+	}
+	return jPre;
 }

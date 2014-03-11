@@ -1,18 +1,15 @@
 package com.reader.document.epub;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.os.Handler;
@@ -20,9 +17,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.reader.app.R;
-import com.reader.document.txt.TxtDocument;
 import com.reader.document.txt.TxtPageProvider;
-import com.reader.document.txt.TxtView;
 
 public class EpubPageProvider {
 	EpubDocument _epubDocument;
@@ -113,23 +108,32 @@ public class EpubPageProvider {
 						needInCachePages.add(next);
 						next = next.next();
 					}
-					List<EpubPageAddr> remove_pages = new ArrayList<EpubPageAddr>();
+					Log.i("song","epub1");
+					Set<EpubPageAddr> remove_pages = new HashSet<EpubPageAddr>();
 
 					Set<Entry<EpubPageAddr, Bitmap>> set = _imageCache
 							.entrySet();
+					Log.i("song","epub2");
 					Iterator<Entry<EpubPageAddr, Bitmap>> iter = set.iterator();
 					while (iter.hasNext()) {
 						Entry<EpubPageAddr, Bitmap> entry = iter.next();
 						EpubPageAddr key = entry.getKey();
 						Bitmap value = entry.getValue();
-						if (!needInCachePages.contains(key))
+						if (!needInCachePages.contains(key)) {
 							value.recycle();
 							remove_pages.add(key);
+						}
 					}
-
+					Log.i("song","epub3");
 					for (EpubPageAddr i : remove_pages) {
-						_imageCache.remove(i);
+						Bitmap b = _imageCache.remove(i);
+						if (b==null)
+							Log.i("song","remove failed");
+						else {
+							Log.i("song","remove sucess "+i.hashCode());
+						}
 					}
+					Log.i("song","epub4");
 					for (EpubPageAddr a : needInCachePages) {
 						if (!_imageCache.containsKey(a)) {
 							Bitmap b;
@@ -142,15 +146,15 @@ public class EpubPageProvider {
 							_imageCache.put(a, b);
 						}
 					}
+					Log.i("song","epub5");
 				}
 			}
 		});
 		Bitmap _bitmap;
 
+		Log.i("song","imagecache:"+local_index.hashCode());
 		if (_imageCache.get(local_index) != null) {
-			{
-				return _imageCache.get(local_index);
-			}
+			return _imageCache.get(local_index);
 		}
 		_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
 				.getDefaultDisplay().getWidth(), _activity.getWindowManager()

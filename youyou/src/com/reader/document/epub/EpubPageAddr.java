@@ -1,12 +1,13 @@
 package com.reader.document.epub;
 
+import android.util.Log;
+
 
 public class EpubPageAddr{
 	int _chapter_index;
 	int _page_index;
 	EpubDocument _epub;
 	public EpubPageAddr(EpubDocument d) {
-		// TODO Auto-generated constructor stub
 		_epub = d;
 	}
 	EpubPageAddr next() {
@@ -18,6 +19,11 @@ public class EpubPageAddr{
 	}
 
 
+	@Override
+	public boolean equals(Object o) {
+		Log.i("song","equals");
+		return this.hashCode() == o.hashCode();
+	}
 	@Override
 	public int hashCode() {
 		return _chapter_index<<16+_page_index;
