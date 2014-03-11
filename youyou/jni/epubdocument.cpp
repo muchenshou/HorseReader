@@ -64,6 +64,27 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_pageCount(
 	return epub.getPageCount();
 }
 
+static LVImageSourceRef _currentImage; //bg
+
+/*
+ * Class:     com_reader_document_txt_TxtDocument
+ * Method:    setBg
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_setBg(
+		JNIEnv *_env, jobject self, jbyteArray jdata) {
+	CRJNIEnv env(_env);
+	LVImageSourceRef img;
+	if (jdata != NULL) {
+		LVStreamRef stream = env.jbyteArrayToStream(jdata);
+		if (!stream.isNull()) {
+			img = LVCreateStreamImageSource(stream);
+		}
+	}
+	_currentImage = img;
+	return 0;
+}
+
 /*
  * Class:     com_reader_document_epub_EpubDocument
  * Method:    loadDocument
@@ -97,6 +118,10 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 			bitmap);
 	if (drawbuf != NULL) {
 		drawbuf->FillRect(0, 0, epub.getWidth(), epub.getHeight(), 0x00ffeeee);
+		if (_currentImage.get() != NULL) {
+			drawbuf->Draw(_currentImage, 0, 0, epub.getWidth(),
+					epub.getHeight());
+		}
 		drawbuf->SetTextColor(0x00000000);
 		//		txt_book->drawPage(drawbuf, index);
 		epub.Draw(*drawbuf, addr.chapterIndex(),addr.pageIndex());

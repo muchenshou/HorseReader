@@ -30,7 +30,13 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_loadDocument
  */
 JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
   (JNIEnv *, jobject, jobject, jobject);
-
+/*
+ * Class:     com_reader_document_txt_EpubDocument
+ * Method:    setBg
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_setBg
+  (JNIEnv *, jobject, jbyteArray);
 /*
  * Class:     com_reader_document_epub_EpubDocument
  * Method:    nextPageAddr

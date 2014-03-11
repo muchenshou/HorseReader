@@ -959,7 +959,7 @@ public:
 	}
 };
 LVRef<TxtBook> txt_book;
-LVImageSourceRef _currentImage; //bg
+static LVImageSourceRef _currentImage; //bg
 
 /*
  * Class:     com_reader_document_txt_TxtDocument
