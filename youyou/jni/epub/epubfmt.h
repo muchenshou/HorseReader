@@ -126,8 +126,7 @@ public:
 				+ mDocumentPages.back().m_pages.length();
 	}
 	/// render (format) document
-	void Render(int dx = 0, int dy = 0, ldomDocument *m_doc = NULL,
-			LVRendPageList * pages = NULL);
+	void Render(int dx = 0, int dy = 0);
 	void loadDocument(LVStreamRef stream);
 	inline int getWidth() {
 		return m_dx;

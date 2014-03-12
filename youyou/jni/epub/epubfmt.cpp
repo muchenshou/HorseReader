@@ -1017,9 +1017,6 @@ EpubDocument::EpubDocument() {
 void EpubDocument::setRenderProps(int dx, int dy) {
 //	if (!m_doc || m_doc->getRootNode() == NULL)
 	//	return;
-	m_dx = dx;
-	m_dy = dy;
-	updateLayout();
 
 	if (dx == 0)
 		dx = m_pageRects[0].width() - m_pageMargins.left - m_pageMargins.right;
@@ -1260,47 +1257,41 @@ void EpubDocument::drawPageTo(LVDrawBuf * drawbuf, ldomDocument * m_doc,
 	m_font->DrawTextString(drawbuf, 5, 0 , pagenum.c_str(), pagenum.length(), '?', NULL, false); //drawbuf->GetHeight()-m_font->getHeight()
 #endif
 }
-void EpubDocument::Render(int dx, int dy, ldomDocument *m_doc,
-		LVRendPageList * pages) {
+void EpubDocument::Render(int dx, int dy) {
+	ldomDocument *doc;
+	LVRendPageList * pages;
+	m_dx = dx;
+	m_dy = dy;
+	updateLayout();
+	m_pageMargins.left = 25;
+	m_pageMargins.right = 25;
+	m_pageMargins.top = 50;
+	m_pageMargins.bottom = 50;
+	int tdx = dx - 50;
+	int tdy = dy - 100;
+	setRenderProps(dx, dy);
 
 	LVLock lock(getMutex());
 	{
-
 		int count = 0;
 		DocPagesContainer::iterator it;
 		for (it = mDocumentPages.begin(); it != mDocumentPages.end(); it++) {
-			CRLog::debug("song epub render1");
 			DocumentPage &p = *it;
 			p.start = count;
-				m_doc = p.m_doc;
-				pages = &p.m_pages;
-			CRLog::debug("song epub render11");
-			if (!m_doc || m_doc->getRootNode() == NULL)
+			doc = p.m_doc;
+			pages = &p.m_pages;
+			if (!doc || doc->getRootNode() == NULL)
 				return;
-			CRLog::debug("song epub render2");
-
-			if (dx == 0)
-				dx = m_pageRects[0].width() - m_pageMargins.left
-						- m_pageMargins.right;
-			if (dy == 0)
-				dy = m_pageRects[0].height() - m_pageMargins.top
-						- m_pageMargins.bottom;
-			CRLog::debug("song epub render3 %d %d", dx, dy);
-			setRenderProps(dx, dy);
-			CRLog::debug("song epub render4");
 
 			if (pages == NULL)
 				pages = &mDocumentPages[0].m_pages;
-			CRLog::debug("song epub render5");
 			if (!m_font)
 				return;
-			CRLog::debug("song epub render6");
-			CRLog::debug("Render(width=%d, height=%d, fontSize=%d)", dx, dy,
+			CRLog::debug("Render(width=%d, height=%d, fontSize=%d)", tdx, tdy,
 					m_font_size);
 			//CRLog::trace("calling render() for document %08X font=%08X", (unsigned int)m_doc, (unsigned int)m_font.get() );
-			m_doc->render(pages, NULL, dx, dy, false, 0, m_font,
+			doc->render(pages, NULL, tdx, tdy, false, 0, m_font,
 					m_def_interline_space, m_props);
-			CRLog::trace("song render pages %d", pages->length());
 			count += pages->length();
 #if 0
 			FILE * f = fopen("/sdcard/pagelist.log", "wt");
@@ -1593,10 +1584,10 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 
 			writer.OnTagClose(L"", L"body");
 			writer.OnStop();
-			char xml_name[256];
-			sprintf(xml_name, "/sdcard//epub_dump%d.xml", i);
-			page.m_doc->saveToStream(LVOpenFileStream(xml_name, LVOM_WRITE),
-					NULL, true);
+//			char xml_name[256];
+//			sprintf(xml_name, "/sdcard//epub_dump%d.xml", i);
+//			page.m_doc->saveToStream(LVOpenFileStream(xml_name, LVOM_WRITE),
+//					NULL, true);
 			mDocumentPages.push_back(page);
 		}
 	}

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.os.Handler;
@@ -85,36 +86,36 @@ public class EpubPageProvider {
 	public Bitmap getPage(final EpubPageAddr index) {
 		final EpubPageAddr local_index = index;// >= getPageCount() ?
 												// getPageCount()-1:index;
-
 		_handle.post(new Runnable() {
 
 			@Override
 			public void run() {
 				synchronized (_imageCache) {
-
+					Log.i("song","epub1:"+local_index);
 					savePageIndexHistory();
-					Log.i("song", "thread id " + Thread.currentThread().getId());
 					System.gc();
 					Set<EpubPageAddr> needInCachePages = new HashSet<EpubPageAddr>();
 					needInCachePages.add(local_index);
 					final int count = 5;
 					EpubPageAddr pre = local_index.pre();
+					
 					for (int i = 0; i < count / 2; i++) {
 						needInCachePages.add(pre);
 						pre = pre.pre();
 					}
+					Log.i("song","epub2:"+pre.toString());
 					EpubPageAddr next = local_index.next();
 					for (int i = 0; i < count / 2; i++) {
 						needInCachePages.add(next);
 						next = next.next();
 					}
-					Log.i("song","epub1");
+					Log.i("song",next.toString());
 					Set<EpubPageAddr> remove_pages = new HashSet<EpubPageAddr>();
 
 					Set<Entry<EpubPageAddr, Bitmap>> set = _imageCache
 							.entrySet();
-					Log.i("song","epub2");
 					Iterator<Entry<EpubPageAddr, Bitmap>> iter = set.iterator();
+					Log.i("song","epub3");
 					while (iter.hasNext()) {
 						Entry<EpubPageAddr, Bitmap> entry = iter.next();
 						EpubPageAddr key = entry.getKey();
@@ -124,16 +125,16 @@ public class EpubPageProvider {
 							remove_pages.add(key);
 						}
 					}
-					Log.i("song","epub3");
+					Log.i("song","epub4");
 					for (EpubPageAddr i : remove_pages) {
 						Bitmap b = _imageCache.remove(i);
-						if (b==null)
-							Log.i("song","remove failed");
-						else {
-							Log.i("song","remove sucess "+i.hashCode());
+						if (b == null) {
+							Log.i("song","remove fail");
+						} else {
+							Log.i("song", "remove ok");
 						}
 					}
-					Log.i("song","epub4");
+					Log.i("song","epub5");
 					for (EpubPageAddr a : needInCachePages) {
 						if (!_imageCache.containsKey(a)) {
 							Bitmap b;
@@ -146,16 +147,15 @@ public class EpubPageProvider {
 							_imageCache.put(a, b);
 						}
 					}
-					Log.i("song","epub5");
 				}
 			}
 		});
 		Bitmap _bitmap;
-
-		Log.i("song","imagecache:"+local_index.hashCode());
+		Log.i("song", "_bitmap:"+local_index._chapter_index +":"+local_index._page_index);
 		if (_imageCache.get(local_index) != null) {
 			return _imageCache.get(local_index);
 		}
+		Log.i("song","ddddd");
 		_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
 				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
 				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
@@ -165,26 +165,30 @@ public class EpubPageProvider {
 	}
 
 	public int getPageCount() {
-		Log.i("song", "getpagecount:" + _epubDocument.pageCount());
 		return _epubDocument.pageCount();
 	}
 
 	EpubPageAddr getPageIndexHistory() {
-		SharedPreferences sp = _activity.getSharedPreferences("txt_history",
+		SharedPreferences sp = _activity.getSharedPreferences("epub_history",
 				Activity.MODE_PRIVATE);
-		String s = sp.getString("epub", "0");
+		int v = sp.getInt(_path, 0);
 		EpubPageAddr addr = new EpubPageAddr(_epubDocument);
+		addr._chapter_index = v >> 16;
+		addr._page_index = 0x0000FFFF & v;
 		addr._chapter_index = 0;
 		addr._page_index = 0;
 		return addr;
 	}
 
 	void savePageIndexHistory() {
-		// SharedPreferences sp = _activity.getSharedPreferences("txt_history",
-		// Activity.MODE_PRIVATE);
-		// Editor e = sp.edit();
-		// e.putString("epub",""+_txtView._pageindex);
-		// e.commit();
+//		SharedPreferences sp = _activity.getSharedPreferences("epub_history",
+//				Activity.MODE_PRIVATE);
+//		Editor e = sp.edit();
+//		e.putInt(
+//				_path,
+//				_txtView._pageindex._chapter_index << 16 + _txtView._pageindex._page_index);
+//		;
+//		e.commit();
 	}
 
 	public byte[] loadResourceBytes(int id) {

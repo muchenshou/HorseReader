@@ -21,12 +21,16 @@ public class EpubPageAddr{
 
 	@Override
 	public boolean equals(Object o) {
-		Log.i("song","equals");
+		Log.i("song","hashcode"+hashCode()+":"+o.hashCode());
 		return this.hashCode() == o.hashCode();
 	}
 	@Override
 	public int hashCode() {
 		return _chapter_index<<16+_page_index;
+	}
+	@Override
+	public String toString() {
+		return "chapter index:"+_chapter_index + "page index:"+_page_index;
 	}
 	
 }
