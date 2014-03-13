@@ -17,7 +17,7 @@ void testEpub(LVStreamRef stream, LVDrawBuf& drawbuf);
 
 extern lString16 mergeCssMacros(CRPropRef props);
 extern lString8 substituteCssMacros(lString8 src, CRPropRef props);
-class EpubItem :public LVRefCounter{
+class EpubItem {
 public:
 	lString16 href;
 	lString16 mediaType;
@@ -35,14 +35,13 @@ public:
 		return *this;
 	}
 };
-typedef LVFastRef<EpubItem> EpubItemRef;
 struct EpubChapterPages:public LVRefCounter {
 	EpubChapterPages():m_doc (NULL),start(0){
 
 	}
 	LVRendPageList m_pages;
 	ldomDocument *m_doc;
-	EpubItemRef item;
+	EpubItem item;
 	int start;
 };
 typedef LVFastRef<EpubChapterPages> EpubChapterPagesRef;

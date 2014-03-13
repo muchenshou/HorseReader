@@ -4,14 +4,14 @@
 #include "lvrend.h"
 #include "lvpagesplitter.h"
 
-class EpubItems: public LVArray<EpubItemRef> {
+class EpubItems: public LVPtrVector<EpubItem> {
 public:
 	EpubItem * findById(const lString16 & id) {
 		if (id.empty())
 			return NULL;
 		for (int i = 0; i < length(); i++)
 			if (get(i)->id == id)
-				return get(i).get();
+				return get(i);
 		return NULL;
 	}
 };
@@ -782,7 +782,7 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument * m_doc,
 						}
 					}
 				}
-				EpubItemRef epubItem ( new EpubItem);
+				EpubItem* epubItem = new EpubItem;
 				epubItem->href = href;
 				epubItem->id = id;
 				epubItem->mediaType = mediaType;
@@ -1300,6 +1300,7 @@ void EpubDocument::Render(int dx, int dy,EpubChapterPagesRef* chapterPages) {
 
 }
 void EpubDocument::loadChapter(EpubChapterPagesRef page) {
+	getMutex().lock();
 	LVEmbeddedFontList fontList;
 	EmbeddedFontStyleParser styleParser(fontList);
 	CRLog::debug("loadChapter 1");
@@ -1318,8 +1319,7 @@ void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 	writer.OnStart(NULL);
 	CRLog::debug("loadChapter 5");
 	writer.OnTagOpenNoAttr(L"", L"body");
-	CRLog::debug("loadChapter 6 %s",UnicodeToUtf8((page->item.get()->href)).c_str());
-	lString16 name = codeBase + (page->item->href);
+	lString16 name = codeBase + (page->item.href);
 	CRLog::debug("loadChapter 7 %s",LCSTR(name));
 	{
 		CRLog::debug("Checking fragment: %s", LCSTR(name));
@@ -1328,10 +1328,12 @@ void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 			appender.setCodeBase(name);
 			lString16 base = name;
 			LVExtractLastPathElement(base);
-			//CRLog::trace("base: %s", LCSTR(base));
+			CRLog::trace("base: %s", LCSTR(base));
 			//LVXMLParser
 			LVHTMLParser parser(stream, &appender);
+			CRLog::debug("loadChapter 8");
 			if (parser.CheckFormat() && parser.Parse()) {
+				CRLog::debug("loadChapter 9");
 				// valid
 				//fragmentCount++;
 				lString8 headCss = appender.getHeadStyleText();
@@ -1363,6 +1365,7 @@ void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 
 	writer.OnTagClose(L"", L"body");
 	writer.OnStop();
+	getMutex().unlock();
 	//			char xml_name[256];
 	//			sprintf(xml_name, "/sdcard//epub_dump%d.xml", i);
 	//			page.m_doc->saveToStream(LVOpenFileStream(xml_name, LVOM_WRITE),
@@ -1401,6 +1404,7 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 	LVArray<EpubItem*> spineItems;
 	LVEmbeddedFontList fontList;
 	EmbeddedFontStyleParser styleParser(fontList);
+
 	//lString16 css;
 
 	//
@@ -1501,7 +1505,7 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 						}
 					}
 				}
-				EpubItemRef epubItem( new EpubItem);
+				EpubItem* epubItem = new EpubItem;
 				epubItem->href = href;
 				epubItem->id = id;
 				epubItem->mediaType = mediaType;
@@ -1587,7 +1591,7 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 		if (spineItems[i]->mediaType == "application/xhtml+xml") {
 			EpubChapterPagesRef page(new EpubChapterPages);
 
-			page->item = spineItems[i];
+			page->item = *spineItems[i];
 //			page->item = new EpubItem;
 //			page->item->href = spineItems[i]->href;
 //			page->item->id = spineItems[i]->id;

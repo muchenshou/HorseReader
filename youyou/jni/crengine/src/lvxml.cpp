@@ -2712,7 +2712,7 @@ bool LVXMLParser::CheckFormat()
 bool LVXMLParser::Parse()
 {
     //
-    //CRLog::trace("LVXMLParser::Parse()");
+    CRLog::trace("LVXMLParser::Parse()");
     Reset();
 //    bool dumpActive = false;
 //    int txt_count = 0;
@@ -2932,7 +2932,7 @@ bool LVXMLParser::Parse()
             }
         }
     }
-    //CRLog::trace("LVXMLParser::Parse() is finished, m_stopped=%s", m_stopped?"true":"false");
+    CRLog::trace("LVXMLParser::Parse() is finished, m_stopped=%s", m_stopped?"true":"false");
     m_callback->OnStop();
     return !errorFlag;
 }
@@ -3637,7 +3637,7 @@ bool LVHTMLParser::CheckFormat()
     }
     delete[] chbuf;
     Reset();
-    //CRLog::trace("LVXMLParser::CheckFormat() finished");
+    CRLog::trace("LVXMLParser::CheckFormat() finished");
     return res;
 }
 

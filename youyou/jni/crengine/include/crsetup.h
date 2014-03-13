@@ -53,7 +53,7 @@
 #ifndef LDOM_USE_OWN_MEM_MAN
 #define LDOM_USE_OWN_MEM_MAN                 1
 #endif
-#define CR_USE_THREADS                       0
+#define CR_USE_THREADS                       1
 #define USE_LIBJPEG                          1
 #define USE_LIBPNG                           1
 #define USE_GIF                              1
