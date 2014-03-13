@@ -84,7 +84,8 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_setBg(
 	_currentImage = img;
 	return 0;
 }
-
+int g_dw;
+int g_dh;
 /*
  * Class:     com_reader_document_epub_EpubDocument
  * Method:    loadDocument
@@ -97,7 +98,9 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_loadDocument(
 	LVStreamRef stream = LVOpenFileStream(path.c_str(), LVOM_READ);
 
 	epub.loadDocument(stream);
-	epub.Render(w,h);
+//	epub.Render(w,h);
+	g_dw = w;
+	g_dh = h;
 	return 0;
 }
 
@@ -114,6 +117,10 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 	SET_ENV(e);
 	C_EpubAddr addr(jEpubAddr);
 	CRJNIEnv env(e);
+	CRLog::debug("song getpage1");
+	EpubChapterPagesRef &chapters =epub.mDocumentPages[addr.chapterIndex()];
+	epub.loadChapter(chapters);
+	epub.Render(g_dw,g_dh,&chapters);
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(e,
 			bitmap);
 	if (drawbuf != NULL) {
@@ -142,10 +149,15 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAdd
   (JNIEnv *e, jobject self, jobject jCur) {
 	SET_ENV(e);
 	C_EpubAddr c_cur(jCur);
+	CRLog::debug("song nextPageAddr");
 	jobject jNext = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_next(jNext);
-	DocumentPage &p = epub.mDocumentPages[c_cur.chapterIndex()];
-	if (c_cur.pageIndex() < p.m_pages.length()-1) {
+
+	EpubChapterPagesRef &p = epub.mDocumentPages[c_cur.chapterIndex()];
+	epub.loadChapter(p);
+	epub.Render(g_dw,g_dh,&p);
+
+	if (c_cur.pageIndex() < p->m_pages.length()-1) {
 		c_next.setChapterIndex(c_cur.chapterIndex());
 		c_next.setPageIndex(c_cur.pageIndex()+1);
 	} else {
@@ -170,16 +182,22 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_prevPageAdd
 {
 	SET_ENV(env);
 	C_EpubAddr c_cur(jCur);
+	CRLog::debug("song prePageAddr");
 	jobject jPre = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_pre(jPre);
-	DocumentPage &p = epub.mDocumentPages[c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0];
+	EpubChapterPagesRef &p = epub.mDocumentPages[c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0];
+	CRLog::debug("song prePageAddr1");
+		epub.loadChapter(p);
+		CRLog::debug("song prePageAddr2");
+		epub.Render(g_dw,g_dh,&p);
+		CRLog::debug("song prePageAddr3");
 	if (c_cur.pageIndex() > 0) {
 		c_pre.setChapterIndex(c_cur.chapterIndex());
 		c_pre.setPageIndex(c_cur.pageIndex()-1);
 	} else {
 		if ((c_cur.chapterIndex()) > 0) {
 			c_pre.setChapterIndex(c_cur.chapterIndex()-1);
-			c_pre.setPageIndex(p.m_pages.length()-1);
+			c_pre.setPageIndex(p->m_pages.length()-1);
 		} else {
 			c_pre.setChapterIndex(0);
 			c_pre.setPageIndex(0);

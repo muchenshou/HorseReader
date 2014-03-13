@@ -13,9 +13,7 @@ public class EpubView extends PageView {
 	public EpubView(Context context, EpubPageProvider provider) {
 		super(context);
 		_provider = provider;
-		_pageindex = new EpubPageAddr(_provider._epubDocument);
-		_pageindex._chapter_index = 0;
-		_pageindex._page_index = 0;
+		_pageindex = provider.getPageIndexHistory(); 
 	}
 
 	public void setBitmap(Bitmap b[]) {
