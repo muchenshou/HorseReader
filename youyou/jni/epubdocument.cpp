@@ -142,7 +142,6 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAdd
   (JNIEnv *e, jobject self, jobject jCur) {
 	SET_ENV(e);
 	C_EpubAddr c_cur(jCur);
-	CRLog::debug("nextPageAddr %d %d",c_cur.chapterIndex(), c_cur.pageIndex());
 	jobject jNext = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_next(jNext);
 	DocumentPage &p = epub.mDocumentPages[c_cur.chapterIndex()];
@@ -173,13 +172,12 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_prevPageAdd
 	C_EpubAddr c_cur(jCur);
 	jobject jPre = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_pre(jPre);
-	CRLog::debug("prePageAddr %d %d",c_cur.chapterIndex(), c_cur.pageIndex());
-	DocumentPage &p = epub.mDocumentPages[c_cur.chapterIndex()-1>0?c_cur.chapterIndex()-1:0];
+	DocumentPage &p = epub.mDocumentPages[c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0];
 	if (c_cur.pageIndex() > 0) {
 		c_pre.setChapterIndex(c_cur.chapterIndex());
 		c_pre.setPageIndex(c_cur.pageIndex()-1);
 	} else {
-		if ((c_cur.chapterIndex()-1) > 0) {
+		if ((c_cur.chapterIndex()) > 0) {
 			c_pre.setChapterIndex(c_cur.chapterIndex()-1);
 			c_pre.setPageIndex(p.m_pages.length()-1);
 		} else {

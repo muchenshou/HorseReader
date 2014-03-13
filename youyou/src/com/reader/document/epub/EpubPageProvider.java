@@ -73,7 +73,7 @@ public class EpubPageProvider {
 		// /_txtDocument.getPage(1, g_bitmap);
 		// _txtDocument.getPage(2, g_bitmap);
 		// g_bitmap = getPage(0);
-		EpubPageAddr addr = new EpubPageAddr(_epubDocument);
+		EpubPageAddr addr = getPageIndexHistory();
 		_txtView.setBitmap(new Bitmap[] { getPage(addr), getPage(addr),
 				getPage(addr) });
 		_txtView.invalidate();
@@ -91,7 +91,6 @@ public class EpubPageProvider {
 			@Override
 			public void run() {
 				synchronized (_imageCache) {
-					Log.i("song","epub1:"+local_index);
 					savePageIndexHistory();
 					System.gc();
 					Set<EpubPageAddr> needInCachePages = new HashSet<EpubPageAddr>();
@@ -103,38 +102,35 @@ public class EpubPageProvider {
 						needInCachePages.add(pre);
 						pre = pre.pre();
 					}
-					Log.i("song","epub2:"+pre.toString());
+					
 					EpubPageAddr next = local_index.next();
 					for (int i = 0; i < count / 2; i++) {
 						needInCachePages.add(next);
 						next = next.next();
 					}
-					Log.i("song",next.toString());
+					
+					for(EpubPageAddr e:needInCachePages) {
+						Log.i("song","needInCachePages:"+e.toString());
+					}
 					Set<EpubPageAddr> remove_pages = new HashSet<EpubPageAddr>();
 
 					Set<Entry<EpubPageAddr, Bitmap>> set = _imageCache
 							.entrySet();
 					Iterator<Entry<EpubPageAddr, Bitmap>> iter = set.iterator();
-					Log.i("song","epub3");
 					while (iter.hasNext()) {
 						Entry<EpubPageAddr, Bitmap> entry = iter.next();
 						EpubPageAddr key = entry.getKey();
 						Bitmap value = entry.getValue();
 						if (!needInCachePages.contains(key)) {
+							Log.i("song","imagecache recycle:"+key.toString());
 							value.recycle();
 							remove_pages.add(key);
 						}
 					}
-					Log.i("song","epub4");
 					for (EpubPageAddr i : remove_pages) {
-						Bitmap b = _imageCache.remove(i);
-						if (b == null) {
-							Log.i("song","remove fail");
-						} else {
-							Log.i("song", "remove ok");
-						}
+						Log.i("song","imagecache remove:"+i.toString());
+						_imageCache.remove(i);
 					}
-					Log.i("song","epub5");
 					for (EpubPageAddr a : needInCachePages) {
 						if (!_imageCache.containsKey(a)) {
 							Bitmap b;
@@ -151,11 +147,9 @@ public class EpubPageProvider {
 			}
 		});
 		Bitmap _bitmap;
-		Log.i("song", "_bitmap:"+local_index._chapter_index +":"+local_index._page_index);
 		if (_imageCache.get(local_index) != null) {
 			return _imageCache.get(local_index);
 		}
-		Log.i("song","ddddd");
 		_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
 				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
 				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
@@ -175,20 +169,18 @@ public class EpubPageProvider {
 		EpubPageAddr addr = new EpubPageAddr(_epubDocument);
 		addr._chapter_index = v >> 16;
 		addr._page_index = 0x0000FFFF & v;
-		addr._chapter_index = 0;
-		addr._page_index = 0;
 		return addr;
 	}
 
 	void savePageIndexHistory() {
-//		SharedPreferences sp = _activity.getSharedPreferences("epub_history",
-//				Activity.MODE_PRIVATE);
-//		Editor e = sp.edit();
-//		e.putInt(
-//				_path,
-//				_txtView._pageindex._chapter_index << 16 + _txtView._pageindex._page_index);
-//		;
-//		e.commit();
+		SharedPreferences sp = _activity.getSharedPreferences("epub_history",
+				Activity.MODE_PRIVATE);
+		Editor e = sp.edit();
+		e.putInt(
+				_path,
+				_txtView._pageindex._chapter_index << 16 + _txtView._pageindex._page_index);
+		;
+		e.commit();
 	}
 
 	public byte[] loadResourceBytes(int id) {

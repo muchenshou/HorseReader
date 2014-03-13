@@ -1,12 +1,10 @@
 package com.reader.document.epub;
 
-import com.reader.view.PageView;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.view.View;
+import android.util.Log;
+
+import com.reader.view.PageView;
 
 public class EpubView extends PageView {
 	EpubPageProvider _provider;
@@ -38,7 +36,7 @@ public class EpubView extends PageView {
 		} else {
 			_pageindex = _pageindex.pre();
 		}
-		
+		Log.i("song","endAnimation:"+"pre:"+_pageindex.pre().toString() + "cur:"+_pageindex.toString()+"next:"+_pageindex.next().toString());
 		this._animationView.setBitmapArray(new Bitmap[] {
 				_provider.getPage(_pageindex.pre()),
 				_provider.getPage(_pageindex),
