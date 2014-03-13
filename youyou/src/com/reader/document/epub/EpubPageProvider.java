@@ -66,22 +66,13 @@ public class EpubPageProvider {
 		_epubDocument.setBg(loadResourceBytes(R.drawable.bg1));
 		_activity.setContentView(_txtView);
 
-		g_bitmap = Bitmap.createBitmap(_activity.getWindowManager()
-				.getDefaultDisplay().getWidth(), _activity.getWindowManager()
-				.getDefaultDisplay().getHeight(), Config.ARGB_8888);
-		_epubDocument.getPage(getPageIndexHistory(), g_bitmap);
-		// /_txtDocument.getPage(1, g_bitmap);
-		// _txtDocument.getPage(2, g_bitmap);
-		// g_bitmap = getPage(0);
 		EpubPageAddr addr = getPageIndexHistory();
-		_txtView.setBitmap(new Bitmap[] { getPage(addr), getPage(addr),
-				getPage(addr) });
+		_txtView.setBitmap(new Bitmap[] { getPage(addr.pre()), getPage(addr),
+				getPage(addr.next()) });
 		_txtView.invalidate();
 		return true;
 	}
 
-	Bitmap g_bitmap;
-	int a = 0;
 
 	public Bitmap getPage(final EpubPageAddr index) {
 		final EpubPageAddr local_index = index;// >= getPageCount() ?
@@ -109,9 +100,6 @@ public class EpubPageProvider {
 						next = next.next();
 					}
 					
-					for(EpubPageAddr e:needInCachePages) {
-						Log.i("song","needInCachePages:"+e.toString());
-					}
 					Set<EpubPageAddr> remove_pages = new HashSet<EpubPageAddr>();
 
 					Set<Entry<EpubPageAddr, Bitmap>> set = _imageCache
@@ -122,13 +110,11 @@ public class EpubPageProvider {
 						EpubPageAddr key = entry.getKey();
 						Bitmap value = entry.getValue();
 						if (!needInCachePages.contains(key)) {
-							Log.i("song","imagecache recycle:"+key.toString());
 							value.recycle();
 							remove_pages.add(key);
 						}
 					}
 					for (EpubPageAddr i : remove_pages) {
-						Log.i("song","imagecache remove:"+i.toString());
 						_imageCache.remove(i);
 					}
 					for (EpubPageAddr a : needInCachePages) {
@@ -178,8 +164,7 @@ public class EpubPageProvider {
 		Editor e = sp.edit();
 		e.putInt(
 				_path,
-				_txtView._pageindex._chapter_index << 16 + _txtView._pageindex._page_index);
-		;
+				(_txtView._pageindex._chapter_index << 16) + _txtView._pageindex._page_index);
 		e.commit();
 	}
 
