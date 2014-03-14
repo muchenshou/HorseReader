@@ -13,7 +13,6 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument * m_doc,
 		CacheLoadingCallback * formatCallback);
 lString16 EpubGetRootFilePath(LVContainerRef m_arc);
 LVStreamRef GetEpubCoverpage(LVContainerRef arc);
-void testEpub(LVStreamRef stream, LVDrawBuf& drawbuf);
 
 extern lString16 mergeCssMacros(CRPropRef props);
 extern lString8 substituteCssMacros(lString8 src, CRPropRef props);
@@ -58,9 +57,9 @@ class EpubDocument {
 	//ldomDocument *m_doc;
 public:
 	typedef std::vector<EpubChapterPagesRef> EpubDocPagesContainer;
-	EpubDocPagesContainer mDocumentPages;
+
 protected:
-	LVMutex _mutex_song;
+	LVMutex _mutex;
 	lvRect m_pageRects[2];
 	lvRect m_pageMargins;
 	int m_dx;
@@ -81,11 +80,21 @@ protected:
 	ldomDocument *temp_unknowndoc;
 	lString16 ncxHref;
 	LVContainerRef m_arc;
+	EpubDocPagesContainer mDocumentPages;
 public:
 	EpubDocument();
 	/// return view mutex
 	LVMutex & getMutex() {
-		return _mutex_song;
+		return _mutex;
+	}
+	EpubChapterPagesRef& getChapterPages(int index) {
+		EpubChapterPagesRef& p = mDocumentPages[index];
+		loadChapter(p);
+		Render(m_dx, m_dy, &p);
+		return p;
+	}
+	inline int getChaptersCount() {
+		return mDocumentPages.size();
 	}
 	void updateLayout() {
 		lvRect rc(0, 0, m_dx, m_dy);
@@ -167,6 +176,10 @@ public:
 	}
 	inline int getHeight() {
 		return m_dy;
+	}
+	inline void setWidthHeight(int dx, int dy) {
+		m_dx = dx;
+		m_dy = dy;
 	}
 };
 #endif // EPUBFMT_H

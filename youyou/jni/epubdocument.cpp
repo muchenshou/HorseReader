@@ -84,8 +84,6 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_setBg(
 	_currentImage = img;
 	return 0;
 }
-int g_dw;
-int g_dh;
 /*
  * Class:     com_reader_document_epub_EpubDocument
  * Method:    loadDocument
@@ -98,9 +96,7 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_loadDocument(
 	LVStreamRef stream = LVOpenFileStream(path.c_str(), LVOM_READ);
 	epub = new EpubDocument;
 	epub->loadDocument(stream);
-//	epub.Render(w,h);
-	g_dw = w;
-	g_dh = h;
+	epub->setWidthHeight(w,h);
 	return 0;
 }
 
@@ -119,10 +115,10 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 	CRJNIEnv env(e);
 	CRLog::debug("song getPage 111");
 //	epub->getMutex().lock();
-	EpubChapterPagesRef &chapters =epub->mDocumentPages[addr.chapterIndex()];
+	EpubChapterPagesRef &chapters =epub->getChapterPages(addr.chapterIndex());
 
-	epub->loadChapter(chapters);
-	epub->Render(g_dw,g_dh,&chapters);
+//	epub->loadChapter(chapters);
+//	epub->Render(g_dw,g_dh,&chapters);
 //	epub->getMutex().unlock();
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(e,
 			bitmap);
@@ -155,16 +151,12 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAdd
 	CRLog::debug("song nextPageAddr");
 	jobject jNext = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_next(jNext);
-//	epub->getMutex().lock();
-	EpubChapterPagesRef &p = epub->mDocumentPages[c_cur.chapterIndex()];
-	epub->loadChapter(p);
-	epub->Render(g_dw,g_dh,&p);
-//	epub->getMutex().unlock();
+	EpubChapterPagesRef &p = epub->getChapterPages(c_cur.chapterIndex());
 	if (c_cur.pageIndex() < p->m_pages.length()-1) {
 		c_next.setChapterIndex(c_cur.chapterIndex());
 		c_next.setPageIndex(c_cur.pageIndex()+1);
 	} else {
-		if ((c_cur.chapterIndex()+1) < (int)epub->mDocumentPages.size()) {
+		if ((c_cur.chapterIndex()+1) < epub->getChaptersCount()) {
 			c_next.setChapterIndex(c_cur.chapterIndex()+1);
 			c_next.setPageIndex(0);
 		} else {
@@ -188,15 +180,7 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_prevPageAdd
 	CRLog::debug("song prePageAddr");
 	jobject jPre = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_pre(jPre);
-//	epub->getMutex().lock();
-	CRLog::debug("song prePageAddr 1");
-	EpubChapterPagesRef &p = epub->mDocumentPages[c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0];
-	epub->loadChapter(p);
-	CRLog::debug("song prePageAddr 2");
-	epub->Render(g_dw,g_dh,&p);
-	CRLog::debug("song prePageAddr 3");
-//	epub->getMutex().unlock();
-	CRLog::debug("song prePageAddr 4");
+	EpubChapterPagesRef &p = epub->getChapterPages(c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0);
 	if (c_cur.pageIndex() > 0) {
 		c_pre.setChapterIndex(c_cur.chapterIndex());
 		c_pre.setPageIndex(c_cur.pageIndex()-1);

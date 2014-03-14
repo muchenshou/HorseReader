@@ -1423,7 +1423,6 @@ void getPageBreakStyle( ldomNode * el, css_page_break_t &before, css_page_break_
 
 int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, int y, int width )
 {
-	CRLog::debug("song renderBlockElement 1");
     if ( enode->isElement() )
     {
         bool isFootNoteBody = false;

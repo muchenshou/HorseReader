@@ -1243,8 +1243,8 @@ void EpubDocument::Render(int dx, int dy, EpubChapterPagesRef* chapterPages) {
 	LVLock lock(getMutex());
 	ldomDocument *doc;
 	LVRendPageList * pages;
-	m_dx = dx;
-	m_dy = dy;
+//	m_dx = dx;
+//	m_dy = dy;
 	updateLayout();
 	m_pageMargins.left = 25;
 	m_pageMargins.right = 25;
@@ -1630,6 +1630,4 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 
 	return;
 
-}
-void testEpub(LVStreamRef stream, LVDrawBuf& drawbuf) {
 }
