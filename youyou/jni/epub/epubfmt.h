@@ -60,7 +60,7 @@ public:
 	typedef std::vector<EpubChapterPagesRef> EpubDocPagesContainer;
 	EpubDocPagesContainer mDocumentPages;
 protected:
-	LVMutex _mutex;
+	LVMutex _mutex_song;
 	lvRect m_pageRects[2];
 	lvRect m_pageMargins;
 	int m_dx;
@@ -85,7 +85,7 @@ public:
 	EpubDocument();
 	/// return view mutex
 	LVMutex & getMutex() {
-		return _mutex;
+		return _mutex_song;
 	}
 	void updateLayout() {
 		lvRect rc(0, 0, m_dx, m_dy);
@@ -146,15 +146,12 @@ public:
 			int basePage);
 
 	void Draw(LVDrawBuf & drawbuf, int chapterindex, int page) {
-		getMutex().lock();
+		LVLock lock(getMutex());
 		std::vector<EpubChapterPages>::iterator it;
 		EpubChapterPagesRef &p = mDocumentPages[chapterindex];
 		LVRendPageInfo *pageinfo = p->m_pages[page];
-		CRLog::debug("song epub Draw2");
 		drawPageTo(&drawbuf, p->m_doc, *pageinfo, &m_pageRects[0],
 				p->m_pages.length(), 1);
-		CRLog::debug("song epub Draw3");
-		getMutex().unlock();
 		return;
 	}
 	int getPageCount() {

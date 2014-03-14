@@ -9,7 +9,7 @@ public class EpubDocument {
 //		return 0;
 //	}
 	public synchronized native int getPage(EpubPageAddr curPageAddr,Bitmap b);
-	public native EpubPageAddr nextPageAddr(EpubPageAddr curPageAddr);
-	public native EpubPageAddr prevPageAddr(EpubPageAddr curPageAddr);
+	public synchronized native EpubPageAddr nextPageAddr(EpubPageAddr curPageAddr);
+	public synchronized native EpubPageAddr prevPageAddr(EpubPageAddr curPageAddr);
 	public synchronized native int setBg(byte[] imageBytes);
 }

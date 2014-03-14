@@ -1239,7 +1239,8 @@ void EpubDocument::drawPageTo(LVDrawBuf * drawbuf, ldomDocument * m_doc,
 	m_font->DrawTextString(drawbuf, 5, 0 , pagenum.c_str(), pagenum.length(), '?', NULL, false); //drawbuf->GetHeight()-m_font->getHeight()
 #endif
 }
-void EpubDocument::Render(int dx, int dy,EpubChapterPagesRef* chapterPages) {
+void EpubDocument::Render(int dx, int dy, EpubChapterPagesRef* chapterPages) {
+	LVLock lock(getMutex());
 	ldomDocument *doc;
 	LVRendPageList * pages;
 	m_dx = dx;
@@ -1252,60 +1253,45 @@ void EpubDocument::Render(int dx, int dy,EpubChapterPagesRef* chapterPages) {
 	int tdx = dx - 50;
 	int tdy = dy - 100;
 	setRenderProps(dx, dy);
-	LVLock lock(getMutex());
 	{
 		int count = 0;
-//		EpubDocPagesContainer::iterator it;
-//		for (it = mDocumentPages.begin(); it != mDocumentPages.end(); it++) {
-//			EpubChapterPagesRef &p = *it;
-			EpubChapterPagesRef &p = *chapterPages;
-//			if (p->bRender) {
-//				return;
-//			}
-			if (p->m_pages.length() != 0)
-				return;
-			p->start = count;
-			doc = p->m_doc;
-			pages = &(p->m_pages);
-			if (!doc || doc->getRootNode() == NULL)
-				return;
+		EpubChapterPagesRef &p = *chapterPages;
+		if (p->m_pages.length() != 0)
+			return;
+		p->start = count;
+		doc = p->m_doc;
+		pages = &(p->m_pages);
+		if (!doc || doc->getRootNode() == NULL)
+			return;
 
-			if (pages == NULL)
-				pages = &(mDocumentPages[0]->m_pages);
-			if (!m_font)
-				return;
-			CRLog::debug("Render(width=%d, height=%d, fontSize=%d)", tdx, tdy,
-					m_font_size);
-			//CRLog::trace("calling render() for document %08X font=%08X", (unsigned int)m_doc, (unsigned int)m_font.get() );
-			doc->render(pages, NULL, tdx, tdy, false, 0, m_font,
-					m_def_interline_space, m_props);
-			count += pages->length();
+		if (!m_font)
+			return;
+		CRLog::debug("Render(width=%d, height=%d, fontSize=%d)", tdx, tdy,
+				m_font_size);
+		//CRLog::trace("calling render() for document %08X font=%08X", (unsigned int)m_doc, (unsigned int)m_font.get() );
+		doc->render(pages, NULL, tdx, tdy, false, 0, m_font,
+				m_def_interline_space, m_props);
+		count += pages->length();
 #if 0
-			FILE * f = fopen("/sdcard/pagelist.log", "wt");
-			if (f) {
-				for (int i=0; i<m_pages.length(); i++)
-				{
-					fprintf(f, "%4d:   %7d .. %-7d [%d]\n", i, m_pages[i].start, m_pages[i].start+m_pages[i].height, m_pages[i].height);
-				}
-				fclose(f);
+		FILE * f = fopen("/sdcard/pagelist.log", "wt");
+		if (f) {
+			for (int i=0; i<m_pages.length(); i++)
+			{
+				fprintf(f, "%4d:   %7d .. %-7d [%d]\n", i, m_pages[i].start, m_pages[i].start+m_pages[i].height, m_pages[i].height);
 			}
+			fclose(f);
+		}
 #endif
-			fontMan->gc();
-			p->bRender = true;
-			//CRLog::debug("Making TOC...");
-			//makeToc();
-			CRLog::debug("Updating selections...");
-			//   		updateSelections();
-//		}
-
+		fontMan->gc();
+		p->bRender = true;
+		CRLog::debug("Updating selections...");
 	}
 
 }
 void EpubDocument::loadChapter(EpubChapterPagesRef page) {
-
+	LVLock lock(getMutex());
 	LVEmbeddedFontList fontList;
 	EmbeddedFontStyleParser styleParser(fontList);
-	LVLock lock(getMutex());
 	if (page->m_doc == NULL) {
 		page->m_doc = new ldomDocument();
 		page->m_doc->setDocFlags(temp_unknowndoc->getDocFlags());
@@ -1591,13 +1577,8 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 			EpubChapterPagesRef page(new EpubChapterPages);
 
 			page->item = *spineItems[i];
-//			page->item = new EpubItem;
-//			page->item->href = spineItems[i]->href;
-//			page->item->id = spineItems[i]->id;
-//			page->item->mediaType = spineItems[i]->mediaType;
-//			page->item->title = spineItems[i]->title;
 			mDocumentPages.push_back(page);
-//			fragmentCount++;
+			fragmentCount++;
 		}
 	}
 
@@ -1609,7 +1590,6 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 		temp_unknowndoc->registerEmbeddedFonts();
 		temp_unknowndoc->forceReinitStyles();
 	}
-	CRLog::debug("EPUB loadDocument return");
 //	temp_unknowndoc->saveToStream(LVOpenFileStream("/sdcard/epub_dump.xml", LVOM_WRITE),NULL,true);
 	if (fragmentCount == 0)
 		return;

@@ -1423,6 +1423,7 @@ void getPageBreakStyle( ldomNode * el, css_page_break_t &before, css_page_break_
 
 int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, int y, int width )
 {
+	CRLog::debug("song renderBlockElement 1");
     if ( enode->isElement() )
     {
         bool isFootNoteBody = false;
@@ -1452,7 +1453,6 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
         int padding_right = lengthToPx( enode->getStyle()->padding[1], width, em ) + DEBUG_TREE_DRAW;
         int padding_top = lengthToPx( enode->getStyle()->padding[2], width, em ) + DEBUG_TREE_DRAW;
         int padding_bottom = lengthToPx( enode->getStyle()->padding[3], width, em ) + DEBUG_TREE_DRAW;
-
         //margin_left += 50;
         //margin_right += 50;
 
@@ -1465,7 +1465,7 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
         int h = 0;
         LFormattedTextRef txform;
         {
-            //CRLog::trace("renderBlockElement - creating render accessor");
+            CRLog::trace("renderBlockElement - creating render accessor");
             RenderRectAccessor fmt( enode );
             fmt.setX( x );
             fmt.setY( y );
