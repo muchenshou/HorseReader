@@ -36,13 +36,21 @@ public:
 	}
 };
 struct EpubChapterPages:public LVRefCounter {
-	EpubChapterPages():m_doc (NULL),start(0){
+	EpubChapterPages():m_doc(NULL),start(0),bLoad(false),bRender(false){
 
 	}
 	LVRendPageList m_pages;
 	ldomDocument *m_doc;
-	EpubItem item;
 	int start;
+	bool bLoad;
+	bool bRender;
+	EpubItem item;
+	~EpubChapterPages() {
+		if (m_doc) {
+			delete m_doc;
+		}
+		m_doc = NULL;
+	}
 };
 typedef LVFastRef<EpubChapterPages> EpubChapterPagesRef;
 class EpubDocument {
@@ -67,7 +75,6 @@ protected:
 	CRPropRef m_doc_props;
 	int m_def_interline_space;
 	lString8 m_stylesheet;
-	bool m_is_rendered;
 	LVImageSourceRef m_defaultCover;
 	// loadchapter
 	lString16 codeBase;

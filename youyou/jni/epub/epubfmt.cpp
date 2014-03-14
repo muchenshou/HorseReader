@@ -993,8 +993,8 @@ EpubDocument::EpubDocument() {
 	m_defaultFontFace = lString8(DEFAULT_FONT_NAME);
 	m_props = LVCreatePropsContainer();
 	m_doc_props = LVCreatePropsContainer();
-	m_is_rendered = false;
 	m_def_interline_space = 100;
+	temp_unknowndoc = NULL;
 }
 void EpubDocument::setRenderProps(int dx, int dy) {
 //	if (!m_doc || m_doc->getRootNode() == NULL)
@@ -1252,7 +1252,6 @@ void EpubDocument::Render(int dx, int dy,EpubChapterPagesRef* chapterPages) {
 	int tdx = dx - 50;
 	int tdy = dy - 100;
 	setRenderProps(dx, dy);
-
 	LVLock lock(getMutex());
 	{
 		int count = 0;
@@ -1260,6 +1259,9 @@ void EpubDocument::Render(int dx, int dy,EpubChapterPagesRef* chapterPages) {
 //		for (it = mDocumentPages.begin(); it != mDocumentPages.end(); it++) {
 //			EpubChapterPagesRef &p = *it;
 			EpubChapterPagesRef &p = *chapterPages;
+//			if (p->bRender) {
+//				return;
+//			}
 			if (p->m_pages.length() != 0)
 				return;
 			p->start = count;
@@ -1289,7 +1291,7 @@ void EpubDocument::Render(int dx, int dy,EpubChapterPagesRef* chapterPages) {
 			}
 #endif
 			fontMan->gc();
-			m_is_rendered = true;
+			p->bRender = true;
 			//CRLog::debug("Making TOC...");
 			//makeToc();
 			CRLog::debug("Updating selections...");
@@ -1300,27 +1302,26 @@ void EpubDocument::Render(int dx, int dy,EpubChapterPagesRef* chapterPages) {
 
 }
 void EpubDocument::loadChapter(EpubChapterPagesRef page) {
-	getMutex().lock();
+
 	LVEmbeddedFontList fontList;
 	EmbeddedFontStyleParser styleParser(fontList);
-	CRLog::debug("loadChapter 1");
+	LVLock lock(getMutex());
 	if (page->m_doc == NULL) {
 		page->m_doc = new ldomDocument();
 		page->m_doc->setDocFlags(temp_unknowndoc->getDocFlags());
 		page->m_doc->setContainer(m_arc);
+		page->bLoad = false;
+		page->bRender =false;
 		page->m_pages.clear();
 	}
-	CRLog::debug("loadChapter 2 %d",page->m_doc);
+	if (page->bLoad)
+		return;
 	ldomDocumentWriter writer(page->m_doc);
-	CRLog::debug("loadChapter 3");
 	ldomDocumentFragmentWriter appender(&writer, cs16("body"),
 			cs16("DocFragment"), lString16::empty_str);
-	CRLog::debug("loadChapter 4");
 	writer.OnStart(NULL);
-	CRLog::debug("loadChapter 5");
 	writer.OnTagOpenNoAttr(L"", L"body");
 	lString16 name = codeBase + (page->item.href);
-	CRLog::debug("loadChapter 7 %s",LCSTR(name));
 	{
 		CRLog::debug("Checking fragment: %s", LCSTR(name));
 		LVStreamRef stream = m_arc->OpenStream(name.c_str(), LVOM_READ);
@@ -1331,9 +1332,7 @@ void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 			CRLog::trace("base: %s", LCSTR(base));
 			//LVXMLParser
 			LVHTMLParser parser(stream, &appender);
-			CRLog::debug("loadChapter 8");
 			if (parser.CheckFormat() && parser.Parse()) {
-				CRLog::debug("loadChapter 9");
 				// valid
 				//fragmentCount++;
 				lString8 headCss = appender.getHeadStyleText();
@@ -1365,7 +1364,7 @@ void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 
 	writer.OnTagClose(L"", L"body");
 	writer.OnStop();
-	getMutex().unlock();
+	page->bLoad = true;
 	//			char xml_name[256];
 	//			sprintf(xml_name, "/sdcard//epub_dump%d.xml", i);
 	//			page.m_doc->saveToStream(LVOpenFileStream(xml_name, LVOM_WRITE),
@@ -1611,6 +1610,7 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 		temp_unknowndoc->forceReinitStyles();
 	}
 	CRLog::debug("EPUB loadDocument return");
+//	temp_unknowndoc->saveToStream(LVOpenFileStream("/sdcard/epub_dump.xml", LVOM_WRITE),NULL,true);
 	if (fragmentCount == 0)
 		return;
 
