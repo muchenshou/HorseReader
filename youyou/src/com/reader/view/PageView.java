@@ -7,6 +7,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,16 +17,19 @@ import android.text.format.Time;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.reader.animation.AnimationView;
 import com.reader.animation.IAnimation;
 import com.reader.animation.SimpleAnimationView;
+import com.reader.util.BitmapUtil;
 
 public class PageView extends ViewGroup implements IAnimation{
 	protected AnimationView _animationView;
 	protected TextView _textView;
 	protected TextView _timeView;
+	protected ImageView _batteryview;
 	public int _pageindex = 0;
 	private Timer _timer;
 	private Handler _uihandler;
@@ -64,9 +70,15 @@ public class PageView extends ViewGroup implements IAnimation{
 		_timer = new Timer();
 		_timer.schedule(new TimeViewTimerTask(), 1000,2000);
 		
+		_batteryview = new ImageView(context);
+		Bitmap b = Bitmap.createBitmap(100, 50, Config.RGB_565);
+		BitmapUtil.DrawBatteryBitmap(b, 0, 0);
+		_batteryview.setImageBitmap(b);
+		
 		addView(_animationView);
 		addView(_textView);
 		addView(_timeView);
+		addView(_batteryview);
 	}
 
 	@Override
@@ -74,6 +86,7 @@ public class PageView extends ViewGroup implements IAnimation{
 		_animationView.layout(l, t, r, b);
 		_textView.layout(l,b-50, r, b);
 		_timeView.layout(l,b-50, r, b);
+		_batteryview.layout(l,b-50, r, b);
 	}
 
 	@Override
