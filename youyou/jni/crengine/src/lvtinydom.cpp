@@ -3335,7 +3335,7 @@ int ldomDocument::render( LVRendPageList * pages, LVDocViewCallback * callback, 
 
         CRLog::trace("init render method...");
         getRootNode()->initNodeRendMethodRecursive();
-
+        CRLog::trace("song updateRenderContext");
 //        getRootNode()->setFont( _def_font );
 //        getRootNode()->setStyle( _def_style );
         updateRenderContext();
@@ -3357,7 +3357,7 @@ int ldomDocument::render( LVRendPageList * pages, LVDocViewCallback * callback, 
         CRLog::info("Final block count: %d", numFinalBlocks);
         context.setCallback(callback, numFinalBlocks);
         //updateStyles();
-        CRLog::trace("rendering...");
+        CRLog::trace("rendering... %d",getRootNode());
         int height = renderBlockElement( context, getRootNode(),
             0, y0, width ) + y0;
         _rendered = true;

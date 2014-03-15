@@ -16,7 +16,7 @@
 #include "cssdef.h"
 #include "lvthread.h"
 #include "epubfmt.h"
-EpubDocument epub;
+LVAutoPtr<EpubDocument> epub;
 class C_EpubAddr {
 	jobject _java_obj;
 public:
@@ -61,7 +61,7 @@ public:
  */
 JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_pageCount(
 		JNIEnv *env, jobject self) {
-	return epub.getPageCount();
+	return epub->getPageCount();
 }
 
 static LVImageSourceRef _currentImage; //bg
@@ -84,8 +84,6 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_setBg(
 	_currentImage = img;
 	return 0;
 }
-int g_dw;
-int g_dh;
 /*
  * Class:     com_reader_document_epub_EpubDocument
  * Method:    loadDocument
@@ -96,11 +94,9 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_loadDocument(
 	CRJNIEnv env(e);
 	lString16 path = env.fromJavaString(bookPath);
 	LVStreamRef stream = LVOpenFileStream(path.c_str(), LVOM_READ);
-
-	epub.loadDocument(stream);
-//	epub.Render(w,h);
-	g_dw = w;
-	g_dh = h;
+	epub = new EpubDocument;
+	epub->loadDocument(stream);
+	epub->setWidthHeight(w,h);
 	return 0;
 }
 
@@ -117,22 +113,25 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 	SET_ENV(e);
 	C_EpubAddr addr(jEpubAddr);
 	CRJNIEnv env(e);
-	CRLog::debug("song getpage1");
-	EpubChapterPagesRef &chapters =epub.mDocumentPages[addr.chapterIndex()];
-	epub.loadChapter(chapters);
-	epub.Render(g_dw,g_dh,&chapters);
+	CRLog::debug("song getPage 111");
+//	epub->getMutex().lock();
+	EpubChapterPagesRef &chapters =epub->getChapterPages(addr.chapterIndex());
+
+//	epub->loadChapter(chapters);
+//	epub->Render(g_dw,g_dh,&chapters);
+//	epub->getMutex().unlock();
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(e,
 			bitmap);
 	if (drawbuf != NULL) {
-		drawbuf->FillRect(0, 0, epub.getWidth(), epub.getHeight(), 0x00ffeeee);
+		drawbuf->FillRect(0, 0, epub->getWidth(), epub->getHeight(), 0x00ffeeee);
 		if (_currentImage.get() != NULL) {
-			drawbuf->Draw(_currentImage, 0, 0, epub.getWidth(),
-					epub.getHeight());
+			drawbuf->Draw(_currentImage, 0, 0, epub->getWidth(),
+					epub->getHeight());
 		}
 		drawbuf->SetTextColor(0x00000000);
 		//		txt_book->drawPage(drawbuf, index);
-		CRLog::debug(" no no %d %d",addr.chapterIndex(),addr.pageIndex());
-		epub.Draw(*drawbuf, addr.chapterIndex(),addr.pageIndex());
+		CRLog::debug(" get chapter page no %d %d",addr.chapterIndex(),addr.pageIndex());
+		epub->Draw(*drawbuf, addr.chapterIndex(),addr.pageIndex());
 		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
 		BitmapAccessorInterface::getInstance()->unlock(e, bitmap, drawbuf);
 	} else {
@@ -152,16 +151,12 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAdd
 	CRLog::debug("song nextPageAddr");
 	jobject jNext = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_next(jNext);
-
-	EpubChapterPagesRef &p = epub.mDocumentPages[c_cur.chapterIndex()];
-	epub.loadChapter(p);
-	epub.Render(g_dw,g_dh,&p);
-
+	EpubChapterPagesRef &p = epub->getChapterPages(c_cur.chapterIndex());
 	if (c_cur.pageIndex() < p->m_pages.length()-1) {
 		c_next.setChapterIndex(c_cur.chapterIndex());
 		c_next.setPageIndex(c_cur.pageIndex()+1);
 	} else {
-		if ((c_cur.chapterIndex()+1) < (int)epub.mDocumentPages.size()) {
+		if ((c_cur.chapterIndex()+1) < epub->getChaptersCount()) {
 			c_next.setChapterIndex(c_cur.chapterIndex()+1);
 			c_next.setPageIndex(0);
 		} else {
@@ -185,12 +180,7 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_prevPageAdd
 	CRLog::debug("song prePageAddr");
 	jobject jPre = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_pre(jPre);
-	EpubChapterPagesRef &p = epub.mDocumentPages[c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0];
-	CRLog::debug("song prePageAddr1");
-		epub.loadChapter(p);
-		CRLog::debug("song prePageAddr2");
-		epub.Render(g_dw,g_dh,&p);
-		CRLog::debug("song prePageAddr3");
+	EpubChapterPagesRef &p = epub->getChapterPages(c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0);
 	if (c_cur.pageIndex() > 0) {
 		c_pre.setChapterIndex(c_cur.chapterIndex());
 		c_pre.setPageIndex(c_cur.pageIndex()-1);

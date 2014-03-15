@@ -1009,7 +1009,7 @@ public:
                         bool allow_hyphenation = true
                      )
     {
-        LVLock lock(_mutex);
+//        songfix LVLock lock(_mutex);
         if ( len <= 0 || _face==NULL )
             return 0;
         int error;

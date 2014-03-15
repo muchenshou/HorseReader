@@ -22,7 +22,7 @@
 
 #if defined(_LINUX)
 #include <pthread.h>
-
+#include "cr3java.h"
 class LVThread {
 private:
     pthread_t _thread;
@@ -75,7 +75,7 @@ private:
 public:
     LVMutex()
     {
-        _valid = ( pthread_mutex_init(&_mutex, NULL) !=0 );
+        _valid = ( pthread_mutex_init(&_mutex, NULL) ==0 );
     }
     ~LVMutex()
     {
@@ -84,8 +84,9 @@ public:
     }
     bool lock()
     {
-        if ( _valid )
+        if ( _valid ) {
             return (pthread_mutex_lock( &_mutex )==0);
+        }
         return false;
     }
     bool trylock()
@@ -96,8 +97,9 @@ public:
     }
     void unlock()
     {
-        if ( _valid )
+        if ( _valid ) {
             pthread_mutex_unlock( &_mutex );
+        }
     }
 };
 
@@ -245,23 +247,21 @@ class LVMutex {
 #endif
 
 class LVLock {
-        LVMutex &_mutex;
-        bool _locked;
-		LVLock & operator = (LVLock&) {
-			// no assignment
-            return *this;
-        }
-    public:
-        LVLock( LVMutex &mutex )
-        : _mutex(mutex)
-        {
-            _locked = _mutex.lock();
-        }
-        ~LVLock()
-        {
-            if ( _locked )
-                _mutex.unlock();
-        }
+	LVMutex &_mutex;
+	bool _locked;
+	LVLock & operator =(LVLock&) {
+		// no assignment
+		return *this;
+	}
+public:
+	LVLock(LVMutex &mutex) :
+			_mutex(mutex) {
+		_locked = _mutex.lock();
+	}
+	~LVLock() {
+		if (_locked)
+			_mutex.unlock();
+	}
 };
 
 

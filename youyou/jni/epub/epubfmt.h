@@ -13,7 +13,6 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument * m_doc,
 		CacheLoadingCallback * formatCallback);
 lString16 EpubGetRootFilePath(LVContainerRef m_arc);
 LVStreamRef GetEpubCoverpage(LVContainerRef arc);
-void testEpub(LVStreamRef stream, LVDrawBuf& drawbuf);
 
 extern lString16 mergeCssMacros(CRPropRef props);
 extern lString8 substituteCssMacros(lString8 src, CRPropRef props);
@@ -36,13 +35,21 @@ public:
 	}
 };
 struct EpubChapterPages:public LVRefCounter {
-	EpubChapterPages():m_doc (NULL),start(0){
+	EpubChapterPages():m_doc(NULL),start(0),bLoad(false),bRender(false){
 
 	}
 	LVRendPageList m_pages;
 	ldomDocument *m_doc;
-	EpubItem item;
 	int start;
+	bool bLoad;
+	bool bRender;
+	EpubItem item;
+	~EpubChapterPages() {
+		if (m_doc) {
+			delete m_doc;
+		}
+		m_doc = NULL;
+	}
 };
 typedef LVFastRef<EpubChapterPages> EpubChapterPagesRef;
 class EpubDocument {
@@ -50,7 +57,7 @@ class EpubDocument {
 	//ldomDocument *m_doc;
 public:
 	typedef std::vector<EpubChapterPagesRef> EpubDocPagesContainer;
-	EpubDocPagesContainer mDocumentPages;
+
 protected:
 	LVMutex _mutex;
 	lvRect m_pageRects[2];
@@ -67,18 +74,27 @@ protected:
 	CRPropRef m_doc_props;
 	int m_def_interline_space;
 	lString8 m_stylesheet;
-	bool m_is_rendered;
 	LVImageSourceRef m_defaultCover;
 	// loadchapter
 	lString16 codeBase;
 	ldomDocument *temp_unknowndoc;
 	lString16 ncxHref;
 	LVContainerRef m_arc;
+	EpubDocPagesContainer mDocumentPages;
 public:
 	EpubDocument();
 	/// return view mutex
 	LVMutex & getMutex() {
 		return _mutex;
+	}
+	EpubChapterPagesRef& getChapterPages(int index) {
+		EpubChapterPagesRef& p = mDocumentPages[index];
+		loadChapter(p);
+		Render(m_dx, m_dy, &p);
+		return p;
+	}
+	inline int getChaptersCount() {
+		return mDocumentPages.size();
 	}
 	void updateLayout() {
 		lvRect rc(0, 0, m_dx, m_dy);
@@ -139,15 +155,12 @@ public:
 			int basePage);
 
 	void Draw(LVDrawBuf & drawbuf, int chapterindex, int page) {
-		getMutex().lock();
+		LVLock lock(getMutex());
 		std::vector<EpubChapterPages>::iterator it;
 		EpubChapterPagesRef &p = mDocumentPages[chapterindex];
 		LVRendPageInfo *pageinfo = p->m_pages[page];
-		CRLog::debug("song epub Draw2");
 		drawPageTo(&drawbuf, p->m_doc, *pageinfo, &m_pageRects[0],
 				p->m_pages.length(), 1);
-		CRLog::debug("song epub Draw3");
-		getMutex().unlock();
 		return;
 	}
 	int getPageCount() {
@@ -163,6 +176,10 @@ public:
 	}
 	inline int getHeight() {
 		return m_dy;
+	}
+	inline void setWidthHeight(int dx, int dy) {
+		m_dx = dx;
+		m_dy = dy;
 	}
 };
 #endif // EPUBFMT_H
