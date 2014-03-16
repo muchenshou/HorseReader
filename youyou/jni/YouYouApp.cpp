@@ -335,9 +335,9 @@ int getInfo(JNIEnv* env, jobject jbitmap, AndroidBitmapInfo* info) {
 	AndroidBitmapInfo info;
 	getInfo(e,bitmap,&info);
 	if (drawbuf != NULL) {
-		LVRefVec<LVImageSource> batteryicon = getBatteryIcons(0xCCFF0000);
+		LVRefVec<LVImageSource> batteryicon = getBatteryIcons(0xFF0000);
 
-		drawbuf->FillRect(0, 0, info.width, info.height, 0xFF000000);
+		drawbuf->FillRect(0, 0, info.width, info.height, 0xFFFFFFFF);
 		drawbuf->Draw(batteryicon[9], 0, 0, info.width, info.height);
 		drawbuf->SetTextColor(0x00000000);
 		//		txt_book->drawPage(drawbuf, index);
