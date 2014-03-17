@@ -71,10 +71,11 @@ public class PageView extends ViewGroup implements IAnimation{
 		_timer.schedule(new TimeViewTimerTask(), 1000,2000);
 		
 		_batteryview = new ImageView(context);
+		_batteryview.setBackgroundColor(Color.TRANSPARENT);
 		Bitmap b = Bitmap.createBitmap(100, 50, Config.ARGB_8888);
+		
 		BitmapUtil.DrawBatteryBitmap(b, 0, 0);
 		_batteryview.setImageBitmap(b);
-		
 		addView(_animationView);
 		addView(_textView);
 		addView(_timeView);

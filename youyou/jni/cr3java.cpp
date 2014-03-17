@@ -184,7 +184,8 @@ static void ConvertCRColorsToAndroid( lUInt8 * buf, int dx, int dy )
 	int sz = dx * dy;
 	for ( lUInt8 * p = buf; --sz>=0; p+=4 ) {
 		// invert A
-		p[3] ^= 0xFF; 
+		p[3] ^= 0xFF;
+//		p[3] = 0x00;
 		// swap R and B
 		lUInt8 c = p[0];
 		p[0] = p[2];
@@ -354,7 +355,7 @@ public:
 		reallocArray( env, size );
 	    //CRLog::trace("JNIGraphicsReplacement::lock getting pixels");
 	    lUInt8 * pixels = (lUInt8 *)env->GetIntArrayElements(_array, 0);
-	    //CRLog::trace("Pixels address %08x", (int)(pixels));
+	    CRLog::trace("Pixels address %08x %08x", (int)(pixels),bpp);
 	    //CRLog::trace("JNIGraphicsReplacement::lock exiting");
 		LVDrawBuf * buf = new LVColorDrawBufEx(width, height, pixels, bpp);
 	    //CRLog::trace("Last row address %08x", (int)buf->GetScanLine(height-1));
@@ -410,12 +411,15 @@ static BitmapAccessorInterface * _bitmapAccessorInstance = NULL;
 BitmapAccessorInterface * BitmapAccessorInterface::getInstance()
 {
 	if ( _bitmapAccessorInstance==NULL ) {
+		CRLog::debug("song getInstance1");
 		JNIGraphicsLib * lib = new JNIGraphicsLib();
 		if ( !lib->load("libjnigraphics.so") ) {
+			CRLog::debug("song getInstance2");
 			delete lib;
 			CRLog::error("Cannot load libjnigraphics.so : will use slower replacement instead");
 			_bitmapAccessorInstance = new JNIGraphicsReplacement(); 
 		} else {
+			CRLog::debug("song getInstance3");
 			_bitmapAccessorInstance = lib;
 		}
 	}

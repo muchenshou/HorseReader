@@ -60,7 +60,7 @@ static LVRefVec<LVImageSource> getBatteryIcons(lUInt32 color) {
 	lUInt32 cl1 = 0x00000000 | (color & 0xFFFFFF);
 	lUInt32 cl2 = 0x40000000 | (color & 0xFFFFFF);
 	lUInt32 cl3 = 0x80000000 | (color & 0xFFFFFF);
-	lUInt32 cl4 = 0xF0000000 | (color & 0xFFFFFF);
+	lUInt32 cl4 = 0xFF000000 | (color & 0xFFFFFF);
 
 	static char color1[] = "0 c #80000000";
 	static char color2[] = "X c #80000000";
@@ -330,21 +330,22 @@ int getInfo(JNIEnv* env, jobject jbitmap, AndroidBitmapInfo* info) {
  */JNIEXPORT jint JNICALL Java_com_reader_util_BitmapUtil_DrawBatteryBitmap(
 		JNIEnv *e, jclass cls, jobject bitmap, jint which, jint color) {
 	SET_ENV(e);
-	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(e,
+	LVBaseDrawBuf * drawbuf = (LVBaseDrawBuf *)BitmapAccessorInterface::getInstance()->lock(e,
 			bitmap);
 	AndroidBitmapInfo info;
-	getInfo(e,bitmap,&info);
-	if (drawbuf != NULL) {
-		LVRefVec<LVImageSource> batteryicon = getBatteryIcons(0xFF0000);
 
-		drawbuf->FillRect(0, 0, info.width, info.height, 0xFFFFFFFF);
+	getInfo(e,bitmap,&info);
+	CRLog::debug("song battery drawbuf lock format %d",info.format);
+	if (drawbuf != NULL) {
+		drawbuf->Clear(0xFF000000);
+		LVRefVec<LVImageSource> batteryicon = getBatteryIcons(0x0);
+
 		drawbuf->Draw(batteryicon[9], 0, 0, info.width, info.height);
-		drawbuf->SetTextColor(0x00000000);
-		//		txt_book->drawPage(drawbuf, index);
-		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
 		BitmapAccessorInterface::getInstance()->unlock(e, bitmap, drawbuf);
+		CRLog::debug("song battery drawbuf lock format battery end");
 	} else {
 		CRLog::error("bitmap accessor is invalid");
 	}
+	CRLog::debug("%d %d %d %d ",drawbuf->_data[0],drawbuf->_data[1],drawbuf->_data[2],drawbuf->_data[3]);
 	return 0;
 }

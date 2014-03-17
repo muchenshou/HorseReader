@@ -157,6 +157,7 @@ protected:
     int _dy;
     int _rowsize;
     lvRect _clip;
+public:
     unsigned char * _data;
     lUInt32 _backgroundColor;
     lUInt32 _textColor;

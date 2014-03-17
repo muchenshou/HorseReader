@@ -123,6 +123,7 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(e,
 			bitmap);
 	if (drawbuf != NULL) {
+
 		drawbuf->FillRect(0, 0, epub->getWidth(), epub->getHeight(), 0x00ffeeee);
 		if (_currentImage.get() != NULL) {
 			drawbuf->Draw(_currentImage, 0, 0, epub->getWidth(),
@@ -130,7 +131,7 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 		}
 		drawbuf->SetTextColor(0x00000000);
 		//		txt_book->drawPage(drawbuf, index);
-		CRLog::debug(" get chapter page no %d %d",addr.chapterIndex(),addr.pageIndex());
+//		CRLog::debug(" get chapter page no %d %d",addr.chapterIndex(),addr.pageIndex());
 		epub->Draw(*drawbuf, addr.chapterIndex(),addr.pageIndex());
 		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
 		BitmapAccessorInterface::getInstance()->unlock(e, bitmap, drawbuf);
@@ -148,7 +149,7 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAdd
   (JNIEnv *e, jobject self, jobject jCur) {
 	SET_ENV(e);
 	C_EpubAddr c_cur(jCur);
-	CRLog::debug("song nextPageAddr");
+//	CRLog::debug("song nextPageAddr");
 	jobject jNext = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_next(jNext);
 	EpubChapterPagesRef &p = epub->getChapterPages(c_cur.chapterIndex());
@@ -177,7 +178,7 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_prevPageAdd
 {
 	SET_ENV(env);
 	C_EpubAddr c_cur(jCur);
-	CRLog::debug("song prePageAddr");
+//	CRLog::debug("song prePageAddr");
 	jobject jPre = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_pre(jPre);
 	EpubChapterPagesRef &p = epub->getChapterPages(c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0);
