@@ -1271,6 +1271,7 @@ void EpubDocument::Render(int dx, int dy, EpubChapterPagesRef* chapterPages) {
 		//CRLog::trace("calling render() for document %08X font=%08X", (unsigned int)m_doc, (unsigned int)m_font.get() );
 		doc->render(pages, NULL, tdx, tdy, false, 0, m_font,
 				m_def_interline_space, m_props);
+
 		count += pages->length();
 #if 0
 		FILE * f = fopen("/sdcard/pagelist.log", "wt");
@@ -1351,10 +1352,10 @@ void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 	writer.OnTagClose(L"", L"body");
 	writer.OnStop();
 	page->bLoad = true;
-	//			char xml_name[256];
-	//			sprintf(xml_name, "/sdcard//epub_dump%d.xml", i);
-	//			page.m_doc->saveToStream(LVOpenFileStream(xml_name, LVOM_WRITE),
-	//					NULL, true);
+				char xml_name[256];
+				sprintf(xml_name, "/sdcard/youyou/epub_dump%s.xml", LCSTR(page->item.href));
+				page->m_doc->saveToStream(LVOpenFileStream(xml_name, LVOM_WRITE),
+						NULL, true);
 
 }
 void EpubDocument::loadDocument(LVStreamRef stream) {
@@ -1367,7 +1368,6 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 	lString16 rootfilePath = EpubGetRootFilePath(arc);
 	if (rootfilePath.empty())
 		return;
-
 	EncryptedDataContainer * decryptor = new EncryptedDataContainer(arc);
 	if (decryptor->open()) {
 		CRLog::debug("EPUB: encrypted items detected");

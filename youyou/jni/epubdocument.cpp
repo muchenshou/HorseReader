@@ -113,13 +113,8 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 	SET_ENV(e);
 	C_EpubAddr addr(jEpubAddr);
 	CRJNIEnv env(e);
-	CRLog::debug("song getPage 111");
-//	epub->getMutex().lock();
 	EpubChapterPagesRef &chapters =epub->getChapterPages(addr.chapterIndex());
 
-//	epub->loadChapter(chapters);
-//	epub->Render(g_dw,g_dh,&chapters);
-//	epub->getMutex().unlock();
 	LVDrawBuf * drawbuf = BitmapAccessorInterface::getInstance()->lock(e,
 			bitmap);
 	if (drawbuf != NULL) {
@@ -130,10 +125,7 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_getPage
 					epub->getHeight());
 		}
 		drawbuf->SetTextColor(0x00000000);
-		//		txt_book->drawPage(drawbuf, index);
-//		CRLog::debug(" get chapter page no %d %d",addr.chapterIndex(),addr.pageIndex());
 		epub->Draw(*drawbuf, addr.chapterIndex(),addr.pageIndex());
-		//CRLog::trace("getPageImageInternal calling bitmap->unlock");
 		BitmapAccessorInterface::getInstance()->unlock(e, bitmap, drawbuf);
 	} else {
 		CRLog::error("bitmap accessor is invalid");
@@ -149,7 +141,7 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_nextPageAdd
   (JNIEnv *e, jobject self, jobject jCur) {
 	SET_ENV(e);
 	C_EpubAddr c_cur(jCur);
-//	CRLog::debug("song nextPageAddr");
+	CRLog::debug("song nextPageAddr");
 	jobject jNext = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_next(jNext);
 	EpubChapterPagesRef &p = epub->getChapterPages(c_cur.chapterIndex());
@@ -178,7 +170,7 @@ JNIEXPORT jobject JNICALL Java_com_reader_document_epub_EpubDocument_prevPageAdd
 {
 	SET_ENV(env);
 	C_EpubAddr c_cur(jCur);
-//	CRLog::debug("song prePageAddr");
+	CRLog::debug("song prePageAddr");
 	jobject jPre = C_EpubAddr::NewObject(c_cur.EpubDocument());
 	C_EpubAddr c_pre(jPre);
 	EpubChapterPagesRef &p = epub->getChapterPages(c_cur.chapterIndex()>0?c_cur.chapterIndex()-1:0);

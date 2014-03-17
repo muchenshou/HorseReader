@@ -1464,7 +1464,7 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
         int h = 0;
         LFormattedTextRef txform;
         {
-            CRLog::trace("renderBlockElement - creating render accessor");
+//            CRLog::trace("renderBlockElement - creating render accessor");
             RenderRectAccessor fmt( enode );
             fmt.setX( x );
             fmt.setY( y );
@@ -1473,6 +1473,12 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
             fmt.push();
 
             int m = enode->getRendMethod();
+            bool song_image_test = false;
+            CRLog::debug("song render block m type %d %s",m, LCSTR(enode->getNodeName()));
+            if (enode->getNodeName().compare("img") == 0) {
+            	song_image_test = true;
+            	CRLog::debug("song render block m value %s",LCSTR(enode->getAttributeValue("src")));
+            }
             switch( m )
             {
             case erm_mixed:
@@ -1508,6 +1514,9 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
                     // recurse all sub-blocks for blocks
                     int y = padding_top;
                     int cnt = enode->getChildCount();
+                    if (song_image_test) {
+                    	CRLog::debug("song render block image %d",cnt);
+                    }
                     for (int i=0; i<cnt; i++)
                     {
                         ldomNode * child = enode->getChildNode( i );
@@ -1537,7 +1546,7 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
                     fmt.setY( fmt.getY() );
                     fmt.push();
                     //if ( CRLog::isTraceEnabled() )
-                    //    CRLog::trace("rendering final node: %s %d %s", LCSTR(enode->getNodeName()), enode->getDataIndex(), LCSTR(ldomXPointer(enode,0).toString()) );
+                        CRLog::trace("rendering final node: %s %d %s", LCSTR(enode->getNodeName()), enode->getDataIndex(), LCSTR(ldomXPointer(enode,0).toString()) );
                     h = enode->renderFinalBlock( txform, &fmt, width - padding_left - padding_right );
                     context.updateRenderProgress(1);
                     // if ( context.updateRenderProgress(1) )

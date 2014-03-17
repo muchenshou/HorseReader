@@ -4270,7 +4270,7 @@ void ldomDocumentWriter::OnTagBody()
 ldomNode * ldomDocumentWriter::OnTagOpen( const lChar16 * nsname, const lChar16 * tagname )
 {
     //logfile << "ldomDocumentWriter::OnTagOpen() [" << nsname << ":" << tagname << "]";
-    //CRLog::trace("OnTagOpen(%s)", UnicodeToUtf8(lString16(tagname)).c_str());
+    CRLog::trace("OnTagOpen(nstagname:%s) nsname:%s", UnicodeToUtf8(lString16(tagname)).c_str(), LCSTR(lString16(nsname)));
     lUInt16 id = _document->getElementNameIndex(tagname);
     lUInt16 nsid = (nsname && nsname[0]) ? _document->getNsNameIndex(nsname) : 0;
 
@@ -10963,10 +10963,12 @@ LVStreamRef ldomNode::getObjectImageStream()
 /// returns object image source
 LVImageSourceRef ldomNode::getObjectImageSource()
 {
+	CRLog::debug("song getObjectImageSource 1" );
     lString16 refName = getObjectImageRefName();
     LVImageSourceRef ref;
     if ( refName.empty() )
         return ref;
+    CRLog::debug("song getObjectImageSource 2 %s", LCSTR(refName));
     ref = getDocument()->getObjectImageSource( refName );
     if ( !ref.isNull() ) {
         int dx = ref->GetWidth();
