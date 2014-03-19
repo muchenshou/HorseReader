@@ -807,9 +807,6 @@ void EpubDocument::drawCoverTo(LVDrawBuf * drawBuf, lvRect & rc) {
 }
 void EpubDocument::drawPageTo(LVDrawBuf * drawbuf, ldomDocument * m_doc,
 		LVRendPageInfo & page, lvRect * pageRect, int pageCount, int basePage) {
-	CRLog::debug("song epub drawpage %d %d %d %d %d %d", page.start,
-			page.height, pageRect->width(), pageRect->height(), pageCount,
-			basePage);
 	int start = page.start;
 	int height = page.height;
 	//CRLog::trace("drawPageTo(%d,%d)", start, height);
@@ -850,12 +847,17 @@ void EpubDocument::drawPageTo(LVDrawBuf * drawbuf, ldomDocument * m_doc,
 		} else {
 			// draw main page text
 			//CRLog::trace("Entering DrawDocument()");
-			if (page.height)
+			if (page.height) {
+				CRLog::debug("song drawpage x0:%d y0:%d dx:%d dy:%d m_doc_x:%d m_doc_y:%d",pageRect->left + m_pageMargins.left,
+						clip.top,pageRect->width() - m_pageMargins.left
+						- m_pageMargins.right, height, 0,
+						-start + offset);
 				DrawDocument(*drawbuf, m_doc->getRootNode(),
 						pageRect->left + m_pageMargins.left, clip.top,
 						pageRect->width() - m_pageMargins.left
 								- m_pageMargins.right, height, 0,
 						-start + offset, m_dy, NULL, NULL);
+			}
 			//CRLog::trace("Done DrawDocument() for main text");
 			// draw footnotes
 #define FOOTNOTE_MARGIN 8

@@ -10,8 +10,8 @@
 #include "lvthread.h"
 
 typedef struct {
-   unsigned short indx; /* index into big table */
-   unsigned short used; /* bitmask of used entries */
+	unsigned short indx; /* index into big table */
+	unsigned short used; /* bitmask of used entries */
 } Summary16;
 
 typedef unsigned int ucs4_t;
@@ -32,168 +32,165 @@ typedef unsigned int ucs4_t;
 #include "../include/encodings/ksc5601.h"
 #endif
 
-static int charToHex( lUInt8 ch )
-{
-    if ( ch>='0' && ch<='9' )
-        return ch-'0';
-    if ( ch>='a' && ch<='f' )
-        return ch-'a'+10;
-    if ( ch>='A' && ch<='F' )
-        return ch-'A'+10;
-    return -1;
+static int charToHex(lUInt8 ch) {
+	if (ch >= '0' && ch <= '9')
+		return ch - '0';
+	if (ch >= 'a' && ch <= 'f')
+		return ch - 'a' + 10;
+	if (ch >= 'A' && ch <= 'F')
+		return ch - 'A' + 10;
+	return -1;
 }
 
 #if GBK_ENCODING_SUPPORT == 1
 // based on code from libiconv
-static lChar16 cr3_gb2312_mbtowc(const unsigned char *s)
-{
-    unsigned char c1 = s[0];
-    if ((c1 >= 0x21 && c1 <= 0x29) || (c1 >= 0x30 && c1 <= 0x77)) {
-        unsigned char c2 = s[1];
-        if (c2 >= 0x21 && c2 < 0x7f) {
-            unsigned int i = 94 * (c1 - 0x21) + (c2 - 0x21);
-            if (i < 1410) {
-                if (i < 831)
-                    return gb2312_2uni_page21[i];
-            } else {
-                if (i < 8178)
-                    return gb2312_2uni_page30[i-1410];
-            }
-        }
-    }
-    return 0;
+static lChar16 cr3_gb2312_mbtowc(const unsigned char *s) {
+	unsigned char c1 = s[0];
+	if ((c1 >= 0x21 && c1 <= 0x29) || (c1 >= 0x30 && c1 <= 0x77)) {
+		unsigned char c2 = s[1];
+		if (c2 >= 0x21 && c2 < 0x7f) {
+			unsigned int i = 94 * (c1 - 0x21) + (c2 - 0x21);
+			if (i < 1410) {
+				if (i < 831)
+					return gb2312_2uni_page21[i];
+			} else {
+				if (i < 8178)
+					return gb2312_2uni_page30[i - 1410];
+			}
+		}
+	}
+	return 0;
 }
 
 // based on code from libiconv
-static lChar16 cr3_cp936ext_mbtowc (const unsigned char *s)
-{
-    unsigned char c1 = s[0];
-    if ((c1 == 0xa6) || (c1 == 0xa8)) {
-        unsigned char c2 = s[1];
-        if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xff)) {
-            unsigned int i = 190 * (c1 - 0x81) + (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
-            if (i < 7410) {
-                if (i >= 7189 && i < 7211)
-                    return cp936ext_2uni_pagea6[i-7189];
-            } else {
-                if (i >= 7532 && i < 7538)
-                    return cp936ext_2uni_pagea8[i-7532];
-            }
-        }
-    }
-    return 0;
+static lChar16 cr3_cp936ext_mbtowc(const unsigned char *s) {
+	unsigned char c1 = s[0];
+	if ((c1 == 0xa6) || (c1 == 0xa8)) {
+		unsigned char c2 = s[1];
+		if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xff)) {
+			unsigned int i = 190 * (c1 - 0x81)
+					+ (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
+			if (i < 7410) {
+				if (i >= 7189 && i < 7211)
+					return cp936ext_2uni_pagea6[i - 7189];
+			} else {
+				if (i >= 7532 && i < 7538)
+					return cp936ext_2uni_pagea8[i - 7532];
+			}
+		}
+	}
+	return 0;
 }
 
 // based on code from libiconv
-static lChar16 cr3_gbkext1_mbtowc (lChar16 c1, lChar16 c2)
-{
-    if ((c1 >= 0x81 && c1 <= 0xa0)) {
-        if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xff)) {
-        unsigned int i = 190 * (c1 - 0x81) + (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
-        if (i < 6080)
-            return gbkext1_2uni_page81[i];
-        }
-    }
-    return 0;
+static lChar16 cr3_gbkext1_mbtowc(lChar16 c1, lChar16 c2) {
+	if ((c1 >= 0x81 && c1 <= 0xa0)) {
+		if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xff)) {
+			unsigned int i = 190 * (c1 - 0x81)
+					+ (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
+			if (i < 6080)
+				return gbkext1_2uni_page81[i];
+		}
+	}
+	return 0;
 }
 
 // based on code from libiconv
-static lChar16 cr3_gbkext2_mbtowc(lChar16 c1, lChar16 c2)
-{
-    if ((c1 >= 0xa8 && c1 <= 0xfe)) {
-        if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xa1)) {
-            unsigned int i = 96 * (c1 - 0x81) + (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
-            if (i < 12016)
-                return gbkext2_2uni_pagea8[i-3744];
-        }
-    }
-    return 0;
+static lChar16 cr3_gbkext2_mbtowc(lChar16 c1, lChar16 c2) {
+	if ((c1 >= 0xa8 && c1 <= 0xfe)) {
+		if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xa1)) {
+			unsigned int i = 96 * (c1 - 0x81)
+					+ (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
+			if (i < 12016)
+				return gbkext2_2uni_pagea8[i - 3744];
+		}
+	}
+	return 0;
 }
 #endif
 
 #if JIS_ENCODING_SUPPORT == 1
 // based on code from libiconv
-static lChar16 cr3_jisx0213_to_ucs4(unsigned int row, unsigned int col)
-{
-    lChar16 val;
+static lChar16 cr3_jisx0213_to_ucs4(unsigned int row, unsigned int col) {
+	lChar16 val;
 
-    if (row >= 0x121 && row <= 0x17e)
-        row -= 289;
-    else if (row == 0x221)
-        row -= 451;
-    else if (row >= 0x223 && row <= 0x225)
-        row -= 452;
-    else if (row == 0x228)
-        row -= 454;
-    else if (row >= 0x22c && row <= 0x22f)
-        row -= 457;
-    else if (row >= 0x26e && row <= 0x27e)
-        row -= 519;
-    else
-        return 0x0000;
+	if (row >= 0x121 && row <= 0x17e)
+		row -= 289;
+	else if (row == 0x221)
+		row -= 451;
+	else if (row >= 0x223 && row <= 0x225)
+		row -= 452;
+	else if (row == 0x228)
+		row -= 454;
+	else if (row >= 0x22c && row <= 0x22f)
+		row -= 457;
+	else if (row >= 0x26e && row <= 0x27e)
+		row -= 519;
+	else
+		return 0x0000;
 
-    if (col >= 0x21 && col <= 0x7e)
-        col -= 0x21;
-    else
-        return 0x0000;
+	if (col >= 0x21 && col <= 0x7e)
+		col -= 0x21;
+	else
+		return 0x0000;
 
-    val = (lChar16)jisx0213_to_ucs_main[row * 94 + col];
-    val = (lChar16)jisx0213_to_ucs_pagestart[val >> 8] + (val & 0xff);
-    if (val == 0xfffd)
-        val = 0x0000;
-    return val;
+	val = (lChar16) jisx0213_to_ucs_main[row * 94 + col];
+	val = (lChar16) jisx0213_to_ucs_pagestart[val >> 8] + (val & 0xff);
+	if (val == 0xfffd)
+		val = 0x0000;
+	return val;
 }
 #endif
 
 #if BIG5_ENCODING_SUPPORT == 1
 // based on code from libiconv
-static lUInt16 cr3_big5_mbtowc(lChar16 c1, lChar16 c2)
-{
-    if ((c1 >= 0xa1 && c1 <= 0xc7) || (c1 >= 0xc9 && c1 <= 0xf9)) {
-        if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0xa1 && c2 < 0xff)) {
-            unsigned int i = 157 * (c1 - 0xa1) + (c2 - (c2 >= 0xa1 ? 0x62 : 0x40));
-            unsigned short wc = 0xfffd;
-            if (i < 6280) {
-                if (i < 6121)
-                    wc = big5_2uni_pagea1[i];
-            } else {
-                if (i < 13932)
-                    wc = big5_2uni_pagec9[i-6280];
-            }
-            if (wc != 0xfffd) {
-                return wc;
-            }
-        }
-    }
-    return 0;
+static lUInt16 cr3_big5_mbtowc(lChar16 c1, lChar16 c2) {
+	if ((c1 >= 0xa1 && c1 <= 0xc7) || (c1 >= 0xc9 && c1 <= 0xf9)) {
+		if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0xa1 && c2 < 0xff)) {
+			unsigned int i = 157 * (c1 - 0xa1)
+					+ (c2 - (c2 >= 0xa1 ? 0x62 : 0x40));
+			unsigned short wc = 0xfffd;
+			if (i < 6280) {
+				if (i < 6121)
+					wc = big5_2uni_pagea1[i];
+			} else {
+				if (i < 13932)
+					wc = big5_2uni_pagec9[i - 6280];
+			}
+			if (wc != 0xfffd) {
+				return wc;
+			}
+		}
+	}
+	return 0;
 }
 
 #endif
 
 #if EUC_KR_ENCODING_SUPPORT == 1
 // based on code from libiconv
-static lChar16 cr3_ksc5601_mbtowc(lChar16 c1, lChar16 c2)
-{
-    if ((c1 >= 0x21 && c1 <= 0x2c) || (c1 >= 0x30 && c1 <= 0x48) || (c1 >= 0x4a && c1 <= 0x7d)) {
-        if (c2 >= 0x21 && c2 < 0x7f) {
-            unsigned int i = 94 * (c1 - 0x21) + (c2 - 0x21);
-            unsigned short wc = 0xfffd;
-            if (i < 1410) {
-                if (i < 1115)
-                    wc = ksc5601_2uni_page21[i];
-            } else if (i < 3854) {
-                if (i < 3760)
-                    wc = ksc5601_2uni_page30[i-1410];
-            } else {
-                if (i < 8742)
-                    wc = ksc5601_2uni_page4a[i-3854];
-            }
-            if (wc != 0xfffd) {
-                return wc;
-            }
-        }
-    }
-    return 0;
+static lChar16 cr3_ksc5601_mbtowc(lChar16 c1, lChar16 c2) {
+	if ((c1 >= 0x21 && c1 <= 0x2c) || (c1 >= 0x30 && c1 <= 0x48)
+			|| (c1 >= 0x4a && c1 <= 0x7d)) {
+		if (c2 >= 0x21 && c2 < 0x7f) {
+			unsigned int i = 94 * (c1 - 0x21) + (c2 - 0x21);
+			unsigned short wc = 0xfffd;
+			if (i < 1410) {
+				if (i < 1115)
+					wc = ksc5601_2uni_page21[i];
+			} else if (i < 3854) {
+				if (i < 3760)
+					wc = ksc5601_2uni_page30[i - 1410];
+			} else {
+				if (i < 8742)
+					wc = ksc5601_2uni_page4a[i - 3854];
+			}
+			if (wc != 0xfffd) {
+				return wc;
+			}
+		}
+	}
+	return 0;
 }
 #endif
 
@@ -215,72 +212,6 @@ struct TxtPage {
 	int endNodeLineNum;
 };
 
-class TxtRender {
-	LVFontRef mFontRef;
-	lUInt32 mWidth;
-	lUInt32 mHeight;
-	std::vector<lUInt32> _lines;
-	lUInt32 mTextLen;
-public:
-	TxtRender(int w, int h, int font_size) :
-			mWidth(w), mHeight(h) {
-		mFontRef = fontMan->GetFont(font_size, 400 + 70, false, css_ff_sans_serif,
-				cs8("Droid Sans Fallback"), 0);
-		mFontRef->setBitmapMode(false);
-		mTextLen = 0;
-	}
-	bool measureText(lString16& node) {
-		lUInt16 widths[1024 * 8];
-		lUInt8 flags[1024 * 8];
-		_lines.clear();
-		mTextLen = node.length();
-		mFontRef->measureText(node.c_str(), node.length(), widths, flags,
-				0x7FFF, '?', 0, false);
-		int pre_index = -1;
-		lUInt16 pre_width;
-		_lines.push_back(0);
-		for (int i = 0; i < node.length(); i++) {
-			pre_width = pre_index == -1 ? 0 : widths[pre_index];
-			if ((widths[i] - pre_width) < (lUInt32) mWidth) {
-				continue;
-			} else {
-				_lines.push_back(i);
-				pre_index = i - 1;
-			}
-		}
-		return true;
-	}
-
-	lUInt32 getLineCount() {
-		return _lines.size();
-	}
-
-	lUInt32 getLinePos(int index) {
-		return _lines[index];
-	}
-
-	lUInt32 getLineLen(int index) {
-		assert(index <=0);
-		if ((lUInt32) index < _lines.size() - 1) {
-			return _lines[index + 1] - _lines[index];
-		} else {
-			return mTextLen - _lines[index];
-		}
-	}
-	lUInt32 screenLines() {
-		return mHeight / mFontRef->getHeight();
-	}
-
-	inline LVFontRef& getFont() {
-		return mFontRef;
-	}
-	inline lUInt32 getWidth() {
-		return mWidth;
-	}
-	inline lUInt32 getHeight() {
-		return mHeight;
-	}
-};
 class TxtBook: public LVFileParserBase {
 	std::vector<TxtNode> mNodes;
 	std::vector<TxtPage> mPages;
@@ -288,21 +219,34 @@ class TxtBook: public LVFileParserBase {
 	lString16 m_encoding_name;
 	char_encoding_type m_enc_type;
 	lChar16 * m_conv_table; // charset conversion table for 8-bit encodings
-	TxtRender mRender;
 	LVMutex _mutex;
 	int _left_margin;
 	int _right_margin;
+	int _top_margin;
+	int _bottom_margin;
+
+	LFormattedText _fmt;
+	LVFontRef mFontRef;
 public:
 	int view_width;
 	int view_height;
+	lUInt32 mWidth;
+	lUInt32 mHeight;
 	TxtBook(LVStreamRef& path, int w, int h, int font_size) :
-			LVFileParserBase(path), m_enc_type(ce_unknown), m_conv_table(NULL), mRender(
-					TxtRender(0, 0,60)), _linesInPage(0) {
+			LVFileParserBase(path), m_enc_type(ce_unknown), m_conv_table(NULL), _linePosInPage(
+					0) {
 		view_width = w;
 		view_height = h;
-		_left_margin = 30;
+		_left_margin = 50;
 		_right_margin = 30;
-		mRender = TxtRender(w - _left_margin-_right_margin, h - 100,font_size);
+		_top_margin = 50;
+		_bottom_margin = 50;
+		mWidth = w - _left_margin - _right_margin;
+		mHeight = h - _top_margin - _bottom_margin;
+		mFontRef = fontMan->GetFont(font_size, 400 + 70, false,
+				css_ff_sans_serif, cs8("Droid Sans Fallback"), 0);
+		mFontRef->setBitmapMode(false);
+
 	}
 	/// returns 8-bit charset conversion table (128 items, for codes 128..255)
 	virtual lChar16 * GetCharsetTable() {
@@ -1026,21 +970,10 @@ public:
 		}
 		lString16 n("");
 		render(n, (lUInt32) (mNodes.size() - 1), true);
-//		std::vector<TxtNode>::iterator it;
-//
-//		for (it = mNodes.begin(); it != mNodes.end();it++) {
-//			CRLog::debug("song node start:%d end:%d", (*it).start,(*it).end);
-//		}
-//		std::vector<TxtPage>::iterator it;
-//		CRLog::debug("song pages size:%d", mPages.size());
-//		for (it = mPages.begin(); it != mPages.end(); it++) {
-//			CRLog::debug("song node start:%d startoffset:%d end:%d endoffset:%d", (*it).startNode,
-//					(*it).startLineNum,(*it).endNode,(*it).endNodeLineNum);
-//		}
 		return false;
 	}
 private:
-	lUInt32 _linesInPage;
+	lUInt32 _linePosInPage;
 	TxtPage _page;
 public:
 	int getPagesCount() {
@@ -1054,35 +987,36 @@ public:
 			CRLog::debug("song render page %d", mPages.size());
 			return;
 		}
-		lUInt32 screenLines = mRender.screenLines();
+		_fmt.Clear();
+		_fmt.AddSourceLine(text.c_str(), text.length(), 0xFF, 0x0,
+				mFontRef.get(),LTEXT_ALIGN_LEFT|LTEXT_FLAG_OWNTEXT,
+		           20, /* interline space, *16 (16=single, 32=double) */
+		           100    /* first line margin */
+		           );
+		_fmt.Format(mWidth, mHeight);
 
-		mRender.measureText(text);
-		lUInt32 lineCount = 0;
-		while (lineCount < mRender.getLineCount()) {
-			if (_linesInPage + 1 <= screenLines) {
-				CRLog::debug("song render lines %d", _linesInPage);
-				if (_linesInPage == 0) {
+		for (int i=0; i<_fmt.GetLineCount(); i++) {
+			const formatted_line_t *line = _fmt.GetLineInfo(i);
+			if (_linePosInPage+(line->height) < mHeight) {
+				if (_linePosInPage == 0) {
 					_page.startNode = nodeid;
-					_page.startLineNum = lineCount;
-				}
-				_linesInPage++;
-				if (_linesInPage == screenLines) {
-					_linesInPage = 0;
+					_page.startLineNum = i;
+				} else {
 					_page.endNode = nodeid;
-//					_page.endNodeOffset = 0;
-					this->mPages.push_back(_page);
+					_page.endNodeLineNum = i;
 				}
+				_linePosInPage+= line->height;
 			} else {
-				assert(false);
+				_linePosInPage = line->height;
+
+				this->mPages.push_back(_page);
+				_page.startNode = nodeid;
+				_page.startLineNum = i;
 			}
-			lineCount++;
 		}
-		CRLog::debug("song renddd %d %d", nodeid, mNodes.size());
 
 	}
-	TxtRender& getRender() {
-		return mRender;
-	}
+
 	lString16 readNode(lvpos_t pos, int len) {
 		Reset();
 
@@ -1105,36 +1039,27 @@ public:
 		lUInt32 start_node = mPages[index].startNode;
 		lUInt32 start_node_offset = mPages[index].startLineNum;
 		lUInt32 end_node = mPages[index].endNode;
-		LVFontRef font = mRender.getFont();
 
-		lUInt16 widths[1024 * 8];
-		lUInt8 flags[1024 * 8];
-		lChar16 buf[1024 * 8];
-		lUInt32 buf_pos = 0;
-		lUInt32 y = 50;
-		CRLog::debug(
-				"song node drag page index %d start_node %d start_node_offset %d",
-				index, start_node, start_node_offset);
+		_fmt.Clear();
 		for (lUInt32 i = start_node; i <= end_node; i++) {
-			// node
 			lString16 node = readNode(mNodes[i].start,
 					mNodes[i].end - mNodes[i].start);
-			font->measureText(node.c_str(), node.length(), widths, flags,
-					0x7FFF, '?', 0);
-			mRender.measureText(node);
-
-			const lChar16 *str = node.c_str();
-			int pre = -1;
-			for (lUInt32 j = (i == start_node ? start_node_offset : 0);
-					j < mRender.getLineCount() && y < mRender.getHeight();
-					j++) {
-				font->DrawTextString(draw, 30, y, str + mRender.getLinePos(j),
-						mRender.getLineLen(j), L'?', NULL, false, 0);
-
-				y += font->getHeight();
-			}
+			_fmt.AddSourceLine(node.c_str(), node.length(), 0x000000,
+					0xFF000000, mFontRef.get(),LTEXT_ALIGN_LEFT|LTEXT_FLAG_OWNTEXT,
+			           20, /* interline space, *16 (16=single, 32=double) */
+			           100    /* first line margin */
+			           );
 		}
-
+		_fmt.Format(mWidth, mHeight);
+		int screenLines = mHeight / (mFontRef->getHeight());
+		const formatted_line_t *line = _fmt.GetLineInfo(
+							 start_node_offset);
+		int start = line->y;
+		draw->setHidePartialGlyphs(true);
+		lvRect r(_left_margin,_top_margin,_left_margin+mWidth, screenLines*mFontRef->getHeight());
+		draw->SetClipRect(&r);
+		_fmt.Draw(draw,_left_margin,-start+_top_margin,NULL);
+		draw->SetClipRect(NULL);
 		return false;
 	}
 };
@@ -1172,11 +1097,12 @@ static LVImageSourceRef _currentImage; //bg
  * Method:    loadDocument
  * Signature: (Ljava/lang/String;II)I
  */JNIEXPORT jint JNICALL Java_com_reader_document_txt_TxtDocument_loadDocument(
-		JNIEnv *e, jobject self, jstring bookPath, jint width, jint height,jint font_size) {
+		JNIEnv *e, jobject self, jstring bookPath, jint width, jint height,
+		jint font_size) {
 	CRJNIEnv env(e);
 	lString16 path = env.fromJavaString(bookPath);
 	LVStreamRef stream = LVOpenFileStream(path.c_str(), LVOM_READ);
-	txt_book = new TxtBook(stream, width, height,font_size);
+	txt_book = new TxtBook(stream, width, height, font_size);
 	CRLog::setLogger(new JNICDRLogger());
 	CRLog::setLogLevel(CRLog::LL_TRACE);
 	CRLog::debug("song loaddocument");

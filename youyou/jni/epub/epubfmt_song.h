@@ -136,11 +136,8 @@ public:
 	void Draw(LVDrawBuf & drawbuf, int chapterindex, int page) {
 		LVLock lock(getMutex());
 		std::vector<EpubChapterPages>::iterator it;
-		CRLog::debug("song draw 1 %d %d",chapterindex, page);
 		EpubChapterPagesRef &p = mDocumentPages[chapterindex];
-		CRLog::debug("song draw 2 %d %d",chapterindex, page);
 		LVRendPageInfo *pageinfo = p->m_pages[page];
-		CRLog::debug("song draw 3");
 		drawPageTo(&drawbuf, p->m_doc, *pageinfo, &m_pageRects[0],
 				p->m_pages.length(), 1);
 		return;
