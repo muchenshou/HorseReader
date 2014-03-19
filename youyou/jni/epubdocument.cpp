@@ -15,7 +15,7 @@
 #include "crtxtenc.h"
 #include "cssdef.h"
 #include "lvthread.h"
-#include "epubfmt.h"
+#include "epubfmt_song.h"
 LVAutoPtr<EpubDocument> epub;
 class C_EpubAddr {
 	jobject _java_obj;

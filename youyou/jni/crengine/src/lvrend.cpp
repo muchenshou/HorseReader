@@ -264,10 +264,8 @@ public:
                         // rows of table
                         CCRTableRow * row = new CCRTableRow;
                         row->elem = item;
-						if ( item==NULL ) {
-							// song	item = item;
-						}
-
+//						if ( item==NULL )
+//							item = item;
                         if ( currentRowGroup ) {
                             // add row to group
                             row->rowgroup = currentRowGroup;
@@ -312,9 +310,8 @@ public:
                         if ( rows.length()==0 ) {
                             CCRTableRow * row = new CCRTableRow;
                             row->elem = item;
-                            if ( item==NULL ) {
-                                // song item = item;
-                            }
+//                            if ( item==NULL )
+//                                item = item;
                             if ( currentRowGroup ) {
                                 // add row to group
                                 row->rowgroup = currentRowGroup;
@@ -1440,9 +1437,8 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
 //            CRLog::trace("renderBlockElement() : Footnote body detected! %s", LCSTR(ldomXPointer(enode,0).toString()) );
         //if (!fmt)
         //    crFatalError();
-        if ( enode->getNodeId() == el_empty_line ) {
-            // song x = x;
-        }
+//        if ( enode->getNodeId() == el_empty_line )
+//            x = x;
         int em = enode->getFont()->getSize();
         int margin_left = lengthToPx( enode->getStyle()->margin[0], width, em ) + DEBUG_TREE_DRAW;
         int margin_right = lengthToPx( enode->getStyle()->margin[1], width, em ) + DEBUG_TREE_DRAW;
@@ -1452,6 +1448,7 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
         int padding_right = lengthToPx( enode->getStyle()->padding[1], width, em ) + DEBUG_TREE_DRAW;
         int padding_top = lengthToPx( enode->getStyle()->padding[2], width, em ) + DEBUG_TREE_DRAW;
         int padding_bottom = lengthToPx( enode->getStyle()->padding[3], width, em ) + DEBUG_TREE_DRAW;
+
         //margin_left += 50;
         //margin_right += 50;
 
@@ -1464,7 +1461,7 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
         int h = 0;
         LFormattedTextRef txform;
         {
-//            CRLog::trace("renderBlockElement - creating render accessor");
+            //CRLog::trace("renderBlockElement - creating render accessor");
             RenderRectAccessor fmt( enode );
             fmt.setX( x );
             fmt.setY( y );
@@ -1473,12 +1470,6 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
             fmt.push();
 
             int m = enode->getRendMethod();
-            bool song_image_test = false;
-            CRLog::debug("song render block m type %d %s",m, LCSTR(enode->getNodeName()));
-            if (enode->getNodeName().compare("img") == 0) {
-            	song_image_test = true;
-            	CRLog::debug("song render block m value %s",LCSTR(enode->getAttributeValue("src")));
-            }
             switch( m )
             {
             case erm_mixed:
@@ -1514,9 +1505,6 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
                     // recurse all sub-blocks for blocks
                     int y = padding_top;
                     int cnt = enode->getChildCount();
-                    if (song_image_test) {
-                    	CRLog::debug("song render block image %d",cnt);
-                    }
                     for (int i=0; i<cnt; i++)
                     {
                         ldomNode * child = enode->getChildNode( i );
@@ -1546,7 +1534,7 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
                     fmt.setY( fmt.getY() );
                     fmt.push();
                     //if ( CRLog::isTraceEnabled() )
-                        CRLog::trace("rendering final node: %s %d %s", LCSTR(enode->getNodeName()), enode->getDataIndex(), LCSTR(ldomXPointer(enode,0).toString()) );
+                    //    CRLog::trace("rendering final node: %s %d %s", LCSTR(enode->getNodeName()), enode->getDataIndex(), LCSTR(ldomXPointer(enode,0).toString()) );
                     h = enode->renderFinalBlock( txform, &fmt, width - padding_left - padding_right );
                     context.updateRenderProgress(1);
                     // if ( context.updateRenderProgress(1) )
@@ -1568,6 +1556,7 @@ int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, in
             default:
                 CRLog::error("Unsupported render method %d", m);
                 crFatalError(); // error
+                break;
             }
         }
         if ( flgSplit ) {
@@ -2004,11 +1993,9 @@ void setNodeStyle( ldomNode * enode, css_style_ref_t parent_style, LVFontRef par
     enode->initNodeFont();
 }
 
-#define UNUSED(x)
 int renderTable( LVRendPageContext & context, ldomNode * node, int x, int y, int width )
 {
-    UNUSED(x);
-    UNUSED(y);
+    CR_UNUSED2(x, y);
     CCRTable table( node, width, 10 );
     int h = table.renderCells( context );
 

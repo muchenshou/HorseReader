@@ -7,12 +7,6 @@
 #include "lvpagesplitter.h"
 #include <vector>
 #include "lvref.h"
-bool DetectEpubFormat(LVStreamRef stream);
-bool ImportEpubDocument(LVStreamRef stream, ldomDocument * m_doc,
-		LVDocViewCallback * progressCallback,
-		CacheLoadingCallback * formatCallback);
-lString16 EpubGetRootFilePath(LVContainerRef m_arc);
-LVStreamRef GetEpubCoverpage(LVContainerRef arc);
 
 extern lString16 mergeCssMacros(CRPropRef props);
 extern lString8 substituteCssMacros(lString8 src, CRPropRef props);
@@ -53,8 +47,6 @@ struct EpubChapterPages:public LVRefCounter {
 };
 typedef LVFastRef<EpubChapterPages> EpubChapterPagesRef;
 class EpubDocument {
-	//LVRendPageList m_pages;
-	//ldomDocument *m_doc;
 public:
 	typedef std::vector<EpubChapterPagesRef> EpubDocPagesContainer;
 

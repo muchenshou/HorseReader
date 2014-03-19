@@ -346,6 +346,5 @@ int getInfo(JNIEnv* env, jobject jbitmap, AndroidBitmapInfo* info) {
 	} else {
 		CRLog::error("bitmap accessor is invalid");
 	}
-	CRLog::debug("%d %d %d %d ",drawbuf->_data[0],drawbuf->_data[1],drawbuf->_data[2],drawbuf->_data[3]);
 	return 0;
 }

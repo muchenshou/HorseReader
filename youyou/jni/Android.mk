@@ -43,6 +43,7 @@ CRENGINE_SRC_FILES := \
     crengine/src/lvstream.cpp \
     crengine/src/lvxml.cpp \
     crengine/src/chmfmt.cpp \
+    crengine/src/epubfmt.cpp \
     crengine/src/pdbfmt.cpp \
     crengine/src/wordfmt.cpp \
     crengine/src/lvstsheet.cpp \
@@ -60,8 +61,8 @@ CRENGINE_SRC_FILES := \
     crengine/src/lvtextfm.cpp \
     crengine/src/lvrend.cpp \
     crengine/src/wolutil.cpp \
-    crengine/src/crgl.cpp \
-    crengine/src/hist.cpp
+    crengine/src/hist.cpp \
+    crengine/src/crconcurrent.cpp
 #    crengine/src/cri18n.cpp
 #    crengine/src/crgui.cpp \
 
@@ -224,7 +225,7 @@ JNI_SRC_FILES := \
 	txtdocument.cpp \
 	epubdocument.cpp \
 	YouYouApp.cpp \
-	epub/epubfmt.cpp
+	epub/epubfmt_song.cpp
 #    cr3engine.cpp \
 #    docview.cpp
 

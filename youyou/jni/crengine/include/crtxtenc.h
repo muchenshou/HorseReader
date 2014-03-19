@@ -30,30 +30,6 @@
 #define EUC_KR_ENCODING_SUPPORT 1
 #endif
 
-
-typedef struct {
-   unsigned short indx; /* index into big table */
-   unsigned short used; /* bitmask of used entries */
-} Summary16;
-typedef unsigned int ucs4_t;
-#if GBK_ENCODING_SUPPORT == 1
-#include "../include/encodings/gbkext1.h"
-#include "../include/encodings/gbkext2.h"
-#include "../include/encodings/gb2312.h"
-#include "../include/encodings/cp936ext.h"
-#endif
-#if JIS_ENCODING_SUPPORT == 1
-#include "../include/encodings/jisx0213.h"
-#endif
-#if BIG5_ENCODING_SUPPORT == 1
-#include "../include/encodings/big5.h"
-#include "../include/encodings/big5_2003.h"
-#endif
-#if EUC_KR_ENCODING_SUPPORT == 1
-#include "../include/encodings/ksc5601.h"
-#endif
-
-
 enum char_encoding_type {
     ce_unknown = 0,
     ce_utf8 = 1,
@@ -148,35 +124,5 @@ bool isValidUtf8Data( const unsigned char * buf, int buf_size );
 
 void MakeStatsForFile( const char * fname, const char * cp_name, const char * lang_name, int index, FILE * f, lString8 & list );
 
-
-#if GBK_ENCODING_SUPPORT == 1
-// based on code from libiconv
-lChar16 cr3_gb2312_mbtowc(const unsigned char *s);
-
-// based on code from libiconv
-lChar16 cr3_cp936ext_mbtowc (const unsigned char *s);
-
-// based on code from libiconv
-lChar16 cr3_gbkext1_mbtowc (lChar16 c1, lChar16 c2);
-
-// based on code from libiconv
-lChar16 cr3_gbkext2_mbtowc(lChar16 c1, lChar16 c2);
-#endif
-
-#if JIS_ENCODING_SUPPORT == 1
-// based on code from libiconv
-lChar16 cr3_jisx0213_to_ucs4(unsigned int row, unsigned int col);
-#endif
-
-#if BIG5_ENCODING_SUPPORT == 1
-// based on code from libiconv
-lUInt16 cr3_big5_mbtowc(lChar16 c1, lChar16 c2);
-
-#endif
-
-#if EUC_KR_ENCODING_SUPPORT == 1
-// based on code from libiconv
-lChar16 cr3_ksc5601_mbtowc(lChar16 c1, lChar16 c2);
-#endif
 
 #endif

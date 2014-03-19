@@ -2025,7 +2025,7 @@ bool ldomDataStorageManager::load()
     }
     lUInt32 n;
     buf >> n;
-    if ( n<0 || n > 10000 )
+    if (n > 10000)
         return false; // invalid
     _recentChunk = NULL;
     _chunks.clear();
@@ -2254,21 +2254,18 @@ void ldomDataStorageManager::compact( int reservedSpace )
         // do compacting
         int sumsize = reservedSpace;
         for ( ldomTextStorageChunk * p = _recentChunk; p; p = p->_nextRecent ) {
-            if ( p->_bufsize >= 0 ) {
-                if ( (int)p->_bufsize + sumsize < _maxUncompressedSize || (p==_activeChunk && reservedSpace<0xFFFFFFF)) {
-                    // fits
-                    sumsize += p->_bufsize;
-                } else {
-                    if ( !_cache )
-                        _owner->createCacheFile();
-                    if ( _cache ) {
-                        if ( !p->swapToCache(true) ) {
-                            crFatalError(111, "Swap file writing error!");
-                        }
-                    }
-                }
-            }
-
+			if ( (int)p->_bufsize + sumsize < _maxUncompressedSize || (p==_activeChunk && reservedSpace<0xFFFFFFF)) {
+				// fits
+				sumsize += p->_bufsize;
+			} else {
+				if ( !_cache )
+					_owner->createCacheFile();
+				if ( _cache ) {
+					if ( !p->swapToCache(true) ) {
+						crFatalError(111, "Swap file writing error!");
+					}
+				}
+			}
         }
 
     }
@@ -3335,7 +3332,7 @@ int ldomDocument::render( LVRendPageList * pages, LVDocViewCallback * callback, 
 
         CRLog::trace("init render method...");
         getRootNode()->initNodeRendMethodRecursive();
-        CRLog::trace("song updateRenderContext");
+
 //        getRootNode()->setFont( _def_font );
 //        getRootNode()->setStyle( _def_style );
         updateRenderContext();
@@ -3357,7 +3354,7 @@ int ldomDocument::render( LVRendPageList * pages, LVDocViewCallback * callback, 
         CRLog::info("Final block count: %d", numFinalBlocks);
         context.setCallback(callback, numFinalBlocks);
         //updateStyles();
-        CRLog::trace("rendering... %d",getRootNode());
+        CRLog::trace("rendering...");
         int height = renderBlockElement( context, getRootNode(),
             0, y0, width ) + y0;
         _rendered = true;
@@ -4207,7 +4204,6 @@ ldomElementWriter * ldomDocumentWriter::pop( ldomElementWriter * obj, lUInt16 id
         tmp2 = tmp->_parent;
         bool stop = (tmp->getElement()->getNodeId() == id);
         ElementCloseHandler( tmp->getElement() );
-        tmp->getElement()->persist();
         delete tmp;
         if ( stop )
             return tmp2;
@@ -4270,7 +4266,7 @@ void ldomDocumentWriter::OnTagBody()
 ldomNode * ldomDocumentWriter::OnTagOpen( const lChar16 * nsname, const lChar16 * tagname )
 {
     //logfile << "ldomDocumentWriter::OnTagOpen() [" << nsname << ":" << tagname << "]";
-//    CRLog::trace("OnTagOpen(nstagname:%s) nsname:%s", UnicodeToUtf8(lString16(tagname)).c_str(), LCSTR(lString16(nsname)));
+    //CRLog::trace("OnTagOpen(%s)", UnicodeToUtf8(lString16(tagname)).c_str());
     lUInt16 id = _document->getElementNameIndex(tagname);
     lUInt16 nsid = (nsname && nsname[0]) ? _document->getNsNameIndex(nsname) : 0;
 
@@ -4311,9 +4307,6 @@ void ldomDocumentWriter::OnTagClose( const lChar16 *, const lChar16 * tagname )
         _errFlag = true;
         //logfile << " !c-err!\n";
         return;
-    }
-    if (_currNode && !lStr_cmp(tagname,"img")) {
-    	CRLog::debug("song hello ontagclose %d %d %d",_currNode->_isBlock, _currNode->getElement()->getAttrCount(),_currNode->getElement()->getChildCount());
     }
     if (tagname[0] == 'l' && _currNode && !lStr_cmp(tagname, "link") ) {
         // link node
@@ -4976,7 +4969,8 @@ bool ldomXPointer::getRect(lvRect & rect) const
     }
     ldomNode * mainNode = p->getDocument()->getRootNode();
     for ( ; p; p = p->getParentNode() ) {
-        if ( p->getRendMethod() == erm_final ) {
+        int rm = p->getRendMethod();
+        if ( rm == erm_final || rm == erm_list_item ) {
             finalNode = p; // found final block
         } else if ( p->getRendMethod() == erm_invisible ) {
             return false; // invisible !!!
@@ -7421,9 +7415,12 @@ void ldomDocumentFragmentWriter::OnAttribute( const lChar16 * nsname, const lCha
         if ( styleDetectionState ) {
             if ( !lStr_cmp(attrname, "rel") && !lStr_cmp(attrvalue, "stylesheet") )
                 styleDetectionState |= 2;
-            else if ( !lStr_cmp(attrname, "type") && !lStr_cmp(attrvalue, "text/css") )
-                styleDetectionState |= 4;
-            else if ( !lStr_cmp(attrname, "href") ) {
+            else if ( !lStr_cmp(attrname, "type") ) {
+                if ( !lStr_cmp(attrvalue, "text/css") )
+                    styleDetectionState |= 4;
+                else
+                    styleDetectionState = 0;  // text/css type supported only
+            } else if ( !lStr_cmp(attrname, "href") ) {
                 styleDetectionState |= 8;
                 lString16 href = attrvalue;
                 if ( stylesheetFile.empty() )
@@ -7508,13 +7505,21 @@ void ldomDocumentFragmentWriter::OnTagClose( const lChar16 * nsname, const lChar
         parent->OnTagClose(nsname, tagname);
 }
 
-/// called after > of opening tag (when entering tag body)
+/// called after > of opening tag (when entering tag body) or just before /> closing tag for empty tags
 void ldomDocumentFragmentWriter::OnTagBody()
 {
     if ( insideTag ) {
         parent->OnTagBody();
     }
-    styleDetectionState = 0;
+    if ( styleDetectionState == 11 ) {
+        // incomplete <link rel="stylesheet", href="..." />; assuming type="text/css"
+        if ( !stylesheetFile.empty() )
+            stylesheetLinks.add(tmpStylesheetFile);
+        else
+            stylesheetFile = tmpStylesheetFile;
+        styleDetectionState = 0;
+    } else
+        styleDetectionState = 0;
 }
 
 
@@ -7592,6 +7597,7 @@ void ldomDocumentWriterFilter::AutoClose( lUInt16 tag_id, bool open )
 
 ldomNode * ldomDocumentWriterFilter::OnTagOpen( const lChar16 * nsname, const lChar16 * tagname )
 {
+    //CRLog::trace("OnTagOpen(%s, %s)", LCSTR(lString16(nsname)), LCSTR(lString16(tagname)));
     if ( !_tagBodyCalled ) {
         CRLog::error("OnTagOpen w/o parent's OnTagBody : %s", LCSTR(lString16(tagname)));
         crFatalError();
@@ -7632,6 +7638,14 @@ void ldomDocumentWriterFilter::OnTagBody()
     }
 }
 
+bool isRightAligned(ldomNode * node) {
+    lString16 style = node->getAttributeValue(attr_style);
+    if (style.empty())
+        return false;
+    int p = style.pos("text-align: right", 0);
+    return (p >= 0);
+}
+
 void ldomDocumentWriterFilter::ElementCloseHandler( ldomNode * node )
 {
     ldomNode * parent = node->getParentNode();
@@ -7640,30 +7654,45 @@ void ldomDocumentWriterFilter::ElementCloseHandler( ldomNode * node )
         if ( parent->getLastChild() != node )
             return;
         if ( id==el_table ) {
-            if (node->getAttributeValue(attr_align) == "right" && node->getAttributeValue(attr_width) == "30%") {
+            if (isRightAligned(node) && node->getAttributeValue(attr_width) == "30%") {
                 // LIB.RU TOC detected: remove it
-                parent->removeLastChild();
+                //parent = parent->modify();
+
+                //parent->removeLastChild();
             }
         } else if ( id==el_pre && _libRuDocumentDetected ) {
             // for LIB.ru - replace PRE element with DIV (section?)
-            if ( node->getChildCount()==0 )
-                parent->removeLastChild(); // remove empty PRE element
+            if ( node->getChildCount()==0 ) {
+                //parent = parent->modify();
+
+                //parent->removeLastChild(); // remove empty PRE element
+            }
             //else if ( node->getLastChild()->getNodeId()==el_div && node->getLastChild()->getChildCount() &&
             //          ((ldomElement*)node->getLastChild())->getLastChild()->getNodeId()==el_form )
             //    parent->removeLastChild(); // remove lib.ru final section
             else
                 node->setNodeId( el_div );
         } else if ( id==el_div ) {
-            if (node->getAttributeValue(attr_align) == "right") {
+//            CRLog::trace("DIV attr align = %s", LCSTR(node->getAttributeValue(attr_align)));
+//            CRLog::trace("DIV attr count = %d", node->getAttrCount());
+//            int alignId = node->getDocument()->getAttrNameIndex("align");
+//            CRLog::trace("align= %d %d", alignId, attr_align);
+//            for (int i = 0; i < node->getAttrCount(); i++)
+//                CRLog::trace("DIV attr %s", LCSTR(node->getAttributeName(i)));
+            if (isRightAligned(node)) {
                 ldomNode * child = node->getLastChild();
                 if ( child && child->getNodeId()==el_form )  {
                     // LIB.RU form detected: remove it
+                    //parent = parent->modify();
+
                     parent->removeLastChild();
                     _libRuDocumentDetected = true;
                 }
             }
         }
     }
+    if (!_libRuDocumentDetected)
+        node->persist();
 }
 
 void ldomDocumentWriterFilter::OnAttribute( const lChar16 * nsname, const lChar16 * attrname, const lChar16 * attrvalue )
@@ -7822,10 +7851,13 @@ void ldomDocumentWriterFilter::OnText( const lChar16 * text, int len, lUInt32 fl
             }
             if ( isHr ) {
                 OnTagOpen( NULL, L"hr" );
+                OnTagBody();
                 OnTagClose( NULL, L"hr" );
             } else if ( len > 0 ) {
-                if ( autoPara )
+                if ( autoPara ) {
                     OnTagOpen( NULL, paraTag );
+                    OnTagBody();
+                }
                 _currNode->onText( text, len, flags );
                 if ( autoPara )
                     OnTagClose( NULL, paraTag );
@@ -8656,6 +8688,7 @@ public:
         : _cacheDir( cacheDir ), _maxSize( maxSize ), _oldStreamSize(0), _oldStreamCRC(0)
     {
         LVAppendPathDelimiter( _cacheDir );
+        CRLog::trace("ldomDocCacheImpl(%s maxSize=%d)", LCSTR(_cacheDir), (int)maxSize);
     }
 
     bool writeIndex()
@@ -8666,7 +8699,7 @@ public:
             LVStreamRef oldStream = LVOpenFileStream(filename.c_str(), LVOM_READ);
             if (!oldStream.isNull()) {
                 _oldStreamSize = (lUInt32)oldStream->GetSize();
-                _oldStreamCRC = (lUInt32)oldStream->crc32();
+                _oldStreamCRC = (lUInt32)oldStream->getcrc32();
             }
         }
 
@@ -8680,6 +8713,7 @@ public:
             FileItem * item = _files[i];
             buf << item->filename;
             buf << item->size;
+            CRLog::trace("cache item: %s %d", LCSTR(item->filename), (int)item->size);
         }
         buf.putCRC( buf.pos() - start );
         if ( buf.error() )
@@ -10966,12 +11000,10 @@ LVStreamRef ldomNode::getObjectImageStream()
 /// returns object image source
 LVImageSourceRef ldomNode::getObjectImageSource()
 {
-	CRLog::debug("song getObjectImageSource 1" );
     lString16 refName = getObjectImageRefName();
     LVImageSourceRef ref;
     if ( refName.empty() )
         return ref;
-    CRLog::debug("song getObjectImageSource 2 %s", LCSTR(refName));
     ref = getDocument()->getObjectImageSource( refName );
     if ( !ref.isNull() ) {
         int dx = ref->GetWidth();
@@ -11044,7 +11076,7 @@ LVStreamRef ldomDocument::getObjectImageStream( lString16 refName )
 LVImageSourceRef ldomDocument::getObjectImageSource( lString16 refName )
 {
     LVStreamRef stream = getObjectImageStream( refName );
-    if ( stream.isNull() )\
+    if (stream.isNull())
          return LVImageSourceRef();
     return LVCreateStreamImageSource( stream );
 }

@@ -16,6 +16,29 @@
 #include "../include/fb2def.h"
 #include "../include/lvdocview.h"
 
+typedef struct {
+   unsigned short indx; /* index into big table */
+   unsigned short used; /* bitmask of used entries */
+} Summary16;
+
+typedef unsigned int ucs4_t;
+#if GBK_ENCODING_SUPPORT == 1
+#include "../include/encodings/gbkext1.h"
+#include "../include/encodings/gbkext2.h"
+#include "../include/encodings/gb2312.h"
+#include "../include/encodings/cp936ext.h"
+#endif
+#if JIS_ENCODING_SUPPORT == 1
+#include "../include/encodings/jisx0213.h"
+#endif
+#if BIG5_ENCODING_SUPPORT == 1
+#include "../include/encodings/big5.h"
+#include "../include/encodings/big5_2003.h"
+#endif
+#if EUC_KR_ENCODING_SUPPORT == 1
+#include "../include/encodings/ksc5601.h"
+#endif
+
 #define BUF_SIZE_INCREMENT 4096
 #define MIN_BUF_DATA_SIZE 4096
 #define CP_AUTODETECT_BUF_SIZE 0x20000
@@ -202,6 +225,160 @@ void LVTextFileBase::checkEof()
         m_buf_pos = m_buf_len = m_stream_size - m_buf_fpos; //force eof
         //m_buf_pos = m_buf_len = m_stream_size - (m_buf_fpos+m_buf_len);
 }
+
+#if GBK_ENCODING_SUPPORT == 1
+// based on code from libiconv
+static lChar16 cr3_gb2312_mbtowc(const unsigned char *s)
+{
+    unsigned char c1 = s[0];
+    if ((c1 >= 0x21 && c1 <= 0x29) || (c1 >= 0x30 && c1 <= 0x77)) {
+        unsigned char c2 = s[1];
+        if (c2 >= 0x21 && c2 < 0x7f) {
+            unsigned int i = 94 * (c1 - 0x21) + (c2 - 0x21);
+            if (i < 1410) {
+                if (i < 831)
+                    return gb2312_2uni_page21[i];
+            } else {
+                if (i < 8178)
+                    return gb2312_2uni_page30[i-1410];
+            }
+        }
+    }
+    return 0;
+}
+
+// based on code from libiconv
+static lChar16 cr3_cp936ext_mbtowc (const unsigned char *s)
+{
+    unsigned char c1 = s[0];
+    if ((c1 == 0xa6) || (c1 == 0xa8)) {
+        unsigned char c2 = s[1];
+        if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xff)) {
+            unsigned int i = 190 * (c1 - 0x81) + (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
+            if (i < 7410) {
+                if (i >= 7189 && i < 7211)
+                    return cp936ext_2uni_pagea6[i-7189];
+            } else {
+                if (i >= 7532 && i < 7538)
+                    return cp936ext_2uni_pagea8[i-7532];
+            }
+        }
+    }
+    return 0;
+}
+
+// based on code from libiconv
+static lChar16 cr3_gbkext1_mbtowc (lChar16 c1, lChar16 c2)
+{
+    if ((c1 >= 0x81 && c1 <= 0xa0)) {
+        if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xff)) {
+        unsigned int i = 190 * (c1 - 0x81) + (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
+        if (i < 6080)
+            return gbkext1_2uni_page81[i];
+        }
+    }
+    return 0;
+}
+
+// based on code from libiconv
+static lChar16 cr3_gbkext2_mbtowc(lChar16 c1, lChar16 c2)
+{
+    if ((c1 >= 0xa8 && c1 <= 0xfe)) {
+        if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0x80 && c2 < 0xa1)) {
+            unsigned int i = 96 * (c1 - 0x81) + (c2 - (c2 >= 0x80 ? 0x41 : 0x40));
+            if (i < 12016)
+                return gbkext2_2uni_pagea8[i-3744];
+        }
+    }
+    return 0;
+}
+#endif
+
+#if JIS_ENCODING_SUPPORT == 1
+// based on code from libiconv
+static lChar16 cr3_jisx0213_to_ucs4(unsigned int row, unsigned int col)
+{
+    lChar16 val;
+
+    if (row >= 0x121 && row <= 0x17e)
+        row -= 289;
+    else if (row == 0x221)
+        row -= 451;
+    else if (row >= 0x223 && row <= 0x225)
+        row -= 452;
+    else if (row == 0x228)
+        row -= 454;
+    else if (row >= 0x22c && row <= 0x22f)
+        row -= 457;
+    else if (row >= 0x26e && row <= 0x27e)
+        row -= 519;
+    else
+        return 0x0000;
+
+    if (col >= 0x21 && col <= 0x7e)
+        col -= 0x21;
+    else
+        return 0x0000;
+
+    val = (lChar16)jisx0213_to_ucs_main[row * 94 + col];
+    val = (lChar16)jisx0213_to_ucs_pagestart[val >> 8] + (val & 0xff);
+    if (val == 0xfffd)
+        val = 0x0000;
+    return val;
+}
+#endif
+
+#if BIG5_ENCODING_SUPPORT == 1
+// based on code from libiconv
+static lUInt16 cr3_big5_mbtowc(lChar16 c1, lChar16 c2)
+{
+    if ((c1 >= 0xa1 && c1 <= 0xc7) || (c1 >= 0xc9 && c1 <= 0xf9)) {
+        if ((c2 >= 0x40 && c2 < 0x7f) || (c2 >= 0xa1 && c2 < 0xff)) {
+            unsigned int i = 157 * (c1 - 0xa1) + (c2 - (c2 >= 0xa1 ? 0x62 : 0x40));
+            unsigned short wc = 0xfffd;
+            if (i < 6280) {
+                if (i < 6121)
+                    wc = big5_2uni_pagea1[i];
+            } else {
+                if (i < 13932)
+                    wc = big5_2uni_pagec9[i-6280];
+            }
+            if (wc != 0xfffd) {
+                return wc;
+            }
+        }
+    }
+    return 0;
+}
+
+#endif
+
+#if EUC_KR_ENCODING_SUPPORT == 1
+// based on code from libiconv
+static lChar16 cr3_ksc5601_mbtowc(lChar16 c1, lChar16 c2)
+{
+    if ((c1 >= 0x21 && c1 <= 0x2c) || (c1 >= 0x30 && c1 <= 0x48) || (c1 >= 0x4a && c1 <= 0x7d)) {
+        if (c2 >= 0x21 && c2 < 0x7f) {
+            unsigned int i = 94 * (c1 - 0x21) + (c2 - 0x21);
+            unsigned short wc = 0xfffd;
+            if (i < 1410) {
+                if (i < 1115)
+                    wc = ksc5601_2uni_page21[i];
+            } else if (i < 3854) {
+                if (i < 3760)
+                    wc = ksc5601_2uni_page30[i-1410];
+            } else {
+                if (i < 8742)
+                    wc = ksc5601_2uni_page4a[i-3854];
+            }
+            if (wc != 0xfffd) {
+                return wc;
+            }
+        }
+    }
+    return 0;
+}
+#endif
 
 
 /// reads several characters from buffer
@@ -2682,26 +2859,31 @@ bool LVXMLParser::CheckFormat()
     bool res = false;
     if ( charsDecoded > 30 ) {
         lString16 s( chbuf, charsDecoded );
-        bool flg = !m_fb2Only || s.pos("<FictionBook") >= 0;
-        if ( flg && (
-                 ((s.pos("<?xml") >= 0 || s.pos(" xmlns=") > 0) && s.pos("version=") >= 6) ||
-                 (m_allowHtml && s.pos("<html xmlns=\"http://www.w3.org/1999/xhtml\"") >= 0)
-                 )) {
-            //&& s.pos("<FictionBook") >= 0
-            res = true;
-            int encpos=s.pos("encoding=\"");
-            if ( encpos>=0 ) {
+        res = s.pos("<FictionBook") >= 0;
+        if ( s.pos("<?xml") >= 0 && s.pos("version=") >= 6 ) {
+            res = res || !m_fb2Only;
+            int encpos;
+            if ( res && (encpos=s.pos("encoding=\"")) >= 0 ) {
                 lString16 encname = s.substr( encpos+10, 20 );
                 int endpos = s.pos("\"");
                 if ( endpos>0 ) {
                     encname.erase( endpos, encname.length() - endpos );
                     SetCharset( encname.c_str() );
                 }
-            } else {
+            }
+        } else if ( !res && s.pos("<html xmlns=\"http://www.w3.org/1999/xhtml\"") >= 0) {
+            res = m_allowHtml;
+        } else if (!res && !m_fb2Only) {
+            // not XML or XML without declaration;
+            int lt_pos = s.pos("<");
+            if ( lt_pos >= 0 && s.pos("xmlns") > lt_pos ) {
+                // contains xml namespace declaration probably XML
+                res = true;
+                // check that only whitespace chars before <
+                for ( int i=0; i<lt_pos && res; i++)
+                    res = IsSpaceChar( chbuf[i] );
             }
         }
-        //else if ( s.pos(L"<html xmlns=\"http://www.w3.org/1999/xhtml\"") >= 0 )
-        //    res = true;
     }
     delete[] chbuf;
     Reset();
@@ -2712,7 +2894,7 @@ bool LVXMLParser::CheckFormat()
 bool LVXMLParser::Parse()
 {
     //
-    CRLog::trace("LVXMLParser::Parse()");
+    //CRLog::trace("LVXMLParser::Parse()");
     Reset();
 //    bool dumpActive = false;
 //    int txt_count = 0;
@@ -2932,7 +3114,7 @@ bool LVXMLParser::Parse()
             }
         }
     }
-    CRLog::trace("LVXMLParser::Parse() is finished, m_stopped=%s", m_stopped?"true":"false");
+    //CRLog::trace("LVXMLParser::Parse() is finished, m_stopped=%s", m_stopped?"true":"false");
     m_callback->OnStop();
     return !errorFlag;
 }
@@ -3564,7 +3746,7 @@ bool LVXMLParser::ReadIdent( lString16 & ns, lString16 & name )
         }
     }
     lChar16 ch = PeekCharFromBuffer();
-    return (!name.empty()) && (ch==' ' || ch=='/' || ch=='>' || ch=='?' || ch=='=' || ch==0);
+    return (!name.empty()) && (ch==' ' || ch=='/' || ch=='>' || ch=='?' || ch=='=' || ch==0 || ch == '\r' || ch == '\n');
 }
 
 void LVXMLParser::SetSpaceMode( bool flgTrimSpaces )
@@ -3637,7 +3819,7 @@ bool LVHTMLParser::CheckFormat()
     }
     delete[] chbuf;
     Reset();
-    CRLog::trace("LVXMLParser::CheckFormat() finished");
+    //CRLog::trace("LVXMLParser::CheckFormat() finished");
     return res;
 }
 
