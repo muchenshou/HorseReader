@@ -1,3 +1,4 @@
+youyou/cr3engine.map
 */bin/*
 */gen/*
 project.properties
@@ -12,4 +13,4 @@ project.properties
 */da.txt
 */suan.txt
 *.so
-youyou/cr3engine.map
+*/cr3engine.map

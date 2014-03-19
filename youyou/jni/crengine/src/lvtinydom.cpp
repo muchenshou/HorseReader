@@ -4270,7 +4270,7 @@ void ldomDocumentWriter::OnTagBody()
 ldomNode * ldomDocumentWriter::OnTagOpen( const lChar16 * nsname, const lChar16 * tagname )
 {
     //logfile << "ldomDocumentWriter::OnTagOpen() [" << nsname << ":" << tagname << "]";
-    CRLog::trace("OnTagOpen(nstagname:%s) nsname:%s", UnicodeToUtf8(lString16(tagname)).c_str(), LCSTR(lString16(nsname)));
+//    CRLog::trace("OnTagOpen(nstagname:%s) nsname:%s", UnicodeToUtf8(lString16(tagname)).c_str(), LCSTR(lString16(nsname)));
     lUInt16 id = _document->getElementNameIndex(tagname);
     lUInt16 nsid = (nsname && nsname[0]) ? _document->getNsNameIndex(nsname) : 0;
 
@@ -4311,6 +4311,9 @@ void ldomDocumentWriter::OnTagClose( const lChar16 *, const lChar16 * tagname )
         _errFlag = true;
         //logfile << " !c-err!\n";
         return;
+    }
+    if (_currNode && !lStr_cmp(tagname,"img")) {
+    	CRLog::debug("song hello ontagclose %d %d %d",_currNode->_isBlock, _currNode->getElement()->getAttrCount(),_currNode->getElement()->getChildCount());
     }
     if (tagname[0] == 'l' && _currNode && !lStr_cmp(tagname, "link") ) {
         // link node

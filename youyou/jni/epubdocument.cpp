@@ -93,9 +93,9 @@ JNIEXPORT jint JNICALL Java_com_reader_document_epub_EpubDocument_loadDocument(
 		JNIEnv *e, jobject self, jstring bookPath, jint w, jint h) {
 	CRJNIEnv env(e);
 	lString16 path = env.fromJavaString(bookPath);
-	LVStreamRef stream = LVOpenFileStream(path.c_str(), LVOM_READ);
+
 	epub = new EpubDocument;
-	epub->loadDocument(stream);
+	epub->loadDocument(path);
 	epub->setWidthHeight(w,h);
 	return 0;
 }

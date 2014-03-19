@@ -1,9 +1,42 @@
+
+#include "../include/crsetup.h"
+#include "../include/fb2def.h"
 #include "epubfmt.h"
+
 #include "lvstream.h"
 #include "lvdocview.h"
 #include "lvrend.h"
 #include "lvpagesplitter.h"
 
+const char
+		* def_stylesheet_epub =
+				"image { text-align: center; text-indent: 0px } \n"
+					"empty-line { height: 1em; } \n"
+					"sub { vertical-align: sub; font-size: 70% }\n"
+					"sup { vertical-align: super; font-size: 70% }\n"
+					"body > image, section > image { text-align: center; margin-before: 1em; margin-after: 1em }\n"
+					"p > image { display: inline }\n"
+					"a { vertical-align: super; font-size: 80% }\n"
+					"p { margin-top:0em; margin-bottom: 0em }\n"
+					"text-author { font-weight: bold; font-style: italic; margin-left: 5%}\n"
+					"empty-line { height: 1em }\n"
+					"epigraph { margin-left: 30%; margin-right: 4%; text-align: left; text-indent: 1px; font-style: italic; margin-top: 15px; margin-bottom: 25px; font-family: Times New Roman, serif }\n"
+					"strong, b { font-weight: bold }\n"
+					"emphasis, i { font-style: italic }\n"
+					"title { text-align: center; text-indent: 0px; font-size: 130%; font-weight: bold; margin-top: 10px; margin-bottom: 10px; font-family: Times New Roman, serif }\n"
+					"subtitle { text-align: center; text-indent: 0px; font-size: 150%; margin-top: 10px; margin-bottom: 10px }\n"
+					"title { page-break-before: always; page-break-inside: avoid; page-break-after: avoid; }\n"
+					"body { text-align: justify; text-indent: 2em }\n"
+					"cite { margin-left: 30%; margin-right: 4%; text-align: justyfy; text-indent: 0px;  margin-top: 20px; margin-bottom: 20px; font-family: Times New Roman, serif }\n"
+					"td, th { text-indent: 0px; font-size: 80%; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; text-align: left; padding: 5px }\n"
+					"th { font-weight: bold }\n"
+					"table > caption { padding: 5px; text-indent: 0px; font-size: 80%; font-weight: bold; text-align: left; background-color: #AAAAAA }\n"
+					"body[name=\"notes\"] { font-size: 70%; }\n"
+					"body[name=\"notes\"]  section[id] { text-align: left; }\n"
+					"body[name=\"notes\"]  section[id] title { display: block; text-align: left; font-size: 110%; font-weight: bold; page-break-before: auto; page-break-inside: auto; page-break-after: auto; }\n"
+					"body[name=\"notes\"]  section[id] title p { text-align: left; display: inline }\n"
+					"body[name=\"notes\"]  section[id] empty-line { display: inline }\n"
+					"code, pre { display: block; white-space: pre; font-family: \"Courier New\", monospace }\n";
 class EpubItems: public LVPtrVector<EpubItem> {
 public:
 	EpubItem * findById(const lString16 & id) {
@@ -1266,6 +1299,7 @@ void EpubDocument::Render(int dx, int dy, EpubChapterPagesRef* chapterPages) {
 
 		if (!m_font)
 			return;
+
 		CRLog::debug("Render(width=%d, height=%d, fontSize=%d)", tdx, tdy,
 				m_font_size);
 		//CRLog::trace("calling render() for document %08X font=%08X", (unsigned int)m_doc, (unsigned int)m_font.get() );
@@ -1289,6 +1323,9 @@ void EpubDocument::Render(int dx, int dy, EpubChapterPagesRef* chapterPages) {
 	}
 
 }
+#define XS_IMPLEMENT_SCHEME 1
+#include "../include/fb2def.h"
+
 void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 	LVLock lock(getMutex());
 	LVEmbeddedFontList fontList;
@@ -1297,12 +1334,18 @@ void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 		page->m_doc = new ldomDocument();
 		page->m_doc->setDocFlags(temp_unknowndoc->getDocFlags());
 		page->m_doc->setContainer(m_arc);
+		page->m_doc->setProps(m_doc_props);
+		page->m_doc->setNodeTypes( fb2_elem_table );
+		page->m_doc->setAttributeTypes( fb2_attr_table );
+		page->m_doc->setNameSpaceTypes( fb2_ns_table );
+		page->m_doc->setStyleSheet(def_stylesheet_epub,true);
 		page->bLoad = false;
 		page->bRender =false;
 		page->m_pages.clear();
 	}
 	if (page->bLoad)
 		return;
+
 	ldomDocumentWriter writer(page->m_doc);
 	ldomDocumentFragmentWriter appender(&writer, cs16("body"),
 			cs16("DocFragment"), lString16::empty_str);
@@ -1358,8 +1401,8 @@ void EpubDocument::loadChapter(EpubChapterPagesRef page) {
 						NULL, true);
 
 }
-void EpubDocument::loadDocument(LVStreamRef stream) {
-
+void EpubDocument::loadDocument(lString16 &path) {
+	LVStreamRef stream = LVOpenFileStream(path.c_str(), LVOM_READ);
 	LVContainerRef arc = LVOpenArchieve(stream);
 	if (arc.isNull())
 		return; // not a ZIP archive
@@ -1428,7 +1471,17 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 		m_doc_props->setString(DOC_PROP_TITLE, title);
 		m_doc_props->setString(DOC_PROP_LANGUAGE, language);
 		m_doc_props->setString(DOC_PROP_AUTHORS, author);
+		m_doc_props->setString(DOC_PROP_FILE_FORMAT, "EPUB");
+		m_doc_props->setInt(DOC_PROP_FILE_FORMAT_ID, doc_format_epub);
+		lString16 fn = LVExtractFilename(path);
+		lString16 dir = LVExtractPath(path);
 
+		m_doc_props->setString(DOC_PROP_ARC_NAME, fn);
+		m_doc_props->setString(DOC_PROP_FILE_PATH, dir);
+		m_doc_props->setString(DOC_PROP_FILE_SIZE, lString16::itoa(
+				(int) stream->GetSize()));
+		m_doc_props->setString(DOC_PROP_FILE_NAME, fn);
+		m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->crc32());
 		for (int i = 1; i < 50; i++) {
 			ldomNode * item = rootfiledoc->nodeFromXPath(
 					lString16("package/metadata/identifier[") << fmt::decimal(i)
@@ -1591,6 +1644,7 @@ void EpubDocument::loadDocument(LVStreamRef stream) {
 		temp_unknowndoc->forceReinitStyles();
 	}
 //	temp_unknowndoc->saveToStream(LVOpenFileStream("/sdcard/epub_dump.xml", LVOM_WRITE),NULL,true);
+	m_doc_props->saveToStream(LVOpenFileStream("/sdcard/youyou/myprops.txt", LVOM_WRITE).get());
 	if (fragmentCount == 0)
 		return;
 

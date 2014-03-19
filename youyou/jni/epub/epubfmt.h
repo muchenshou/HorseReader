@@ -160,7 +160,7 @@ public:
 	/// render (format) document
 	void loadChapter(EpubChapterPagesRef item);
 	void Render(int dx = 0, int dy = 0,EpubChapterPagesRef* chapterPages=NULL);
-	void loadDocument(LVStreamRef stream);
+	void loadDocument(lString16& path);
 	inline int getWidth() {
 		return m_dx;
 	}

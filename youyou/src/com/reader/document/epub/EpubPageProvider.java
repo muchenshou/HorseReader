@@ -77,61 +77,61 @@ public class EpubPageProvider {
 	public Bitmap getPage(final EpubPageAddr index) {
 		final EpubPageAddr local_index = index;// >= getPageCount() ?
 												// getPageCount()-1:index;
-//		_handle.post(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				synchronized (_imageCache) {
-//					savePageIndexHistory();
-//					System.gc();
-//					Set<EpubPageAddr> needInCachePages = new HashSet<EpubPageAddr>();
-//					needInCachePages.add(local_index);
-//					final int count = 5;
-//					EpubPageAddr pre = local_index.pre();
-//					
-//					for (int i = 0; i < count / 2; i++) {
-//						needInCachePages.add(pre);
-//						pre = pre.pre();
-//					}
-//					
-//					EpubPageAddr next = local_index.next();
-//					for (int i = 0; i < count / 2; i++) {
-//						needInCachePages.add(next);
-//						next = next.next();
-//					}
-//					
-//					Set<EpubPageAddr> remove_pages = new HashSet<EpubPageAddr>();
-//
-//					Set<Entry<EpubPageAddr, Bitmap>> set = _imageCache
-//							.entrySet();
-//					Iterator<Entry<EpubPageAddr, Bitmap>> iter = set.iterator();
-//					while (iter.hasNext()) {
-//						Entry<EpubPageAddr, Bitmap> entry = iter.next();
-//						EpubPageAddr key = entry.getKey();
-//						Bitmap value = entry.getValue();
-//						if (!needInCachePages.contains(key)) {
-//							value.recycle();
-//							remove_pages.add(key);
-//						}
-//					}
-//					for (EpubPageAddr i : remove_pages) {
-//						_imageCache.remove(i);
-//					}
-//					for (EpubPageAddr a : needInCachePages) {
-//						if (!_imageCache.containsKey(a)) {
-//							Bitmap b;
-//							b = Bitmap.createBitmap(_activity
-//									.getWindowManager().getDefaultDisplay()
-//									.getWidth(), _activity.getWindowManager()
-//									.getDefaultDisplay().getHeight(),
-//									Config.RGB_565);
-//							_epubDocument.getPage(a, b);
-//							_imageCache.put(a, b);
-//						}
-//					}
-//				}
-//			}
-//		});
+		_handle.post(new Runnable() {
+
+			@Override
+			public void run() {
+				synchronized (_imageCache) {
+					savePageIndexHistory();
+					System.gc();
+					Set<EpubPageAddr> needInCachePages = new HashSet<EpubPageAddr>();
+					needInCachePages.add(local_index);
+					final int count = 5;
+					EpubPageAddr pre = local_index.pre();
+					
+					for (int i = 0; i < count / 2; i++) {
+						needInCachePages.add(pre);
+						pre = pre.pre();
+					}
+					
+					EpubPageAddr next = local_index.next();
+					for (int i = 0; i < count / 2; i++) {
+						needInCachePages.add(next);
+						next = next.next();
+					}
+					
+					Set<EpubPageAddr> remove_pages = new HashSet<EpubPageAddr>();
+
+					Set<Entry<EpubPageAddr, Bitmap>> set = _imageCache
+							.entrySet();
+					Iterator<Entry<EpubPageAddr, Bitmap>> iter = set.iterator();
+					while (iter.hasNext()) {
+						Entry<EpubPageAddr, Bitmap> entry = iter.next();
+						EpubPageAddr key = entry.getKey();
+						Bitmap value = entry.getValue();
+						if (!needInCachePages.contains(key)) {
+							value.recycle();
+							remove_pages.add(key);
+						}
+					}
+					for (EpubPageAddr i : remove_pages) {
+						_imageCache.remove(i);
+					}
+					for (EpubPageAddr a : needInCachePages) {
+						if (!_imageCache.containsKey(a)) {
+							Bitmap b;
+							b = Bitmap.createBitmap(_activity
+									.getWindowManager().getDefaultDisplay()
+									.getWidth(), _activity.getWindowManager()
+									.getDefaultDisplay().getHeight(),
+									Config.RGB_565);
+							_epubDocument.getPage(a, b);
+							_imageCache.put(a, b);
+						}
+					}
+				}
+			}
+		});
 		Bitmap _bitmap;
 		if (_imageCache.get(local_index) != null) {
 			return _imageCache.get(local_index);
