@@ -211,6 +211,9 @@ struct TxtPage {
 	lUInt32 endNode;
 	int endNodeLineNum;
 };
+class TxtBookCache {
+	// {文件内容：[4:文件的最后修改时间][4:储存内容的crc]{储存内容：[4:nodes的size][:nodes][4:pages的size][pages]}}
+};
 
 class TxtBook: public LVFileParserBase {
 	std::vector<TxtNode> mNodes;

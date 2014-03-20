@@ -4,16 +4,20 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.reader.util.BitmapInfo;
 import com.reader.view.PageView;
 
 public class EpubView extends PageView {
 	EpubPageProvider _provider;
 	public EpubPageAddr _pageindex ;
-
+	private BitmapInfo _bitmapinfo = new BitmapInfo();
 	public EpubView(Context context, EpubPageProvider provider) {
 		super(context);
 		_provider = provider;
 		_pageindex = provider.getPageIndexHistory(); 
+		_bitmapinfo._bitmap[0] = _provider.createBitmap();
+		_bitmapinfo._bitmap[1] = _provider.createBitmap();
+		_bitmapinfo._bitmap[2] = _provider.createBitmap();
 	}
 
 	public void setBitmap(Bitmap b[]) {
@@ -35,10 +39,10 @@ public class EpubView extends PageView {
 			_pageindex = _pageindex.pre();
 		}
 		Log.i("song","endAnimation:"+"pre:"+_pageindex.pre().toString() + "cur:"+_pageindex.toString()+"next:"+_pageindex.next().toString());
-		this._animationView.setBitmapArray(new Bitmap[] {
-				_provider.getPage(_pageindex.pre()),
-				_provider.getPage(_pageindex),
-				_provider.getPage(_pageindex.next()) });
+		_bitmapinfo._addr = _pageindex;
+		
+		_provider.getPage(_bitmapinfo);
+		this._animationView.setBitmapArray(_bitmapinfo._bitmap);
 		_animationView.postInvalidate();
 		return super.endAnimation(flags);
 	}

@@ -1,6 +1,5 @@
 package com.reader.document.epub;
 
-import android.util.Log;
 
 
 public class EpubPageAddr{
