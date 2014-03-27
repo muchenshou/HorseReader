@@ -10,9 +10,10 @@ public class YouYouActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
-//		_allui = new AllUi(this);
-		_MainUi = new MainUi(this);
-		setContentView(_MainUi.create(R.layout.mainui));
+		_allui = new AllUi(this);
+//		_MainUi = new MainUi(this);
+//		setContentView(_MainUi.create(R.layout.mainui));
+		setContentView(_allui);
 	}
 	
 }
