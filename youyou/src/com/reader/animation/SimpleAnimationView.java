@@ -133,7 +133,7 @@ public class SimpleAnimationView extends AnimationView {
 		}
 		mX = mEndX - mStartX;
 		mBoundLine = mStartX;
-		_animation.startAnimation(0);
+		_animation.startAnimation(_dir);
 	}
 
 	private void postAnimationEnd() {

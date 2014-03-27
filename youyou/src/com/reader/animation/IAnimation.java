@@ -5,7 +5,7 @@ public interface IAnimation {
 		PRE, NEXT
 	};
 
-	public int startAnimation(int flags);
+	public int startAnimation(DIR flags);
 
 	public int endAnimation(DIR flags);
 }

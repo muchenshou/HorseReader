@@ -4,7 +4,9 @@ import java.io.File;
 
 import com.reader.record.BookHistory;
 import com.reader.ui.BookAdapter;
+import com.reader.app.MainUi;
 import com.reader.app.ReadingActivity;
+import com.reader.app.MainUi.BtnStatus;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,13 +18,20 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class HistoryListFragment extends Fragment implements
+public class HistoryListFragment extends BaseFragment implements MainUi.OnBtnClick,
 		OnItemClickListener {
 	ListView mListView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		MainUi.BtnStatus sta = _mainui.new BtnStatus();
+		sta.visible = View.INVISIBLE;
+		sta.text = "·µ»Ø";
+		_mainui.setLeft(sta);
+		sta.visible = View.VISIBLE;
+		sta.text = "Êé¿â";
+		_mainui.setRight(sta);
 		mListView = new ListView(this.getActivity());
 		mListView.setOnItemClickListener(this);
 		mListView.setScrollingCacheEnabled(false);
@@ -39,6 +48,12 @@ public class HistoryListFragment extends Fragment implements
 		openFile(new File((String) adapter.getItem(pos)));
 	}
 
+	@Override
+	public void onStart() {
+		_mainui.setOnBtnClick(this);
+		super.onStart();
+	}
+
 	private void openFile(File f) {
 		Intent intent = new Intent(this.getActivity(), ReadingActivity.class);
 		intent.putExtra("bookname", f.getPath());
@@ -50,5 +65,16 @@ public class HistoryListFragment extends Fragment implements
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putString("DO NOT CRASH", "OK");
+	}
+
+	@Override
+	public void onLeftBtnClick(Object obj) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRightBtnClick(Object obj) {
+		_mainui.switchFragment(1);
 	}
 }

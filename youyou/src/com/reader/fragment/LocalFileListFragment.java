@@ -30,9 +30,10 @@ import com.reader.searchfile.SearchFile;
 import com.reader.searchfile.SearchFile.FindOneBehavior;
 import com.reader.searchfile.SearchFileWithMultiThread;
 import com.reader.util.FilenameExtFilter;
+import com.reader.app.MainUi;
 
-public class LocalFileListFragment extends Fragment implements
-		View.OnClickListener, OnItemClickListener {
+public class LocalFileListFragment extends BaseFragment implements
+		MainUi.OnBtnClick, OnItemClickListener {
 	ListView mListView;
 	FileListAdapter mFileListAdapter;
 	ProgressDialog mProgAlert;
@@ -40,7 +41,12 @@ public class LocalFileListFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
+		MainUi.BtnStatus sta = _mainui.new BtnStatus();
+		sta.visible = View.VISIBLE;
+		sta.text = "·µ»Ø";
+		_mainui.setLeft(sta);
+		sta.text = "ËÑË÷";
+		_mainui.setRight(sta);
 		View tv = inflater.inflate(R.layout.fileselect, container, false);
 		this.mListView = (ListView) tv.findViewById(R.id.filelist);
 		this.mListView.setOnItemClickListener(this);
@@ -75,11 +81,6 @@ public class LocalFileListFragment extends Fragment implements
 	}
 
 	@Override
-	public void onClick(View v) {
-		searchBook();
-	}
-
-	@Override
 	public void onItemClick(AdapterView<?> l, View arg1, int position, long arg3) {
 		String bookname = (String) l.getAdapter().getItem(position);
 		// history
@@ -105,7 +106,7 @@ public class LocalFileListFragment extends Fragment implements
 		 * @param cl
 		 */
 		public SearchFileTask(Context context) {
-			String exts[] = { "txt", "umd","epub" };
+			String exts[] = { "txt", "umd", "epub" };
 			FileFilter fef = new FilenameExtFilter(exts);
 			mContext = context;
 			mSearchFile = new SearchFileWithMultiThread(mSearchFileCallBack,
@@ -143,6 +144,12 @@ public class LocalFileListFragment extends Fragment implements
 	}
 
 	@Override
+	public void onStart() {
+		_mainui.setOnBtnClick(this);
+		super.onStart();
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
@@ -150,6 +157,16 @@ public class LocalFileListFragment extends Fragment implements
 		mProgAlert.setCanceledOnTouchOutside(false);
 		mProgAlert.setCancelable(false);
 		mProgAlert.setMessage("ËÑË÷ÖÐ...");
+	}
+
+	@Override
+	public void onLeftBtnClick(Object obj) {
+		getFragmentManager().popBackStack();
+	}
+
+	@Override
+	public void onRightBtnClick(Object obj) {
+		searchBook();
 	}
 
 }

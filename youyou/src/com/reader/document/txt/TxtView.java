@@ -20,18 +20,26 @@ public class TxtView extends PageView {
 	}
 
 	@Override
-	public int startAnimation(int flags) {
-		// TODO Auto-generated method stub
+	public int startAnimation(DIR flags) {
+		final DIR f = flags;
+		TxtPageProvider._handle.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (f == DIR.NEXT) {
+					_pageindex++;
+				} else {
+					_pageindex--;
+				}
+				_provider.getPage(_pageindex);
+			}
+		});
 		return super.startAnimation(flags);
 	}
 
 	@Override
 	public int endAnimation(DIR flags) {
-		if (flags == DIR.NEXT) {
-			_pageindex++;
-		} else {
-			_pageindex--;
-		}
+		
 		this._animationView.setBitmapArray(new Bitmap[] {
 				_provider.getPage(_pageindex-1),
 				_provider.getPage(_pageindex),

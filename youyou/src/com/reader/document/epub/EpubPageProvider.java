@@ -151,23 +151,7 @@ public class EpubPageProvider {
 				.getDefaultDisplay().getHeight(),
 				Config.RGB_565);
 	}
-	public void getPage(final BitmapInfo index) {
-		final EpubPageAddr local_index = (EpubPageAddr)index._addr;// >= getPageCount() ?
-												// getPageCount()-1:index;
-		_handle.post(new Runnable() {
-
-			@Override
-			public void run() {
-				synchronized (_imageCache) {
-					savePageIndexHistory();
-					System.gc();
-					_epubDocument.getPage(local_index, index._bitmap[1]);
-					_epubDocument.getPage(local_index.next(), index._bitmap[2]);
-					_epubDocument.getPage(local_index.pre(), index._bitmap[0]);
-				}
-			}
-		});
-	}
+	
 	public int getPageCount() {
 		return _epubDocument.pageCount();
 	}

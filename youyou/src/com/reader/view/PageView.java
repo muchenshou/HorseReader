@@ -91,7 +91,7 @@ public class PageView extends ViewGroup implements IAnimation{
 	}
 
 	@Override
-	public int startAnimation(int flags) {
+	public int startAnimation(DIR flags) {
 		_textView.setText(""+_pageindex);
 
 		return 0;
